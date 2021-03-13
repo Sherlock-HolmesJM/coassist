@@ -70,6 +70,7 @@ const Section = styled.section`
   .container {
     display: flex;
     flex-wrap: wrap;
+    justify-content: center;
   }
   .container > * {
     margin: 20px;
