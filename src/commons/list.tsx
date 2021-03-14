@@ -76,6 +76,10 @@ const Div = styled.div`
     .title {
       font-size: 1.2rem;
     }
+    .badge-container {
+      top: 12px;
+      right: 2px;
+    }
   }
 `;
 

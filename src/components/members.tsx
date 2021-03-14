@@ -11,6 +11,7 @@ export interface MemberI {
   name: string;
   type: MemberType;
   status: MemberStatus;
+  workStatus: boolean;
 }
 
 const Members: React.FC<MembersProps> = (props) => {
@@ -33,6 +34,7 @@ const Members: React.FC<MembersProps> = (props) => {
       name,
       type,
       status: 'inactive',
+      workStatus: false,
     };
     const newMembers = [...members];
     newMembers.push(newMember);
@@ -61,7 +63,7 @@ const Members: React.FC<MembersProps> = (props) => {
       <header className='header'>
         <nav className='nav'>
           <Link to='/home' className='btn btn-link'>
-            back
+            Back
           </Link>
         </nav>
         <form onSubmit={handleSubmit} className='form'>
@@ -119,6 +121,9 @@ const Section = styled.section`
     margin: 10px;
     background: gray;
     flex-wrap: wrap;
+  }
+  .btn-link {
+    color: white;
   }
   .form {
     display: flex;

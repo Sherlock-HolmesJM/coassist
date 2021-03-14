@@ -1,35 +1,38 @@
-import Lottie from "lottie-react";
-import styled from "styled-components";
-import { homeBot } from "../media";
-import { Link } from "react-router-dom";
+import Lottie from 'lottie-react';
+import styled from 'styled-components';
+import { homeBot } from '../media';
+import { Link } from 'react-router-dom';
 
 export interface Props {}
 
 const Home: React.FC<Props> = (props) => {
   return (
     <Section>
-      <header className="header">
-        <div className="header-content">
-          <h1 className="header-title">Collator's Assistant</h1>
-          <h4 className="header-welcome">
+      <header className='header'>
+        <div className='header-content'>
+          <h1 className='header-title'>Collator's Assistant</h1>
+          <h4 className='header-welcome'>
             <em>Welcome Collator</em>
           </h4>
         </div>
-        <Lottie className="bot" animationData={homeBot} />
+        <Lottie className='bot' animationData={homeBot} />
       </header>
-      <main className="main">
-        <div className="list-group">
+      <main className='main'>
+        <div className='list-group'>
           <Link
-            to="/members"
-            className="list-group-item list-group-item-action"
-            aria-current="true"
+            to='/members'
+            className='list-group-item list-group-item-action'
+            aria-current='true'
           >
             Members
           </Link>
-          <Link to="/home" className="list-group-item list-group-item-action">
+          <Link
+            to='/assignments'
+            className='list-group-item list-group-item-action'
+          >
             Assignments
           </Link>
-          <Link to="/" className="list-group-item list-group-item-action">
+          <Link to='/' className='list-group-item list-group-item-action'>
             Logout
           </Link>
         </div>
