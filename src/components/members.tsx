@@ -1,8 +1,10 @@
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import styled from 'styled-components';
 import List from '../commons/list';
 import { Link } from 'react-router-dom';
 import { capitalize } from '../util';
+import { context } from '../context/context';
+import { setMembers } from '../context/actions';
 
 export interface MembersProps {}
 export type MemberStatus = 'active' | 'inactive';
@@ -11,11 +13,13 @@ export interface MemberI {
   name: string;
   type: MemberType;
   status: MemberStatus;
-  workStatus: boolean;
+  work: string | null;
+  done: boolean;
 }
 
 const Members: React.FC<MembersProps> = (props) => {
-  const [members, setMembers] = useState<MemberI[]>([]);
+  const { dispatch, members } = useContext(context);
+
   const [name, setName] = useState('');
   const [type, setType] = useState<MemberType>('T');
 
@@ -34,11 +38,11 @@ const Members: React.FC<MembersProps> = (props) => {
       name,
       type,
       status: 'inactive',
-      workStatus: false,
+      work: null,
+      done: false,
     };
-    const newMembers = [...members];
-    newMembers.push(newMember);
-    setMembers(newMembers);
+    const newMembers = [...members, newMember];
+    dispatch(setMembers(newMembers));
     setName('');
     nameRef.current?.focus();
   };
@@ -48,14 +52,14 @@ const Members: React.FC<MembersProps> = (props) => {
     newMember.status = newMember.status === 'active' ? 'inactive' : 'active';
     const newMembers = members.filter((m) => m.name !== member.name);
     newMembers.push(newMember);
-    setMembers(newMembers);
+    dispatch(setMembers(newMembers));
   };
 
   const handleDelete = (name: string) => {
     const result = prompt('Are you sure?');
     if (result === null) return;
     const newMembers = members.filter((m) => m.name !== name);
-    setMembers(newMembers);
+    dispatch(setMembers(newMembers));
   };
 
   return (
@@ -135,12 +139,6 @@ const Section = styled.section`
     flex-basis: clamp(300px, 50%, 400px);
     text-transform: capitalize;
     border: 2px gray red;
-  }
-
-  .container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
   }
   .container > * {
     flex-basis: 400px;

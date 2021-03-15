@@ -1,37 +1,43 @@
-import React, { useRef, useState } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { capitalize } from '../util';
+import { context } from '../context/context';
+import { updateMessages } from '../context/actions';
+import { MessageI } from './message/message';
 
 interface Props {}
 
 function Assignment(props: Props) {
-  // const {} = props;
-
+  const { dispatch, messages } = useContext(context);
   const [filename, setFilename] = useState('');
-  const [list, setList] = useState<string[]>(['kdkdkdk']);
-
   const fileRef = useRef<HTMLInputElement>(null);
+
+  const list = Object.keys(messages);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const index = list.indexOf(filename);
-    if (index !== -1)
+    if (messages[filename])
       return alert(`${capitalize(filename)} is already being worked on.`);
 
-    const newList = [...list];
-    newList.push(filename);
-    setList(newList);
+    const message: MessageI = { filename, workers: [], status: 'in-progress' };
+    const newMessages = { ...messages, [filename]: message };
+
+    dispatch(updateMessages(newMessages));
     setFilename('');
+
     fileRef.current?.focus();
   };
 
   const handleDelete = (item: string) => {
     const result = prompt('Are you sure?');
     if (result === null) return;
-    const newList = list.filter((i) => i !== item);
-    setList(newList);
+
+    const newMessages = { ...messages };
+    delete newMessages[item];
+
+    dispatch(updateMessages(newMessages));
   };
 
   return (
@@ -60,7 +66,7 @@ function Assignment(props: Props) {
           {list.map((l) => (
             <li key={l} className='list-group-item'>
               <Link to={`/assignments:${l}`} className='link'>
-                {l}
+                {l} - <em>{messages[l]?.status}</em>
               </Link>
               <span className='badge bg-danger' onClick={() => handleDelete(l)}>
                 X
