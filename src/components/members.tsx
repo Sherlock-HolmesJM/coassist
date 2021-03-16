@@ -17,32 +17,23 @@ const MembersComp: React.FC<MembersProps> = (props) => {
 
   const nameRef = useRef<HTMLInputElement>(null);
 
-  const activeMembs = Object.entries(members)
-    .filter((m) => m[1].status === 'active')
-    .reduce((a: MemberI[], n) => [...a, n[1]], []);
-
-  const inactiveMembers = Object.entries(members)
-    .filter((m) => m[1].status === 'inactive')
-    .reduce((a: MemberI[], n) => [...a, n[1]], []);
-
-  const list = Object.entries(members).reduce(
-    (a: MemberI[], n) => [...a, n[1]],
-    []
-  );
+  const activeMembers = members.filter((m) => m.active);
+  const inactiveMembers = members.filter((m) => !m.active);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (members[name]) return alert(`${capitalize(name)} is already a member.`);
+    const index = members.findIndex((m) => m.name === name);
+    if (index !== -1) return alert(`${capitalize(name)} is already a member.`);
 
     const newMember: MemberI = {
       name,
       type,
-      status: 'inactive',
-      works: {},
+      active: false,
+      works: [],
       free: false,
     };
-    const newMembers = { ...members, [name]: newMember };
+    const newMembers: MemberI[] = [...members, newMember];
 
     dispatch(setMembers(newMembers));
     setName('');
@@ -50,21 +41,22 @@ const MembersComp: React.FC<MembersProps> = (props) => {
   };
 
   const handleMark = (member: MemberI) => {
-    const newMember = { ...member, free: !member.free };
-    newMember.status = newMember.status === 'active' ? 'inactive' : 'active';
+    const newMember: MemberI = {
+      ...member,
+      free: !member.free,
+      active: !member.active,
+    };
 
-    const newMembers = { ...members };
-    newMembers[member.name] = newMember;
+    const index = members.indexOf(member);
+    const newMembers = [...members];
+    newMembers[index] = newMember;
     dispatch(setMembers(newMembers));
   };
 
   const handleDelete = (name: string) => {
     const result = prompt('Are you sure?');
     if (result === null) return;
-    const newMembers = { ...members };
-    delete newMembers[name];
-    console.log(newMembers);
-
+    const newMembers = members.filter((m) => m.name !== name);
     dispatch(setMembers(newMembers));
   };
 
@@ -107,15 +99,15 @@ const MembersComp: React.FC<MembersProps> = (props) => {
           onDelete={handleDelete}
         />
         <List
-          items={activeMembs}
+          items={activeMembers}
           title='active members'
           onMark={handleMark}
           onDelete={handleDelete}
         />
       </div>
       <div className='hide'>
-        <List items={list} title='all members' />
-        <List items={activeMembs} title='active members' />
+        <List items={members} title='all members' />
+        <List items={activeMembers} title='active members' />
         <List items={inactiveMembers} title='inactive members' />
       </div>
     </Section>

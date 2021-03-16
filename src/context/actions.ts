@@ -1,24 +1,28 @@
-import { Members } from '../types/member';
-import { MessagesI } from './context';
+import { MemberI } from '../types/member';
+import { MessageI } from '../types/member';
 import {
-  UpdateWorker,
-  UPDATE_MESSAGES,
-  SetList,
+  SetMessages,
+  SET_MESSAGES,
   SetMembers,
-  SET_LIST,
   SET_MEMBERS,
+  SetMM,
+  SET_MM,
 } from './types';
 
-export const updateMessages = (messages: MessagesI): UpdateWorker => ({
-  type: UPDATE_MESSAGES,
+export const setMM = (messages: MessageI[], members: MemberI[]): SetMM => ({
+  type: SET_MM,
+  payload: {
+    messages,
+    members,
+  },
+});
+
+export const setMessages = (messages: MessageI[]): SetMessages => ({
+  type: SET_MESSAGES,
   payload: messages,
 });
 
-export const setList = (list: string[]): SetList => ({
-  type: SET_LIST,
-  payload: list,
-});
-export const setMembers = (members: Members): SetMembers => ({
+export const setMembers = (members: MemberI[]): SetMembers => ({
   type: SET_MEMBERS,
   payload: members,
 });

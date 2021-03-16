@@ -3,44 +3,62 @@ import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { capitalize } from '../util';
 import { context } from '../context/context';
-import { updateMessages } from '../context/actions';
-import { MessageI } from './message/message';
+import { setMessages, setMM } from '../context/actions';
+import { MessageI } from '../types/member';
 
 interface Props {}
 
 function Assignment(props: Props) {
-  const { dispatch, messages } = useContext(context);
+  const { dispatch, messages, members } = useContext(context);
   const [filename, setFilename] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
-
-  const list = Object.entries(messages)
-    .sort((a, b) => b[1].status.length - a[1].status.length)
-    .reduce((acc: string[], next) => [...acc, next[0]], []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (messages[filename])
+    const index = messages.findIndex((m) => m.name === filename);
+    if (index !== -1)
       return alert(`${capitalize(filename)} is already being worked on.`);
 
     const message: MessageI = { name: filename, status: 'in-progress' };
-    const newMessages = { ...messages, [filename]: message };
+    const newMessages = [...messages, message];
 
-    dispatch(updateMessages(newMessages));
+    dispatch(setMessages(newMessages));
     setFilename('');
 
     fileRef.current?.focus();
   };
 
-  const handleDelete = (key: string) => {
+  const handleDelete = (message: MessageI) => {
     const result = prompt('Are you sure?');
     if (result === null) return;
+    const newMessages = messages.filter((m) => m.name !== message.name);
 
-    const newMessages = { ...messages };
-    delete newMessages[key];
-
-    dispatch(updateMessages(newMessages));
+    if (message.status !== 'undone') {
+      const newMembers = [...members];
+      newMembers
+        .filter((m) => m.works.find((w) => w.name === message.name))
+        .forEach((wkr) => {
+          wkr.works = wkr.works.filter((w) => w.name !== message.name);
+        });
+      dispatch(setMM(newMessages, newMembers));
+    } else dispatch(setMessages(newMessages));
   };
+
+  // const getStatus = (message: string) => {
+  //   let workDone = 0;
+  //   let totalWorks = 0;
+  //   const workers = members.filter((m) =>
+  //     m.works.find((w) => w.name === message)
+  //   );
+  //   workers.forEach((wkr) => {
+  //     totalWorks = totalWorks + wkr.works.length;
+  //     workDone = wkr.works.filter((w) => w.done).length + workDone;
+  //   });
+  //   if (totalWorks === workDone && workDone !== 0) return 'done';
+  //   else if (totalWorks === 0) return 'undone';
+  //   else return 'in-progress';
+  // };
 
   return (
     <Section>
@@ -65,12 +83,12 @@ function Assignment(props: Props) {
       </header>
       <main className='list-container'>
         <ul className='list-group'>
-          {list.map((l) => (
-            <li key={l} className='list-group-item'>
-              <Link to={`/assignments:${l}`} className='link'>
-                {l} - <em>{messages[l]?.status}</em>
+          {messages.map((m) => (
+            <li key={m.name} className='list-group-item'>
+              <Link to={`/assignments:${m.name}`} className='link'>
+                {m.name} - <em>{m.status}</em>
               </Link>
-              <span className='badge bg-danger' onClick={() => handleDelete(l)}>
+              <span className='badge bg-danger' onClick={() => handleDelete(m)}>
                 X
               </span>
             </li>

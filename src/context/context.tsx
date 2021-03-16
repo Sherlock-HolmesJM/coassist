@@ -1,24 +1,19 @@
 import React, { PureComponent, ReactNode } from 'react';
-import { Members } from '../types/member';
-import { MessageI } from '../components/message/message';
+import { MessageI, MemberI } from '../types/member';
 import { data } from '../services';
-import { UPDATE_MESSAGES, AllActions, SET_MEMBERS } from './types';
+import { SET_MESSAGES, AllActions, SET_MEMBERS, SET_MM } from './types';
 
 interface Props {}
 
-export interface MessagesI {
-  [index: string]: MessageI;
-}
-
 interface State {
-  messages: MessagesI;
-  members: Members;
+  messages: MessageI[];
+  members: MemberI[];
   dispatch: (a: any) => void;
 }
 
 const state: State = {
-  messages: {},
-  members: {},
+  messages: [],
+  members: [],
   dispatch: () => '',
 };
 
@@ -41,16 +36,18 @@ class Provider extends PureComponent<Props, State> {
 
   reducer = (action: AllActions) => {
     switch (action.type) {
-      case UPDATE_MESSAGES:
-        return {
-          ...this.state,
-          messages: { ...action.payload },
-        };
       case SET_MEMBERS:
         return {
           ...this.state,
-          members: { ...action.payload },
+          members: [...action.payload],
         };
+      case SET_MESSAGES:
+        return {
+          ...this.state,
+          messages: [...action.payload],
+        };
+      case SET_MM:
+        return { ...this.state, ...action.payload };
       default:
         return this.state;
     }
@@ -58,7 +55,7 @@ class Provider extends PureComponent<Props, State> {
 
   componentDidMount() {
     this.setState({
-      ...((data as unknown) as State),
+      ...data,
     });
   }
 

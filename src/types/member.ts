@@ -3,23 +3,21 @@ export type MemberType = 'TE' | 'T';
 
 export interface Work {
   name: string;
+  part: string;
   done: boolean;
-}
-
-export interface Works {
-  [index: string]: Work;
-}
-
-export interface Members {
-  [key: string]: MemberI;
 }
 
 export interface MemberI {
   name: string;
   type: MemberType;
-  status: MemberStatus;
+  active: boolean;
   free: boolean;
-  works: Works;
+  works: Work[];
+}
+
+export interface MessageI {
+  name: string;
+  status: 'in-progress' | 'done' | 'undone';
 }
 
 export default MemberI;

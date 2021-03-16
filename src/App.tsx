@@ -7,7 +7,7 @@ import Login from './components/login';
 import Home from './components/home';
 import Members from './components/members';
 import Assignments from './components/assignment';
-import Message from './components/message';
+import Message from './components/message/message';
 
 function App() {
   return (

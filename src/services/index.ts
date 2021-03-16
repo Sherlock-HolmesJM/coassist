@@ -1,27 +1,28 @@
 import members from './members';
+import { MessageI } from '../types/member';
 
-const messages = {
-  'glh-wed190919': {
+const messages: MessageI[] = [
+  {
     name: 'glh-wed190919',
-    status: 'in-progress',
+    status: 'undone',
   },
-  'glh-wed190911': {
+  {
     name: 'glh-wed190911',
-    status: 'in-progress',
+    status: 'undone',
   },
-  'glh-wed190912': {
+  {
     name: 'glh-wed190912',
-    status: 'done',
+    status: 'undone',
   },
-  'glh-wed190913': {
+  {
     name: 'glh-wed190913',
-    status: 'in-progress',
+    status: 'undone',
   },
-  'glh-wed190914': {
+  {
     name: 'glh-wed190914',
-    status: 'done',
+    status: 'undone',
   },
-};
+];
 
 export const data = {
   members,

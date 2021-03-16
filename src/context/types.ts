@@ -1,22 +1,26 @@
-import { Members } from '../types/member';
-import { MessagesI } from './context';
+import { MemberI } from '../types/member';
+import { MessageI } from '../types/member';
 
-export const SET_LIST = 'SET_LIST';
 export const SET_MEMBERS = 'SET_MEMBERS';
-export const UPDATE_MESSAGES = 'UPDATE_MESSAGES';
+export const SET_MESSAGES = 'SET_MESSAGES';
+export const SET_MM = 'SET_MM';
 
-export interface SetList {
-  type: typeof SET_LIST;
-  payload: string[];
+export interface SetMM {
+  type: typeof SET_MM;
+  payload: {
+    members: MemberI[];
+    messages: MessageI[];
+  };
 }
+
 export interface SetMembers {
   type: typeof SET_MEMBERS;
-  payload: Members;
+  payload: MemberI[];
 }
 
-export interface UpdateWorker {
-  type: typeof UPDATE_MESSAGES;
-  payload: MessagesI;
+export interface SetMessages {
+  type: typeof SET_MESSAGES;
+  payload: MessageI[];
 }
 
-export type AllActions = SetList | SetMembers | UpdateWorker;
+export type AllActions = SetMembers | SetMessages | SetMM;

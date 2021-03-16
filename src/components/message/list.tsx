@@ -5,6 +5,7 @@ import { MemberI } from '../../types/member';
 export interface ListProps {
   members: MemberI[];
   title: string;
+  done: boolean;
   message: string;
   onDelete: (member: MemberI, part: string) => void;
   onMark: (member: MemberI, part: string) => void;
@@ -12,51 +13,51 @@ export interface ListProps {
 }
 
 const List: React.FC<ListProps> = (props) => {
-  const { title, members, message, onMark, onDelete, onUpdate } = props;
+  const { title, message, done, members, onMark, onDelete, onUpdate } = props;
 
   return (
     <Div className='list'>
       <h3 className='title'>{capitalize(title)} </h3>
       <ul className='list-group'>
         {members.map((member) => {
-          const keys = Object.keys(member.works).filter((k) =>
-            k.includes(message)
-          );
-          return keys.map((key) => {
-            const { done } = member.works[key];
-            return (
-              <li className='list-group-item' key={key}>
-                <div>
+          return member.works
+            .filter((w) => w.done === done && w.name === message)
+            .map((work) => {
+              return (
+                <li className='list-group-item' key={work.part}>
                   <div>
-                    {capitalize(member.name)} - {member.type}:
+                    <div>
+                      {capitalize(member.name)} - {member.type}:
+                    </div>
+                    <div>
+                      <em>{work.part.toUpperCase()}</em>
+                    </div>
                   </div>
                   <div>
-                    <em>{key?.toUpperCase()}</em>
+                    <span
+                      className={`badge bg-${
+                        work.done ? 'success' : 'secondary'
+                      }`}
+                      onClick={() => onMark(member, work.part)}
+                    >
+                      {work.done ? 'D' : 'IP'}
+                    </span>
+                    <span
+                      className='badge bg-warning'
+                      onClick={() => onUpdate(member, work.part)}
+                    >
+                      {!work.done && 'U'}
+                    </span>
+                    <span
+                      className='badge bg-danger'
+                      onClick={() => onDelete(member, work.part)}
+                    >
+                      X
+                    </span>
                   </div>
-                </div>
-                <div>
-                  <span
-                    className={`badge bg-${done ? 'success' : 'secondary'}`}
-                    onClick={() => onMark(member, key)}
-                  >
-                    {done ? 'D' : 'IP'}
-                  </span>
-                  <span
-                    className='badge bg-warning'
-                    onClick={() => onUpdate(member, key)}
-                  >
-                    {!done && 'U'}
-                  </span>
-                  <span
-                    className='badge bg-danger'
-                    onClick={() => onDelete(member, key)}
-                  >
-                    X
-                  </span>
-                </div>
-              </li>
-            );
-          });
+                </li>
+              );
+            });
         })}
       </ul>
     </Div>
