@@ -1,4 +1,4 @@
-import { MemberI } from '../components/members';
+import { Members } from '../types/member';
 import { MessagesI } from './context';
 import {
   UpdateWorker,
@@ -18,7 +18,7 @@ export const setList = (list: string[]): SetList => ({
   type: SET_LIST,
   payload: list,
 });
-export const setMembers = (members: MemberI[]): SetMembers => ({
+export const setMembers = (members: Members): SetMembers => ({
   type: SET_MEMBERS,
   payload: members,
 });

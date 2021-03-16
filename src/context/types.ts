@@ -1,4 +1,4 @@
-import { MemberI } from '../components/members';
+import { Members } from '../types/member';
 import { MessagesI } from './context';
 
 export const SET_LIST = 'SET_LIST';
@@ -11,7 +11,7 @@ export interface SetList {
 }
 export interface SetMembers {
   type: typeof SET_MEMBERS;
-  payload: MemberI[];
+  payload: Members;
 }
 
 export interface UpdateWorker {

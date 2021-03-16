@@ -13,7 +13,9 @@ function Assignment(props: Props) {
   const [filename, setFilename] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const list = Object.keys(messages);
+  const list = Object.entries(messages)
+    .sort((a, b) => b[1].status.length - a[1].status.length)
+    .reduce((acc: string[], next) => [...acc, next[0]], []);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -21,7 +23,7 @@ function Assignment(props: Props) {
     if (messages[filename])
       return alert(`${capitalize(filename)} is already being worked on.`);
 
-    const message: MessageI = { filename, workers: [], status: 'in-progress' };
+    const message: MessageI = { name: filename, status: 'in-progress' };
     const newMessages = { ...messages, [filename]: message };
 
     dispatch(updateMessages(newMessages));
@@ -30,12 +32,12 @@ function Assignment(props: Props) {
     fileRef.current?.focus();
   };
 
-  const handleDelete = (item: string) => {
+  const handleDelete = (key: string) => {
     const result = prompt('Are you sure?');
     if (result === null) return;
 
     const newMessages = { ...messages };
-    delete newMessages[item];
+    delete newMessages[key];
 
     dispatch(updateMessages(newMessages));
   };

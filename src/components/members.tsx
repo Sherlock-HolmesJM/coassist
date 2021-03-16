@@ -5,19 +5,11 @@ import { Link } from 'react-router-dom';
 import { capitalize } from '../util';
 import { context } from '../context/context';
 import { setMembers } from '../context/actions';
+import { MemberI, MemberType } from '../types/member';
 
 export interface MembersProps {}
-export type MemberStatus = 'active' | 'inactive';
-export type MemberType = 'TE' | 'T';
-export interface MemberI {
-  name: string;
-  type: MemberType;
-  status: MemberStatus;
-  work: string | null;
-  done: boolean;
-}
 
-const Members: React.FC<MembersProps> = (props) => {
+const MembersComp: React.FC<MembersProps> = (props) => {
   const { dispatch, members } = useContext(context);
 
   const [name, setName] = useState('');
@@ -25,40 +17,54 @@ const Members: React.FC<MembersProps> = (props) => {
 
   const nameRef = useRef<HTMLInputElement>(null);
 
-  const activeMembers = members.filter((m) => m.status === 'active');
-  const inactiveMembers = members.filter((m) => m.status === 'inactive');
+  const activeMembs = Object.entries(members)
+    .filter((m) => m[1].status === 'active')
+    .reduce((a: MemberI[], n) => [...a, n[1]], []);
+
+  const inactiveMembers = Object.entries(members)
+    .filter((m) => m[1].status === 'inactive')
+    .reduce((a: MemberI[], n) => [...a, n[1]], []);
+
+  const list = Object.entries(members).reduce(
+    (a: MemberI[], n) => [...a, n[1]],
+    []
+  );
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const result = members.find((m) => m.name === name);
-    if (result) return alert(`${capitalize(name)} is already a member.`);
+    if (members[name]) return alert(`${capitalize(name)} is already a member.`);
 
     const newMember: MemberI = {
       name,
       type,
       status: 'inactive',
-      work: null,
-      done: false,
+      works: {},
+      free: false,
     };
-    const newMembers = [...members, newMember];
+    const newMembers = { ...members, [name]: newMember };
+
     dispatch(setMembers(newMembers));
     setName('');
     nameRef.current?.focus();
   };
 
   const handleMark = (member: MemberI) => {
-    const newMember = { ...member };
+    const newMember = { ...member, free: !member.free };
     newMember.status = newMember.status === 'active' ? 'inactive' : 'active';
-    const newMembers = members.filter((m) => m.name !== member.name);
-    newMembers.push(newMember);
+
+    const newMembers = { ...members };
+    newMembers[member.name] = newMember;
     dispatch(setMembers(newMembers));
   };
 
   const handleDelete = (name: string) => {
     const result = prompt('Are you sure?');
     if (result === null) return;
-    const newMembers = members.filter((m) => m.name !== name);
+    const newMembers = { ...members };
+    delete newMembers[name];
+    console.log(newMembers);
+
     dispatch(setMembers(newMembers));
   };
 
@@ -101,15 +107,15 @@ const Members: React.FC<MembersProps> = (props) => {
           onDelete={handleDelete}
         />
         <List
-          items={activeMembers}
+          items={activeMembs}
           title='active members'
           onMark={handleMark}
           onDelete={handleDelete}
         />
       </div>
       <div className='hide'>
-        <List items={members} title='all members' />
-        <List items={activeMembers} title='active members' />
+        <List items={list} title='all members' />
+        <List items={activeMembs} title='active members' />
         <List items={inactiveMembers} title='inactive members' />
       </div>
     </Section>
@@ -162,4 +168,4 @@ const Section = styled.section`
   }
 `;
 
-export default Members;
+export default MembersComp;

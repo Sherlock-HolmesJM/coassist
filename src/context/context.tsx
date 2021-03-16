@@ -1,8 +1,8 @@
 import React, { PureComponent, ReactNode } from 'react';
-import { MemberI } from '../components/members';
+import { Members } from '../types/member';
 import { MessageI } from '../components/message/message';
 import { data } from '../services';
-import { UPDATE_MESSAGES, AllActions, SET_LIST, SET_MEMBERS } from './types';
+import { UPDATE_MESSAGES, AllActions, SET_MEMBERS } from './types';
 
 interface Props {}
 
@@ -12,13 +12,13 @@ export interface MessagesI {
 
 interface State {
   messages: MessagesI;
-  members: MemberI[];
+  members: Members;
   dispatch: (a: any) => void;
 }
 
 const state: State = {
   messages: {},
-  members: [],
+  members: {},
   dispatch: () => '',
 };
 
@@ -46,15 +46,10 @@ class Provider extends PureComponent<Props, State> {
           ...this.state,
           messages: { ...action.payload },
         };
-      case SET_LIST:
-        return {
-          ...this.state,
-          list: [...action.payload],
-        };
       case SET_MEMBERS:
         return {
           ...this.state,
-          members: [...action.payload],
+          members: { ...action.payload },
         };
       default:
         return this.state;

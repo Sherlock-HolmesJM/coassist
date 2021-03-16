@@ -1,48 +1,63 @@
 import styled from 'styled-components';
 import { capitalize } from '../../util';
-import { MemberI } from '../../components/members';
+import { MemberI } from '../../types/member';
 
 export interface ListProps {
-  items: MemberI[];
+  members: MemberI[];
   title: string;
-  onDelete: (name: string) => void;
-  onMark: (member: MemberI) => void;
-  onUpdate: (member: MemberI) => void;
+  message: string;
+  onDelete: (member: MemberI, part: string) => void;
+  onMark: (member: MemberI, part: string) => void;
+  onUpdate: (member: MemberI, part: string) => void;
 }
 
 const List: React.FC<ListProps> = (props) => {
-  const { title, items, onMark, onDelete, onUpdate } = props;
+  const { title, members, message, onMark, onDelete, onUpdate } = props;
 
   return (
     <Div className='list'>
       <h3 className='title'>{capitalize(title)} </h3>
       <ul className='list-group'>
-        {items.map((item) => (
-          <li className='list-group-item' key={item.name}>
-            <div>
-              <div>
-                {capitalize(item.name)} - {item.type}:
-              </div>
-              <div>
-                <em>{item.work?.toUpperCase()}</em>
-              </div>
-            </div>
-            <div>
-              <span className='badge bg-success' onClick={() => onMark(item)}>
-                M
-              </span>
-              <span className='badge bg-warning' onClick={() => onUpdate(item)}>
-                U
-              </span>
-              <span
-                className='badge bg-danger'
-                onClick={() => onDelete(item.name)}
-              >
-                X
-              </span>
-            </div>
-          </li>
-        ))}
+        {members.map((member) => {
+          const keys = Object.keys(member.works).filter((k) =>
+            k.includes(message)
+          );
+          return keys.map((key) => {
+            const { done } = member.works[key];
+            return (
+              <li className='list-group-item' key={key}>
+                <div>
+                  <div>
+                    {capitalize(member.name)} - {member.type}:
+                  </div>
+                  <div>
+                    <em>{key?.toUpperCase()}</em>
+                  </div>
+                </div>
+                <div>
+                  <span
+                    className={`badge bg-${done ? 'success' : 'secondary'}`}
+                    onClick={() => onMark(member, key)}
+                  >
+                    {done ? 'D' : 'IP'}
+                  </span>
+                  <span
+                    className='badge bg-warning'
+                    onClick={() => onUpdate(member, key)}
+                  >
+                    {!done && 'U'}
+                  </span>
+                  <span
+                    className='badge bg-danger'
+                    onClick={() => onDelete(member, key)}
+                  >
+                    X
+                  </span>
+                </div>
+              </li>
+            );
+          });
+        })}
       </ul>
     </Div>
   );
