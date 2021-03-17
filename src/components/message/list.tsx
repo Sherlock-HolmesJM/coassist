@@ -19,46 +19,48 @@ const List: React.FC<ListProps> = (props) => {
     <Div className='list'>
       <h3 className='title'>{capitalize(title)} </h3>
       <ul className='list-group'>
-        {members.map((member) => {
-          return member.works
-            .filter((w) => w.done === done && w.name === message)
-            .map((work) => {
-              return (
-                <li className='list-group-item' key={work.part}>
-                  <div>
+        {members
+          .sort((a, b) => a.type.length - b.type.length)
+          .map((member) => {
+            return member.works
+              .filter((w) => w.done === done && w.name === message)
+              .map((work) => {
+                return (
+                  <li className='list-group-item' key={work.part}>
                     <div>
-                      {capitalize(member.name)} - {member.type}:
+                      <div>
+                        {capitalize(member.name)} - {member.type}:
+                      </div>
+                      <div>
+                        <em>{work.part.toUpperCase()}</em>
+                      </div>
                     </div>
                     <div>
-                      <em>{work.part.toUpperCase()}</em>
+                      <span
+                        className={`badge bg-${
+                          work.done ? 'success' : 'secondary'
+                        }`}
+                        onClick={() => onMark(member, work.part)}
+                      >
+                        {work.done ? 'D' : 'IP'}
+                      </span>
+                      <span
+                        className='badge bg-warning'
+                        onClick={() => onUpdate(member, work.part)}
+                      >
+                        {!work.done && 'U'}
+                      </span>
+                      <span
+                        className='badge bg-danger'
+                        onClick={() => onDelete(member, work.part)}
+                      >
+                        X
+                      </span>
                     </div>
-                  </div>
-                  <div>
-                    <span
-                      className={`badge bg-${
-                        work.done ? 'success' : 'secondary'
-                      }`}
-                      onClick={() => onMark(member, work.part)}
-                    >
-                      {work.done ? 'D' : 'IP'}
-                    </span>
-                    <span
-                      className='badge bg-warning'
-                      onClick={() => onUpdate(member, work.part)}
-                    >
-                      {!work.done && 'U'}
-                    </span>
-                    <span
-                      className='badge bg-danger'
-                      onClick={() => onDelete(member, work.part)}
-                    >
-                      X
-                    </span>
-                  </div>
-                </li>
-              );
-            });
-        })}
+                  </li>
+                );
+              });
+          })}
       </ul>
     </Div>
   );
