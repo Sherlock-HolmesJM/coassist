@@ -66,8 +66,7 @@ class Provider extends PureComponent<Props, State> {
         });
         if (this.props.location.pathname === '/')
           this.props.history.replace('/home');
-      }
-      // else this.props.history.replace('/');
+      } else this.props.history.replace('/');
     });
   }
 
