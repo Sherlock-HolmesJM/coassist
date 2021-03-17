@@ -19,15 +19,19 @@ function Message(props: Props) {
   const filename = message + '-';
   const freeMembers = members.filter((m) => m.active && m.free);
   const workers = getWorkers(members, message);
+  const getFirstWorker = () => freeMembers[0];
 
   useEffect(() => {
     setSplit(filename);
   }, [filename]);
 
   useEffect(() => {
-    freeMembers[0] && setNameWorker(freeMembers[0].name);
+    const w = getFirstWorker();
+    if (w) setNameWorker(w.name);
     // eslint-disable-next-line
   }, [freeMembers.length]);
+
+  console.log(nameWorker);
 
   const index = messages.findIndex((m) => m.name === message);
   if (index === -1) return <Redirect to='/assignments' />;
@@ -38,7 +42,7 @@ function Message(props: Props) {
     if (!worker) return;
 
     const workName = getWork();
-    if (checkWork(workers, workName)) return;
+    if (checkWork(workers, workName, worker.type)) return;
     const work: Work = { name: message, part: workName, done: false };
     const newWorker: MemberI = {
       ...worker,
@@ -66,7 +70,7 @@ function Message(props: Props) {
 
   const handleUpdate = (member: MemberI, part: string) => {
     const workName = getWork();
-    if (checkWork(workers, workName)) return;
+    if (checkWork(workers, workName, member.type)) return;
     const newWorker = { ...member };
     let index = newWorker.works.findIndex((w) => w.part === part);
     newWorker.works[index].part = workName;
@@ -88,7 +92,10 @@ function Message(props: Props) {
     if (!m) return newMsgs;
 
     const workers = getWorkers(members, message);
-    const totalWorks = workers.length;
+    const totalWorks = workers.reduce(
+      (a, wkr) => a + wkr.works.filter((w) => w.name === message).length,
+      0
+    );
     const workDone = workers.reduce(
       (a, wkr) =>
         a + wkr.works.filter((w) => w.name === message && w.done).length,
@@ -130,6 +137,7 @@ function Message(props: Props) {
             className='form-select'
             onChange={(e) => setNameWorker(e.target.value)}
           >
+            {/* <option value=''></option> */}
             {freeMembers.map((m, i) => (
               <option key={i} value={m.name}>
                 {`${m.name.toUpperCase()} - ${m.type}`}
