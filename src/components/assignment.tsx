@@ -1,4 +1,4 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useRef } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { capitalize } from '../util';
@@ -12,12 +12,12 @@ interface Props {}
 
 function Assignment(props: Props) {
   const { dispatch, messages, members } = useContext(context);
-  const [filename, setFilename] = useState('');
   const fileRef = useRef<HTMLInputElement>(null);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const filename = fileRef.current?.value.toLowerCase().trim() ?? '';
     const index = messages.findIndex((m) => m.name === filename);
     if (index !== -1)
       return alert(`${capitalize(filename)} is already being worked on.`);
@@ -26,8 +26,8 @@ function Assignment(props: Props) {
     const newMessages = [...messages, message];
 
     dispatch(setMessages(newMessages));
-    setFilename('');
     fileRef.current?.focus();
+    if (fileRef.current) fileRef.current.value = '';
     db.storeMessage(message);
   };
 
@@ -80,8 +80,6 @@ function Assignment(props: Props) {
             className='form-control'
             type='text'
             placeholder='filename'
-            value={filename}
-            onChange={(e) => setFilename(e.target.value.toLowerCase())}
             required
             ref={fileRef}
           />

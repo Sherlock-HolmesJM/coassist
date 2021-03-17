@@ -13,7 +13,7 @@ export interface MembersProps {}
 const MembersComp: React.FC<MembersProps> = (props) => {
   const { dispatch, members } = useContext(context);
 
-  const [name, setName] = useState('');
+  // const [name, setName] = useState('');
   const [type, setType] = useState<MemberType>('T');
 
   const nameRef = useRef<HTMLInputElement>(null);
@@ -24,6 +24,7 @@ const MembersComp: React.FC<MembersProps> = (props) => {
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
+    const name = nameRef.current?.value.toLowerCase().trim() ?? '';
     const index = members.findIndex((m) => m.name === name);
     if (index !== -1) return alert(`${capitalize(name)} is already a member.`);
 
@@ -37,9 +38,9 @@ const MembersComp: React.FC<MembersProps> = (props) => {
     const newMembers: MemberI[] = [...members, newMember];
 
     dispatch(setMembers(newMembers));
-    setName('');
-    nameRef.current?.focus();
     db.setMember(newMember);
+    nameRef.current?.focus();
+    if (nameRef.current) nameRef.current.value = '';
   };
 
   const handleMark = (member: MemberI) => {
@@ -77,8 +78,6 @@ const MembersComp: React.FC<MembersProps> = (props) => {
             className='form-control'
             type='text'
             placeholder="member's name"
-            value={name}
-            onChange={(e) => setName(e.target.value.toLowerCase())}
             required
             ref={nameRef}
           />

@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useState } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Link, Redirect, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { context } from '../../context/context';
@@ -13,32 +13,34 @@ interface Props {}
 function Message(props: Props) {
   const { members, dispatch, messages } = useContext(context);
   const message = useParams<{ slug: string }>().slug.replace(':', '');
-  const [split, setSplit] = useState('');
-  const [nameWorker, setNameWorker] = useState('');
+  // const [split, setSplit] = useState('');
+
+  const splitRef = useRef<HTMLInputElement>(null);
+  const workerRef = useRef<HTMLSelectElement>(null);
+
+  const getSplit = () => splitRef.current?.value.trim().toLowerCase() ?? '';
+  const getName = () => workerRef.current?.value.trim().toLowerCase() ?? '';
+  const setSplit = (split: string) => {
+    if (splitRef.current) splitRef.current.value = split;
+  };
 
   const filename = message + '-';
   const freeMembers = members.filter((m) => m.active && m.free);
   const workers = getWorkers(members, message);
-  const getFirstWorker = () => freeMembers[0];
 
   useEffect(() => {
     setSplit(filename);
   }, [filename]);
 
-  useEffect(() => {
-    const w = getFirstWorker();
-    if (w) setNameWorker(w.name);
-    // eslint-disable-next-line
-  }, [freeMembers.length]);
-
-  console.log(nameWorker);
+  // console.log(nameWorker);
 
   const index = messages.findIndex((m) => m.name === message);
   if (index === -1) return <Redirect to='/assignments' />;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const worker = freeMembers.find((w) => w.name === nameWorker);
+    console.log(workerRef.current?.value, ' here');
+    const worker = freeMembers.find((w) => w.name === getName());
     if (!worker) return;
 
     const workName = getWork();
@@ -111,9 +113,9 @@ function Message(props: Props) {
     return newMsgs;
   };
 
-  const getWork = () => (parseInput(split) === '' ? message : split);
   const parseInput = (value: string) =>
     value.slice(filename.length, value.length);
+  const getWork = () => (parseInput(getSplit()) === '' ? message : getSplit());
 
   return (
     <Section>
@@ -128,15 +130,11 @@ function Message(props: Props) {
             className='form-control'
             type='text'
             placeholder='filename'
-            value={split}
+            ref={splitRef}
             onChange={(e) => setSplit(filename + parseInput(e.target.value))}
             required
           />
-          <select
-            required
-            className='form-select'
-            onChange={(e) => setNameWorker(e.target.value)}
-          >
+          <select required className='form-select' ref={workerRef}>
             {/* <option value=''></option> */}
             {freeMembers.map((m, i) => (
               <option key={i} value={m.name}>
