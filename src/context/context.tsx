@@ -61,7 +61,6 @@ class Provider extends PureComponent<Props, State> {
       if (user) {
         db.getData().then((data) => {
           if (data) {
-            console.log(data);
             this.setState({ ...((data as unknown) as State) });
           }
         });

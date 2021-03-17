@@ -72,6 +72,12 @@ const Div = styled.div`
     cursor: pointer;
   }
 
+  @media screen and (max-width: 500px) {
+    .badge-container {
+      top: 15px;
+    }
+  }
+
   @media print {
     .title {
       font-size: 1.2rem;

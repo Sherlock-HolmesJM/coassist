@@ -8,8 +8,6 @@ import config from './services/config';
 import './index.css';
 import App from './App';
 
-// console.log(config);
-
 firebase.initializeApp(config);
 
 ReactDOM.render(
