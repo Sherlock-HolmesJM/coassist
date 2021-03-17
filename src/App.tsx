@@ -8,6 +8,7 @@ import Home from './components/home';
 import Members from './components/members';
 import Assignments from './components/assignment';
 import Message from './components/message/message';
+import Error from './components/error';
 
 function App() {
   return (
@@ -16,7 +17,8 @@ function App() {
       <Route path='/home' component={Home} />
       <Route path='/members' component={Members} />
       <Route path='/assignments' component={Assignments} />
-      <Route path='/' component={Login} />
+      <Route exact path='/' component={Login} />
+      <Route component={Error} />
     </Switch>
   );
 }
