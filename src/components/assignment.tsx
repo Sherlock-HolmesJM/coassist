@@ -124,7 +124,7 @@ const Section = styled.section`
     width: 100%;
   }
   .form-control {
-    flex-basis: clamp(300px, 50%, 400px);
+    flex-basis: clamp(310px, 50%, 400px);
     text-transform: capitalize;
     border: 2px gray red;
   }
@@ -138,6 +138,7 @@ const Section = styled.section`
     display: flex;
     flex-wrap: wrap;
     justify-content: center;
+    padding: 10px;
   }
   .list-container > * {
     flex-basis: 400px;

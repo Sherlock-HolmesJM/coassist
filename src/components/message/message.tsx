@@ -192,7 +192,7 @@ const Section = styled.section`
     width: 100%;
   }
   .form-control {
-    flex-basis: clamp(220px, 30%, 270px);
+    flex-basis: clamp(310px, 50%, 400px);
     text-transform: uppercase;
     border: 2px gray red;
   }
