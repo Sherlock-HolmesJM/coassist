@@ -6,6 +6,7 @@ import { capitalize } from '../util';
 import { context } from '../context/context';
 import { setMembers } from '../context/actions';
 import { MemberI, MemberType } from '../types/member';
+import { db } from '../services';
 
 export interface MembersProps {}
 
@@ -30,7 +31,7 @@ const MembersComp: React.FC<MembersProps> = (props) => {
       name,
       type,
       active: false,
-      works: [],
+      works: [{ name: 'def', part: 'def', done: true }],
       free: false,
     };
     const newMembers: MemberI[] = [...members, newMember];
@@ -38,6 +39,7 @@ const MembersComp: React.FC<MembersProps> = (props) => {
     dispatch(setMembers(newMembers));
     setName('');
     nameRef.current?.focus();
+    db.setMember(newMember);
   };
 
   const handleMark = (member: MemberI) => {
@@ -51,6 +53,7 @@ const MembersComp: React.FC<MembersProps> = (props) => {
     const newMembers = [...members];
     newMembers[index] = newMember;
     dispatch(setMembers(newMembers));
+    db.updateMember(newMember);
   };
 
   const handleDelete = (name: string) => {
@@ -58,6 +61,7 @@ const MembersComp: React.FC<MembersProps> = (props) => {
     if (result === null) return;
     const newMembers = members.filter((m) => m.name !== name);
     dispatch(setMembers(newMembers));
+    db.deleteMember(name);
   };
 
   return (

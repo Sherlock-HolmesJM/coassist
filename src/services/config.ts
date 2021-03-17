@@ -1,11 +1,11 @@
 export const config = {
-  apiKey: process.env.REACT_APP_apiKey,
-  authDomain: process.env.REACT_APP_authDomain,
-  databaseURL: process.env.REACT_APP_databaseURL,
-  projectId: process.env.REACT_APP_projectId,
-  storageBucket: process.env.REACT_APP_storageBucket,
-  messagingSenderId: process.env.REACT_APP_messagingSenderId,
-  appId: process.env.REACT_APP_appId,
+  apiKey: 'AIzaSyBS1llIrkLST2KKAVe_dyC7_SxyKQBg4sI',
+  authDomain: 'real-estate-esy.firebaseapp.com',
+  databaseURL: 'https://real-estate-esy-default-rtdb.firebaseio.com',
+  projectId: 'real-estate-esy',
+  storageBucket: 'real-estate-esy.appspot.com',
+  messagingSenderId: '240404895420',
+  appId: '1:240404895420:web:1ee14cc423cb8b633ce2b9',
 };
 
 export default config;

@@ -7,6 +7,14 @@ export interface Work {
   done: boolean;
 }
 
+export interface Members {
+  [key: string]: MemberI;
+}
+
+export interface Messages {
+  [key: string]: MessageI;
+}
+
 export interface MemberI {
   name: string;
   type: MemberType;

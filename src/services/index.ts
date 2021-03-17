@@ -1,5 +1,6 @@
 import members from './members';
 import { MessageI } from '../types/member';
+import * as db from './database';
 
 const messages: MessageI[] = [
   {
@@ -23,6 +24,8 @@ const messages: MessageI[] = [
     status: 'undone',
   },
 ];
+
+export { db };
 
 export const data = {
   members,

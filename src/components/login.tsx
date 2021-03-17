@@ -1,33 +1,20 @@
-// import { useState } from 'react';
-// import firebase from 'firebase';
-// import 'firebase/auth';
 import styled from 'styled-components';
 import Lottie from 'lottie-react';
 import { loginBot } from '../media';
-// import { googleSignIn } from '../services/auth';
-import { Redirect, Link } from 'react-router-dom';
+import { googleSignIn } from '../services/auth';
 
 export interface Props {}
 
 const Login: React.FC<Props> = (props) => {
-  // const [red, setRed] = useState(false);
-
-  // firebase.auth().onAuthStateChanged((user) => user && setRed(true));
-
-  // if (red) return <Redirect to='/home' />;
-
   return (
     <Main>
       <Lottie className='mb-4 img-div' animationData={loginBot} />
       <h1 className='h3 mb-4 fw-normal'>Hello...</h1>
       <div className='btn-group'>
-        {/* <button onClick={googleSignIn} className='btn btn-primary'>
+        <button className='btn btn-primary' onClick={googleSignIn}>
           Sign-in
-        </button> */}
-        <Link to='/home' className='btn btn-primary'>
-          Sign-in
-        </Link>
-        <button className='btn btn-outline-primary'>Sign-up</button>
+        </button>
+        {/* <button className='btn btn-outline-primary'>Sign-up</button> */}
       </div>
     </Main>
   );

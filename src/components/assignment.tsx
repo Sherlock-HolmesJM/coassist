@@ -5,6 +5,8 @@ import { capitalize } from '../util';
 import { context } from '../context/context';
 import { setMessages, setMM } from '../context/actions';
 import { MessageI } from '../types/member';
+import { db } from '../services';
+import { getWorkers } from './message/messageModel';
 
 interface Props {}
 
@@ -20,13 +22,13 @@ function Assignment(props: Props) {
     if (index !== -1)
       return alert(`${capitalize(filename)} is already being worked on.`);
 
-    const message: MessageI = { name: filename, status: 'in-progress' };
+    const message: MessageI = { name: filename, status: 'undone' };
     const newMessages = [...messages, message];
 
     dispatch(setMessages(newMessages));
     setFilename('');
-
     fileRef.current?.focus();
+    db.storeMessage(message);
   };
 
   const handleDelete = (message: MessageI) => {
@@ -36,13 +38,18 @@ function Assignment(props: Props) {
 
     if (message.status !== 'undone') {
       const newMembers = [...members];
-      newMembers
-        .filter((m) => m.works.find((w) => w.name === message.name))
-        .forEach((wkr) => {
-          wkr.works = wkr.works.filter((w) => w.name !== message.name);
-        });
+      const workers = getWorkers(members, message.name);
+      workers.forEach((wkr) => {
+        wkr.works = wkr.works.filter((w) => w.name !== message.name);
+        const index = wkr.works.findIndex((w) => w.done === false);
+        if (index === -1) wkr.free = true;
+      });
+
       dispatch(setMM(newMessages, newMembers));
+      db.updateMembers(workers);
     } else dispatch(setMessages(newMessages));
+
+    db.deleteMessage(message.name);
   };
 
   // const getStatus = (message: string) => {

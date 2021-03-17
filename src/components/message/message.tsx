@@ -6,6 +6,7 @@ import { setMM } from '../../context/actions';
 import List from './list';
 import { MemberI, Work } from '../../types/member';
 import { checkWork, getWorkers } from './messageModel';
+import { db } from '../../services';
 
 interface Props {}
 
@@ -45,6 +46,7 @@ function Message(props: Props) {
       free: false,
     };
     update(members, newWorker);
+    db.updateMember(newWorker);
   };
 
   const handleMark = (member: MemberI, part: string) => {
@@ -52,12 +54,14 @@ function Message(props: Props) {
     let index = newWorker.works.findIndex((w) => w.part === part);
     newWorker.works[index].done = !newWorker.works[index].done;
     update(members, newWorker);
+    db.updateMember(newWorker);
   };
 
   const handleDelete = (member: MemberI, part: string) => {
     const newWorker = { ...member, free: true };
     newWorker.works = newWorker.works.filter((w) => w.part !== part);
     update(members, newWorker);
+    db.updateMember(newWorker);
   };
 
   const handleUpdate = (member: MemberI, part: string) => {
@@ -67,6 +71,7 @@ function Message(props: Props) {
     let index = newWorker.works.findIndex((w) => w.part === part);
     newWorker.works[index].part = workName;
     update(members, newWorker);
+    db.updateMember(newWorker);
   };
 
   const update = (members: MemberI[], newMember: MemberI) => {
@@ -85,15 +90,17 @@ function Message(props: Props) {
     const workers = getWorkers(members, message);
     const totalWorks = workers.length;
     const workDone = workers.reduce(
-      (a, wkr) => a + wkr.works.filter((w) => w.done).length,
+      (a, wkr) =>
+        a + wkr.works.filter((w) => w.name === message && w.done).length,
       0
     );
 
     if (totalWorks === workDone && workDone !== 0) m.status = 'done';
-    else if (totalWorks === 0) m.status = 'undone';
+    else if (totalWorks === workDone && workDone === 0) m.status = 'undone';
     else m.status = 'in-progress';
 
-    // console.log({ totalWorks, workDone, status: m.status });
+    console.log({ totalWorks, workDone, status: m.status });
+    db.storeMessage(m);
     return newMsgs;
   };
 

@@ -1,11 +1,14 @@
 import React, { PureComponent, ReactNode } from 'react';
+import firebase from 'firebase';
+import 'firebase/auth';
 import { MessageI, MemberI } from '../types/member';
-import { data } from '../services';
+import { db } from '../services';
 import { SET_MESSAGES, AllActions, SET_MEMBERS, SET_MM } from './types';
+import { RouteComponentProps, withRouter } from 'react-router';
 
-interface Props {}
+interface Props extends RouteComponentProps {}
 
-interface State {
+export interface State {
   messages: MessageI[];
   members: MemberI[];
   dispatch: (a: any) => void;
@@ -54,8 +57,17 @@ class Provider extends PureComponent<Props, State> {
   };
 
   componentDidMount() {
-    this.setState({
-      ...data,
+    firebase.auth().onAuthStateChanged((user) => {
+      if (user) {
+        db.getData().then((data) => {
+          if (data) {
+            console.log(data);
+            this.setState({ ...((data as unknown) as State) });
+          }
+        });
+        if (this.props.location.pathname === '/')
+          this.props.history.replace('/home');
+      } else this.props.history.replace('/');
     });
   }
 
@@ -68,5 +80,5 @@ class Provider extends PureComponent<Props, State> {
   }
 }
 
-export default Provider;
+export default withRouter(Provider);
 export { context };

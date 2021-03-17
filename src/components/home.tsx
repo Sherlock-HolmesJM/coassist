@@ -2,6 +2,7 @@ import Lottie from 'lottie-react';
 import styled from 'styled-components';
 import { homeBot } from '../media';
 import { Link } from 'react-router-dom';
+import { signOut } from '../services/auth';
 
 export interface Props {}
 
@@ -32,9 +33,12 @@ const Home: React.FC<Props> = (props) => {
           >
             Assignments
           </Link>
-          <Link to='/' className='list-group-item list-group-item-action'>
+          <button
+            onClick={signOut}
+            className='list-group-item list-group-item-action'
+          >
             Logout
-          </Link>
+          </button>
         </div>
       </main>
     </Section>
