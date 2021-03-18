@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { capitalize } from '../util';
 import { context } from '../context/context';
 import { setMessages, setMM } from '../context/actions';
-import { MessageI } from '../types/member';
+import { MessageI, MessageStatus } from '../types/member';
 import { db } from '../services';
 import { getMemberStatus } from './message/messageModel';
 
@@ -56,6 +56,13 @@ function Assignment(props: Props) {
     db.removeMessage(message.muid);
   };
 
+  const getColor = (status: MessageStatus) =>
+    status === 'done'
+      ? 'danger'
+      : status === 'in-progress'
+      ? 'warning'
+      : 'success';
+
   return (
     <Section>
       <header className='header'>
@@ -76,23 +83,23 @@ function Assignment(props: Props) {
         </form>
       </header>
       <main className='list-container'>
-        <ul className='list-group'>
+        <div className='list-group-k'>
           {messages
-            .sort((a, b) => a.name.localeCompare(b.name))
+            .sort((a, b) => b.status.localeCompare(a.status))
             .map((m) => (
-              <li key={m.name} className='list-group-item'>
+              <div key={m.name} className='list-group-item'>
                 <Link to={`/assignments:${m.name}`} className='link'>
                   {m.name} - <em>{m.status}</em>
                 </Link>
                 <span
-                  className='badge bg-danger'
+                  className={`badge bg-${getColor(m.status)}`}
                   onClick={() => handleDelete(m)}
                 >
                   X
                 </span>
-              </li>
+              </div>
             ))}
-        </ul>
+        </div>
       </main>
     </Section>
   );
@@ -115,6 +122,7 @@ const Section = styled.section`
     justify-content: center;
     width: 100%;
   }
+
   .form-control {
     flex-basis: clamp(310px, 50%, 400px);
     text-transform: capitalize;
@@ -127,16 +135,20 @@ const Section = styled.section`
     color: white;
   }
   .list-container {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
     padding: 10px;
   }
   .list-container > * {
     flex-basis: 400px;
   }
+  .list-group-k {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-around;
+  }
   .list-group-item {
     text-transform: uppercase;
+    flex-basis: 600px;
+    margin: 5px;
   }
   .link {
     color: gray;
