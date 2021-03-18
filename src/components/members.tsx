@@ -32,15 +32,14 @@ const MembersComp: React.FC<MembersProps> = (props) => {
       name,
       type,
       active: false,
-      works: [{ name: 'def', part: 'def', done: true }],
       free: false,
     };
     const newMembers: MemberI[] = [...members, newMember];
 
-    dispatch(setMembers(newMembers));
-    db.setMember(newMember);
     nameRef.current?.focus();
     if (nameRef.current) nameRef.current.value = '';
+    dispatch(setMembers(newMembers));
+    db.setMember(newMember);
   };
 
   const handleMark = (member: MemberI) => {

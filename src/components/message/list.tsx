@@ -1,65 +1,61 @@
 import styled from 'styled-components';
 import { capitalize } from '../../util';
-import { MemberI } from '../../types/member';
+import { Worker } from '../../types/member';
 
 export interface ListProps {
-  members: MemberI[];
+  workers: Worker[];
   title: string;
   done: boolean;
-  message: string;
-  onDelete: (member: MemberI, part: string) => void;
-  onMark: (member: MemberI, part: string) => void;
-  onUpdate: (member: MemberI, part: string) => void;
+  onDelete: (worker: Worker) => void;
+  onMark: (worker: Worker) => void;
+  onUpdate: (worker: Worker) => void;
 }
 
 const List: React.FC<ListProps> = (props) => {
-  const { title, message, done, members, onMark, onDelete, onUpdate } = props;
+  const { title, workers, onMark, onDelete, onUpdate } = props;
 
   return (
     <Div className='list'>
       <h3 className='title'>{capitalize(title)} </h3>
       <ul className='list-group'>
-        {members
+        {workers
+          .sort((a, b) => a.part.localeCompare(b.part))
           .sort((a, b) => a.type.length - b.type.length)
-          .map((member) => {
-            return member.works
-              .filter((w) => w.done === done && w.name === message)
-              .map((work) => {
-                return (
-                  <li className='list-group-item' key={work.part}>
-                    <div>
-                      <div>
-                        {capitalize(member.name)} - {member.type}:
-                      </div>
-                      <div>
-                        <em>{work.part.toUpperCase()}</em>
-                      </div>
-                    </div>
-                    <div>
-                      <span
-                        className={`badge bg-${
-                          work.done ? 'success' : 'secondary'
-                        }`}
-                        onClick={() => onMark(member, work.part)}
-                      >
-                        {work.done ? 'D' : 'IP'}
-                      </span>
-                      <span
-                        className='badge bg-warning'
-                        onClick={() => onUpdate(member, work.part)}
-                      >
-                        {!work.done && 'U'}
-                      </span>
-                      <span
-                        className='badge bg-danger'
-                        onClick={() => onDelete(member, work.part)}
-                      >
-                        X
-                      </span>
-                    </div>
-                  </li>
-                );
-              });
+          .map((worker) => {
+            return (
+              <li className='list-group-item' key={worker.part}>
+                <div>
+                  <div>
+                    {capitalize(worker.name)} - {worker.type}:
+                  </div>
+                  <div>
+                    <em>{worker.part.toUpperCase()}</em>
+                  </div>
+                </div>
+                <div>
+                  <span
+                    className={`badge bg-${
+                      worker.done ? 'success' : 'secondary'
+                    }`}
+                    onClick={() => onMark(worker)}
+                  >
+                    {worker.done ? 'D' : 'IP'}
+                  </span>
+                  <span
+                    className='badge bg-warning'
+                    onClick={() => onUpdate(worker)}
+                  >
+                    {!worker.done && 'U'}
+                  </span>
+                  <span
+                    className='badge bg-danger'
+                    onClick={() => onDelete(worker)}
+                  >
+                    X
+                  </span>
+                </div>
+              </li>
+            );
           })}
       </ul>
     </Div>
@@ -88,7 +84,8 @@ const Div = styled.div`
   .badge {
     color: white;
     cursor: pointer;
-    margin: 2px;
+    margin: 4px;
+    font-size: 14px;
   }
 
   @media print {

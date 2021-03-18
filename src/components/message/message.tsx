@@ -1,32 +1,34 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useRef } from 'react';
 import { Link, Redirect, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { context } from '../../context/context';
-import { setMM } from '../../context/actions';
+import { setMessages, setMM } from '../../context/actions';
 import List from './list';
-import { MemberI, Work } from '../../types/member';
-import { checkWork, getWorkers } from './messageModel';
+import { MemberI, MessageI, Worker } from '../../types/member';
 import { db } from '../../services';
+import * as mm from './messageModel';
 
 interface Props {}
 
 function Message(props: Props) {
   const { members, dispatch, messages } = useContext(context);
-  const message = useParams<{ slug: string }>().slug.replace(':', '');
+  const messageName = useParams<{ slug: string }>().slug.replace(':', '');
   // const [split, setSplit] = useState('');
 
   const splitRef = useRef<HTMLInputElement>(null);
   const workerRef = useRef<HTMLSelectElement>(null);
 
   const getSplit = () => splitRef.current?.value.trim().toLowerCase() ?? '';
-  const getName = () => workerRef.current?.value.trim().toLowerCase() ?? '';
+  const getWorkerName = () =>
+    workerRef.current?.value.trim().toLowerCase() ?? '';
   const setSplit = (split: string) => {
     if (splitRef.current) splitRef.current.value = split;
   };
 
-  const filename = message + '-';
+  const filename = messageName + '-';
   const freeMembers = members.filter((m) => m.active && m.free);
-  const workers = getWorkers(members, message);
+  const message = messages.find((m) => m.name === messageName);
+  const workers = message?.workers ?? ([] as Worker[]);
 
   useEffect(() => {
     setSplit(filename);
@@ -34,88 +36,108 @@ function Message(props: Props) {
 
   // console.log(nameWorker);
 
-  const index = messages.findIndex((m) => m.name === message);
-  if (index === -1) return <Redirect to='/assignments' />;
+  if (!message) return <Redirect to='/assignments' />;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    console.log(workerRef.current?.value, ' here');
-    const worker = freeMembers.find((w) => w.name === getName());
-    if (!worker) return;
+    const member = freeMembers.find((w) => w.name === getWorkerName());
+    if (!member) return;
 
-    const workName = getWork();
-    if (checkWork(workers, workName, worker.type)) return;
-    const work: Work = { name: message, part: workName, done: false };
-    const newWorker: MemberI = {
-      ...worker,
-      works: [...worker.works, work],
-      free: false,
+    const messagePart = getPart();
+    if (mm.checkWork(message.workers, messagePart, member.type)) return;
+
+    const newMessage: MessageI = { ...message, status: 'in-progress' };
+    const newMember = { ...member, free: false };
+    const { name, type } = newMember;
+
+    const worker: Worker = {
+      wid: Date.now(),
+      message: messageName,
+      part: messagePart,
+      done: false,
+      name,
+      type,
     };
-    update(members, newWorker);
-    db.updateMember(newWorker);
+
+    newMessage.workers.push(worker);
+    const newMessages = mm.getNewMessages(newMessage, messages);
+    const newMembers = mm.getNewMembers(newMember, members);
+    dispatch(setMM(newMessages, newMembers));
+    db.updateMember(newMember);
+    db.updateMessage({ name: newMessage.name, status: newMessage.status });
+    db.setWorker(worker);
   };
 
-  const handleMark = (member: MemberI, part: string) => {
-    const newWorker = { ...member, free: !member.free };
-    let index = newWorker.works.findIndex((w) => w.part === part);
-    newWorker.works[index].done = !newWorker.works[index].done;
-    update(members, newWorker);
-    db.updateMember(newWorker);
+  const handleMark = (worker: Worker) => {
+    const mem = members.find((m) => m.name === worker.name);
+    if (!mem) return;
+
+    const wkr: Worker = { ...worker, done: !worker.done };
+
+    update(mem, wkr);
+    db.setWorker(wkr);
   };
 
-  const handleDelete = (member: MemberI, part: string) => {
-    const newWorker = { ...member, free: true };
-    newWorker.works = newWorker.works.filter((w) => w.part !== part);
-    update(members, newWorker);
-    db.updateMember(newWorker);
+  const handleDelete = (worker: Worker) => {
+    const mem = members.find((m) => m.name === worker.name);
+    if (!mem) return;
+
+    const newMessage = { ...message };
+    newMessage.workers = message.workers.filter((w) => w.wid !== worker.wid);
+    newMessage.status = mm.getMessageStatus(newMessage);
+    const megs = mm.getNewMessages(newMessage, messages);
+
+    const member = { ...mem, free: mm.getMemberStatus(worker.name, megs) };
+    const membs = mm.getNewMembers(member, members);
+
+    db.updateMember(member);
+    db.removeWorker(worker.message, worker.wid);
+    db.updateMessage({
+      name: newMessage.name,
+      status: newMessage.status,
+    });
+    dispatch(setMM(megs, membs));
   };
 
-  const handleUpdate = (member: MemberI, part: string) => {
-    const workName = getWork();
-    if (checkWork(workers, workName, member.type)) return;
-    const newWorker = { ...member };
-    let index = newWorker.works.findIndex((w) => w.part === part);
-    newWorker.works[index].part = workName;
-    update(members, newWorker);
-    db.updateMember(newWorker);
+  const handleUpdate = (worker: Worker) => {
+    const messagePart = getPart();
+    if (mm.checkWork(workers, messagePart, worker.type)) return;
+
+    const newWorker: Worker = { ...worker, part: messagePart };
+
+    const newMessage = { ...message };
+    newMessage.workers = newMessage.workers.filter((w) => w.wid !== worker.wid);
+    newMessage.workers.push(newWorker);
+
+    const newMessages = mm.getNewMessages(newMessage, messages);
+    dispatch(setMessages(newMessages));
+    db.setWorker(newWorker);
   };
 
-  const update = (members: MemberI[], newMember: MemberI) => {
-    const newMembers = [...members];
-    const index = newMembers.findIndex((m) => m.name === newMember.name);
-    newMembers[index] = newMember;
-    dispatch(setMM(updateMsgStatus(newMembers), newMembers));
-  };
+  const update = (member: MemberI, worker: Worker) => {
+    const newMessage: MessageI = { ...message };
+    newMessage.workers = newMessage.workers.filter((w) => w.wid !== worker.wid);
+    newMessage.workers.push(worker);
+    newMessage.status = mm.getMessageStatus(newMessage);
 
-  const updateMsgStatus = (members: MemberI[]) => {
-    const newMsgs = [...messages];
-    const m = newMsgs.find((m) => m.name === message);
-
-    if (!m) return newMsgs;
-
-    const workers = getWorkers(members, message);
-    const totalWorks = workers.reduce(
-      (a, wkr) => a + wkr.works.filter((w) => w.name === message).length,
-      0
-    );
-    const workDone = workers.reduce(
-      (a, wkr) =>
-        a + wkr.works.filter((w) => w.name === message && w.done).length,
-      0
-    );
-
-    if (totalWorks === workDone && workDone !== 0) m.status = 'done';
-    else if (totalWorks === workDone && workDone === 0) m.status = 'undone';
-    else m.status = 'in-progress';
-
-    console.log({ totalWorks, workDone, status: m.status });
-    db.storeMessage(m);
-    return newMsgs;
+    const newMessages = mm.getNewMessages(newMessage, messages);
+    const mem = {
+      ...member,
+      free: mm.getMemberStatus(worker.name, newMessages),
+    };
+    const newMembers = mm.getNewMembers(mem, members);
+    dispatch(setMM(newMessages, newMembers));
+    db.updateMember(mem);
+    db.updateMessage({
+      name: newMessage.name,
+      status: newMessage.status,
+    });
   };
 
   const parseInput = (value: string) =>
     value.slice(filename.length, value.length);
-  const getWork = () => (parseInput(getSplit()) === '' ? message : getSplit());
+  const getPart = () =>
+    parseInput(getSplit()) === '' ? messageName : getSplit();
 
   return (
     <Section>
@@ -147,18 +169,16 @@ function Message(props: Props) {
       </header>
       <div className='container'>
         <List
-          members={workers}
+          workers={workers.filter((w) => !w.done)}
           done={false}
-          message={message}
           title='in-progress'
           onDelete={handleDelete}
           onUpdate={handleUpdate}
           onMark={handleMark}
         />
         <List
-          members={workers}
+          workers={workers.filter((w) => w.done)}
           done
-          message={message}
           title='done'
           onDelete={handleDelete}
           onUpdate={handleUpdate}

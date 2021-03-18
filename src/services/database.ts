@@ -1,7 +1,7 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
-import MemberI, { MessageI } from '../types/member';
+import MemberI, { MessageI, MessageStatus, Worker } from '../types/member';
 import { transform, transformMembers } from './transformer';
 
 const uid = () => firebase.auth().currentUser?.uid;
@@ -43,16 +43,39 @@ export const deleteMember = (name: string) =>
     .remove()
     .catch((e) => console.log(e.message));
 
-export const storeMessage = (message: MessageI) =>
+export const setMessage = (message: MessageI) =>
   firebase
     .database()
     .ref(path() + 'messages/' + message.name)
     .set(message)
     .catch((e) => console.log(e.message));
 
-export const deleteMessage = (name: string) =>
+export const updateMessage = (message: {
+  name: string;
+  status: MessageStatus;
+}) => {
+  firebase
+    .database()
+    .ref(path() + 'messages/' + message.name)
+    .update(message)
+    .catch((e) => console.log(e.message));
+};
+
+export const removeMessage = (name: string) =>
   firebase
     .database()
     .ref(path() + 'messages/' + name)
     .remove()
     .catch((e) => console.log(e.message));
+
+export const setWorker = (worker: Worker) =>
+  firebase
+    .database()
+    .ref(path() + '/messages/' + worker.message + '/workers/' + worker.wid)
+    .set(worker);
+
+export const removeWorker = (message: string, wid: number) =>
+  firebase
+    .database()
+    .ref(path() + '/messages/' + message + '/workers/' + wid)
+    .remove();

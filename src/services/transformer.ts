@@ -1,4 +1,10 @@
-import MemberI, { Members, MessageI, Messages } from '../types/member';
+import MemberI, {
+  Members,
+  MessageI,
+  Messages,
+  Worker,
+  Workers,
+} from '../types/member';
 
 interface ServerState {
   members: Members;
@@ -11,24 +17,25 @@ export const transformMembers = (members: MemberI[]) => {
   return transMembers;
 };
 
+export const revert = <G, T>(object: G): T[] => {
+  if (!object) return [];
+  return Object.entries(object).reduce((a: T[], n) => [...a, n[1]], []);
+};
+
 export const transform = (data: ServerState) => {
-  const { messages, members } = data;
+  const { messages: msgs, members: membs } = data;
 
-  let newMessages: MessageI[] = [];
-  let newMembers: MemberI[] = [];
+  let messages: MessageI[] = [];
+  let members: MemberI[] = [];
 
+  if (members) members = revert<Members, MemberI>(membs);
   if (messages) {
-    newMessages = Object.entries(messages).reduce(
-      (a: MessageI[], m) => [...a, m[1]],
-      []
-    );
-  }
-  if (members) {
-    newMembers = Object.entries(members).reduce(
-      (a: MemberI[], m) => [...a, m[1]],
-      []
+    messages = revert<Messages, MessageI>(msgs);
+    messages.forEach(
+      (m) =>
+        (m.workers = revert<Workers, Worker>((m.workers as unknown) as Workers))
     );
   }
 
-  return { members: newMembers, messages: newMessages };
+  return { members, messages };
 };

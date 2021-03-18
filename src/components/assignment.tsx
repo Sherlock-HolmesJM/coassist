@@ -6,7 +6,7 @@ import { context } from '../context/context';
 import { setMessages, setMM } from '../context/actions';
 import { MessageI } from '../types/member';
 import { db } from '../services';
-import { getWorkers } from './message/messageModel';
+import { getMemberStatus } from './message/messageModel';
 
 interface Props {}
 
@@ -22,13 +22,13 @@ function Assignment(props: Props) {
     if (index !== -1)
       return alert(`${capitalize(filename)} is already being worked on.`);
 
-    const message: MessageI = { name: filename, status: 'undone' };
+    const message: MessageI = { name: filename, status: 'undone', workers: [] };
     const newMessages = [...messages, message];
 
     dispatch(setMessages(newMessages));
     fileRef.current?.focus();
     if (fileRef.current) fileRef.current.value = '';
-    db.storeMessage(message);
+    db.setMessage(message);
   };
 
   const handleDelete = (message: MessageI) => {
@@ -36,36 +36,20 @@ function Assignment(props: Props) {
     if (result === null) return;
     const newMessages = messages.filter((m) => m.name !== message.name);
 
-    if (message.status !== 'undone') {
+    if (message.status === 'undone') {
+      dispatch(setMessages(newMessages));
+    } else {
       const newMembers = [...members];
-      const workers = getWorkers(members, message.name);
-      workers.forEach((wkr) => {
-        wkr.works = wkr.works.filter((w) => w.name !== message.name);
-        const index = wkr.works.findIndex((w) => w.done === false);
-        if (index === -1) wkr.free = true;
+      newMembers.forEach((mem) => {
+        mem.free = getMemberStatus(mem.name, newMessages);
       });
 
       dispatch(setMM(newMessages, newMembers));
-      db.updateMembers(workers);
-    } else dispatch(setMessages(newMessages));
+      db.updateMembers(newMembers);
+    }
 
-    db.deleteMessage(message.name);
+    db.removeMessage(message.name);
   };
-
-  // const getStatus = (message: string) => {
-  //   let workDone = 0;
-  //   let totalWorks = 0;
-  //   const workers = members.filter((m) =>
-  //     m.works.find((w) => w.name === message)
-  //   );
-  //   workers.forEach((wkr) => {
-  //     totalWorks = totalWorks + wkr.works.length;
-  //     workDone = wkr.works.filter((w) => w.done).length + workDone;
-  //   });
-  //   if (totalWorks === workDone && workDone !== 0) return 'done';
-  //   else if (totalWorks === 0) return 'undone';
-  //   else return 'in-progress';
-  // };
 
   return (
     <Section>
@@ -88,16 +72,21 @@ function Assignment(props: Props) {
       </header>
       <main className='list-container'>
         <ul className='list-group'>
-          {messages.map((m) => (
-            <li key={m.name} className='list-group-item'>
-              <Link to={`/assignments:${m.name}`} className='link'>
-                {m.name} - <em>{m.status}</em>
-              </Link>
-              <span className='badge bg-danger' onClick={() => handleDelete(m)}>
-                X
-              </span>
-            </li>
-          ))}
+          {messages
+            .sort((a, b) => a.name.localeCompare(b.name))
+            .map((m) => (
+              <li key={m.name} className='list-group-item'>
+                <Link to={`/assignments:${m.name}`} className='link'>
+                  {m.name} - <em>{m.status}</em>
+                </Link>
+                <span
+                  className='badge bg-danger'
+                  onClick={() => handleDelete(m)}
+                >
+                  X
+                </span>
+              </li>
+            ))}
         </ul>
       </main>
     </Section>
