@@ -7,7 +7,7 @@ import { capitalize } from '../../util';
 
 export const getNewMembers = (member: MemberI, members: MemberI[]) => {
   const newMembers = [...members];
-  let index = newMembers.findIndex((m) => m.name === member.name);
+  let index = newMembers.findIndex((m) => m.muid === member.muid);
   newMembers[index] = member;
   return newMembers;
 };
@@ -19,15 +19,15 @@ export const getNewMessages = (message: MessageI, messages: MessageI[]) => {
   return newMessages;
 };
 
-export const getMemberStatus = (workerName: string, messages: MessageI[]) => {
+export const getMemberStatus = (muid: number, messages: MessageI[]) => {
   const msg = messages.find((m) =>
-    m.workers.filter((w) => w.name === workerName).find((w) => w.done === false)
+    m.workers.filter((w) => w.memuid === muid).find((w) => w.done === false)
   );
 
   console.log(
-    workerName,
+    muid,
     ' is working on ',
-    msg?.workers.find((w) => w.name === workerName)
+    msg?.workers.find((w) => w.memuid === muid)
   );
   // returns false if name is still working on a message.
   return msg ? false : true;

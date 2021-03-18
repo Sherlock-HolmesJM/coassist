@@ -3,18 +3,22 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import { MessageI, MemberI } from '../types/member';
 import { db } from '../services';
-import { SET_MESSAGES, AllActions, SET_MEMBERS, SET_MM } from './types';
+import { SET_MESSAGES, AllActions, SET_MEMBERS, SET_MM, SET_CG } from './types';
 import { RouteComponentProps, withRouter } from 'react-router';
 
 interface Props extends RouteComponentProps {}
 
 export interface State {
+  collatorName: string;
+  groupName: string;
   messages: MessageI[];
   members: MemberI[];
   dispatch: (a: any) => void;
 }
 
 const state: State = {
+  groupName: 'group name',
+  collatorName: "collator's name",
   messages: [],
   members: [],
   dispatch: () => '',
@@ -39,6 +43,11 @@ class Provider extends PureComponent<Props, State> {
 
   reducer = (action: AllActions) => {
     switch (action.type) {
+      case SET_CG:
+        return {
+          ...this.state,
+          ...action.payload,
+        };
       case SET_MEMBERS:
         return {
           ...this.state,

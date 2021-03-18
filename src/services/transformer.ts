@@ -7,13 +7,15 @@ import MemberI, {
 } from '../types/member';
 
 interface ServerState {
+  groupName: string;
+  collatorName: string;
   members: Members;
   messages: Messages;
 }
 
 export const transformMembers = (members: MemberI[]) => {
   const transMembers: Members = {};
-  members.forEach((m) => (transMembers[m.name] = m));
+  members.forEach((m) => (transMembers[m.muid] = m));
   return transMembers;
 };
 
@@ -37,5 +39,5 @@ export const transform = (data: ServerState) => {
     );
   }
 
-  return { members, messages };
+  return { ...data, members, messages };
 };

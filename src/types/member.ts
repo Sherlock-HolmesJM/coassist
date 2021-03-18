@@ -2,10 +2,12 @@ export type MemberStatus = 'active' | 'inactive';
 export type MemberType = 'TE' | 'T';
 
 export interface Worker {
-  wid: number;
+  memuid: number;
   name: string;
   type: MemberType;
-  message: string;
+  wuid: number;
+  msguid: number;
+  msgname: string;
   part: string;
   done: boolean;
 }
@@ -25,6 +27,7 @@ export interface Messages {
 export type MessageStatus = 'done' | 'undone' | 'in-progress';
 
 export interface MemberI {
+  muid: number;
   name: string;
   type: MemberType;
   active: boolean;
@@ -32,6 +35,7 @@ export interface MemberI {
 }
 
 export interface MessageI {
+  muid: number;
   name: string;
   status: 'in-progress' | 'done' | 'undone';
   workers: Worker[];

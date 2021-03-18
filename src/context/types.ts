@@ -4,6 +4,15 @@ import { MessageI } from '../types/member';
 export const SET_MEMBERS = 'SET_MEMBERS';
 export const SET_MESSAGES = 'SET_MESSAGES';
 export const SET_MM = 'SET_MM';
+export const SET_CG = 'CG';
+
+export interface SetCG {
+  type: typeof SET_CG;
+  payload: {
+    collatorName: string;
+    groupName: string;
+  };
+}
 
 export interface SetMM {
   type: typeof SET_MM;
@@ -23,4 +32,4 @@ export interface SetMessages {
   payload: MessageI[];
 }
 
-export type AllActions = SetMembers | SetMessages | SetMM;
+export type AllActions = SetMembers | SetMessages | SetMM | SetCG;

@@ -15,6 +15,12 @@ export const getData = () =>
     .then((r) => transform(r.val()))
     .catch((e) => null);
 
+export const updateCGNames = (collatorName: string, groupName: string) =>
+  firebase.database().ref(path()).update({
+    collatorName,
+    groupName,
+  });
+
 export const updateMembers = (members: MemberI[]) =>
   firebase
     .database()
@@ -25,57 +31,57 @@ export const updateMembers = (members: MemberI[]) =>
 export const setMember = (member: MemberI) =>
   firebase
     .database()
-    .ref(path() + 'members/' + member.name)
+    .ref(path() + 'members/' + member.muid)
     .set(member)
     .catch((e) => console.log(e.message));
 
 export const updateMember = (member: MemberI) =>
   firebase
     .database()
-    .ref(path() + 'members/' + member.name)
+    .ref(path() + 'members/' + member.muid)
     .update(member)
     .catch((e) => console.log(e.message));
 
-export const deleteMember = (name: string) =>
+export const deleteMember = (muid: number) =>
   firebase
     .database()
-    .ref(path() + 'members/' + name)
+    .ref(path() + 'members/' + muid)
     .remove()
     .catch((e) => console.log(e.message));
 
 export const setMessage = (message: MessageI) =>
   firebase
     .database()
-    .ref(path() + 'messages/' + message.name)
+    .ref(path() + 'messages/' + message.muid)
     .set(message)
     .catch((e) => console.log(e.message));
 
 export const updateMessage = (message: {
-  name: string;
+  muid: number;
   status: MessageStatus;
 }) => {
   firebase
     .database()
-    .ref(path() + 'messages/' + message.name)
+    .ref(path() + 'messages/' + message.muid)
     .update(message)
     .catch((e) => console.log(e.message));
 };
 
-export const removeMessage = (name: string) =>
+export const removeMessage = (muid: number) =>
   firebase
     .database()
-    .ref(path() + 'messages/' + name)
+    .ref(path() + 'messages/' + muid)
     .remove()
     .catch((e) => console.log(e.message));
 
 export const setWorker = (worker: Worker) =>
   firebase
     .database()
-    .ref(path() + '/messages/' + worker.message + '/workers/' + worker.wid)
+    .ref(path() + '/messages/' + worker.msguid + '/workers/' + worker.wuid)
     .set(worker);
 
-export const removeWorker = (message: string, wid: number) =>
+export const removeWorker = (muid: number, wuid: number) =>
   firebase
     .database()
-    .ref(path() + '/messages/' + message + '/workers/' + wid)
+    .ref(path() + '/messages/' + muid + '/workers/' + wuid)
     .remove();

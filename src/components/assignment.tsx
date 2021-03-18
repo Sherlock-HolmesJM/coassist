@@ -22,7 +22,12 @@ function Assignment(props: Props) {
     if (index !== -1)
       return alert(`${capitalize(filename)} is already being worked on.`);
 
-    const message: MessageI = { name: filename, status: 'undone', workers: [] };
+    const message: MessageI = {
+      muid: Date.now(),
+      name: filename,
+      status: 'undone',
+      workers: [],
+    };
     const newMessages = [...messages, message];
 
     dispatch(setMessages(newMessages));
@@ -41,14 +46,14 @@ function Assignment(props: Props) {
     } else {
       const newMembers = [...members];
       newMembers.forEach((mem) => {
-        mem.free = getMemberStatus(mem.name, newMessages);
+        mem.free = getMemberStatus(mem.muid, newMessages);
       });
 
       dispatch(setMM(newMessages, newMembers));
       db.updateMembers(newMembers);
     }
 
-    db.removeMessage(message.name);
+    db.removeMessage(message.muid);
   };
 
   return (

@@ -7,11 +7,14 @@ import { context } from '../context/context';
 import { setMembers } from '../context/actions';
 import { MemberI, MemberType } from '../types/member';
 import { db } from '../services';
+import { getMemberStatus } from './message/messageModel';
 
 export interface MembersProps {}
 
 const MembersComp: React.FC<MembersProps> = (props) => {
-  const { dispatch, members } = useContext(context);
+  const { dispatch, members, messages, collatorName, groupName } = useContext(
+    context
+  );
 
   // const [name, setName] = useState('');
   const [type, setType] = useState<MemberType>('T');
@@ -29,6 +32,7 @@ const MembersComp: React.FC<MembersProps> = (props) => {
     if (index !== -1) return alert(`${capitalize(name)} is already a member.`);
 
     const newMember: MemberI = {
+      muid: Date.now(),
       name,
       type,
       active: false,
@@ -45,7 +49,7 @@ const MembersComp: React.FC<MembersProps> = (props) => {
   const handleMark = (member: MemberI) => {
     const newMember: MemberI = {
       ...member,
-      free: !member.free,
+      free: getMemberStatus(member.muid, messages),
       active: !member.active,
     };
 
@@ -56,12 +60,12 @@ const MembersComp: React.FC<MembersProps> = (props) => {
     db.updateMember(newMember);
   };
 
-  const handleDelete = (name: string) => {
+  const handleDelete = (muid: number) => {
     const result = prompt('Are you sure?');
     if (result === null) return;
-    const newMembers = members.filter((m) => m.name !== name);
+    const newMembers = members.filter((m) => m.muid !== muid);
     dispatch(setMembers(newMembers));
-    db.deleteMember(name);
+    db.deleteMember(muid);
   };
 
   return (
@@ -108,9 +112,15 @@ const MembersComp: React.FC<MembersProps> = (props) => {
         />
       </div>
       <div className='hide'>
-        <List items={members} title='all members' />
-        <List items={activeMembers} title='active members' />
-        <List items={inactiveMembers} title='inactive members' />
+        <div className='hide-title-container'>
+          <h4>{groupName} Members List</h4>
+          <h4>Collator: {collatorName}</h4>
+        </div>
+        <div className='hide-container'>
+          <List items={members} title='all members' />
+          <List items={activeMembers} title='active members' />
+          <List items={inactiveMembers} title='inactive members' />
+        </div>
       </div>
     </Section>
   );
@@ -145,10 +155,15 @@ const Section = styled.section`
   }
   .hide {
     display: none;
-    flex-direction: column;
-    justify-content: flex-start;
-    border: 1px solid blue;
-    margin: 10px;
+  }
+  .hide-title-container {
+    text-align: center;
+    text-transform: capitalize;
+    margin-bottom: 25px;
+  }
+  .hide-container {
+    display: flex;
+    justify-content: space-around;
   }
 
   @media print {
@@ -157,7 +172,7 @@ const Section = styled.section`
       display: none;
     }
     .hide {
-      display: flex;
+      display: block;
     }
   }
 `;

@@ -3,10 +3,27 @@ import styled from 'styled-components';
 import { homeBot } from '../media';
 import { Link } from 'react-router-dom';
 import { signOut } from '../services/auth';
+import { useContext } from 'react';
+import { context } from '../context/context';
+import { setCG } from '../context/actions';
+import { updateCGNames } from '../services/database';
 
 export interface Props {}
 
 const Home: React.FC<Props> = (props) => {
+  const { collatorName, groupName, dispatch } = useContext(context);
+
+  const handleChange = (e: any, collatorName: string, groupName: string) => {
+    collatorName =
+      collatorName === '' ? "collator's name" : collatorName.toLowerCase();
+    groupName = groupName === '' ? 'group name' : groupName.toLowerCase();
+
+    if (e.key === 'Enter') {
+      dispatch(setCG(collatorName, groupName));
+      updateCGNames(collatorName, groupName);
+    }
+  };
+
   return (
     <Section>
       <header className='header'>
@@ -20,6 +37,22 @@ const Home: React.FC<Props> = (props) => {
       </header>
       <main className='main'>
         <div className='list-group'>
+          <input
+            type='text'
+            className='list-group-item input-text'
+            placeholder={groupName}
+            onKeyPress={(e) =>
+              handleChange(e, collatorName, e.currentTarget.value.trim())
+            }
+          />
+          <input
+            type='text'
+            className='list-group-item input-text'
+            placeholder={collatorName}
+            onKeyPress={(e) =>
+              handleChange(e, e.currentTarget.value.trim(), groupName)
+            }
+          />
           <Link
             to='/members'
             className='list-group-item list-group-item-action'
@@ -62,6 +95,9 @@ const Section = styled.section`
   .header-welcome {
     font-size: clamp(1rem, 4vw, 1.5rem);
     color: gray;
+  }
+  .input-text {
+    text-transform: capitalize;
   }
   .bot {
     flex-basis: min(100px, 50%);

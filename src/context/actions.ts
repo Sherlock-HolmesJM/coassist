@@ -7,7 +7,14 @@ import {
   SET_MEMBERS,
   SetMM,
   SET_MM,
+  SetCG,
+  SET_CG,
 } from './types';
+
+export const setCG = (collatorName: string, groupName: string): SetCG => ({
+  type: SET_CG,
+  payload: { collatorName, groupName },
+});
 
 export const setMM = (messages: MessageI[], members: MemberI[]): SetMM => ({
   type: SET_MM,

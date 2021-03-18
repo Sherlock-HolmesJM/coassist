@@ -5,7 +5,7 @@ import { MemberI } from '../types/member';
 export interface ListProps {
   items: MemberI[];
   title: string;
-  onDelete?: (name: string) => void;
+  onDelete?: (muid: number) => void;
   onMark?: (member: MemberI) => void;
 }
 
@@ -24,7 +24,7 @@ const List: React.FC<ListProps> = (props) => {
       </div>
       <ul className='list-group'>
         {sorted.map((item) => (
-          <li className='list-group-item' key={item.name}>
+          <li className='list-group-item' key={item.muid}>
             {capitalize(item.name)} - {item.type}
             {onMark && onDelete && (
               <div>
@@ -36,7 +36,7 @@ const List: React.FC<ListProps> = (props) => {
                 </span>
                 <span
                   className='badge bg-danger'
-                  onClick={() => onDelete(item.name)}
+                  onClick={() => onDelete(item.muid)}
                 >
                   X
                 </span>
@@ -69,10 +69,11 @@ const Div = styled.div`
   }
 
   .badge {
+    font-size: 14px;
     cursor: pointer;
   }
 
-  @media screen and (max-width: 500px) {
+  @media screen and (max-width: 679px) {
     .badge-container {
       top: 15px;
     }
@@ -80,11 +81,18 @@ const Div = styled.div`
 
   @media print {
     .title {
+      font-size: 1.4rem;
+    }
+    li {
       font-size: 1.2rem;
     }
     .badge-container {
-      top: 12px;
-      right: 2px;
+      font-size: 20px;
+      top: 19px;
+      right: -90px;
+    }
+    .badge {
+      border: none;
     }
   }
 `;
