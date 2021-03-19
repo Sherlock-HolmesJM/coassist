@@ -17,7 +17,7 @@ export interface State {
 }
 
 const state: State = {
-  groupName: 'group name',
+  groupName: "group's name",
   collatorName: "collator's name",
   messages: [],
   members: [],
@@ -75,8 +75,7 @@ class Provider extends PureComponent<Props, State> {
         });
         if (this.props.location.pathname === '/')
           this.props.history.replace('/home');
-      }
-      // else this.props.history.replace('/');
+      } else this.props.history.replace('/');
     });
   }
 
