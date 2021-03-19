@@ -1,7 +1,7 @@
 import React, { PureComponent, ReactNode } from 'react';
 import firebase from 'firebase/app';
 import 'firebase/auth';
-import { MessageI, MemberI } from '../types/member';
+import { MessageI, MemberI } from '../types';
 import { db } from '../services';
 import { SET_MESSAGES, AllActions, SET_MEMBERS, SET_MM, SET_CG } from './types';
 import { RouteComponentProps, withRouter } from 'react-router';

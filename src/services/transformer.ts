@@ -1,10 +1,11 @@
-import MemberI, {
+import {
+  MemberI,
   Members,
   MessageI,
   Messages,
   Worker,
   Workers,
-} from '../types/member';
+} from '../types';
 
 interface ServerState {
   groupName: string;

@@ -1,4 +1,4 @@
-import MemberI, { MemberType, MessageI, Worker } from '../../types/member';
+import { MemberI, MemberType, MessageI, Worker } from '../../types';
 import { capitalize } from '../../util';
 
 // export function getWorkers(members: MemberI[], message: string) {

@@ -1,5 +1,4 @@
-import { MemberI } from '../types/member';
-import { MessageI } from '../types/member';
+import { MemberI, MessageI } from '../types';
 
 export const SET_MEMBERS = 'SET_MEMBERS';
 export const SET_MESSAGES = 'SET_MESSAGES';

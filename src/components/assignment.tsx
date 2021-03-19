@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { capitalize } from '../util';
 import { context } from '../context/context';
 import { setMessages, setMM } from '../context/actions';
-import { MessageI, MessageStatus } from '../types/member';
+import { MessageI, MessageStatus } from '../types';
 import { db } from '../services';
 import { getMemberStatus } from './message/messageModel';
 
@@ -27,6 +27,15 @@ function Assignment(props: Props) {
       name: filename,
       status: 'undone',
       workers: [],
+      Ts: [],
+      TEs: [],
+      category: 'sermon',
+      dateReceived: new Date().toJSON(),
+      dateReturned: new Date().toJSON(),
+      duration: -1,
+      size: -1,
+      teuid: -1,
+      tuid: -1,
     };
     const newMessages = [...messages, message];
 

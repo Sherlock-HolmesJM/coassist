@@ -1,6 +1,6 @@
 import { capitalize } from '../util';
 import styled from 'styled-components';
-import { MemberI } from '../types/member';
+import { MemberI } from '../types';
 
 export interface ListProps {
   items: MemberI[];

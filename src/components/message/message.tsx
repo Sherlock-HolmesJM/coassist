@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { context } from '../../context/context';
 import { setMessages, setMM } from '../../context/actions';
 import List from './list';
-import { MemberI, MessageI, Worker } from '../../types/member';
+import { MemberI, MessageI, Worker } from '../../types';
 import { db } from '../../services';
 import * as mm from './messageModel';
 

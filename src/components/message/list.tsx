@@ -1,6 +1,6 @@
 import styled from 'styled-components';
 import { capitalize } from '../../util';
-import { Worker } from '../../types/member';
+import { Worker } from '../../types';
 
 export interface ListProps {
   workers: Worker[];

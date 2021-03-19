@@ -1,5 +1,4 @@
-import { MemberI } from '../types/member';
-import { MessageI } from '../types/member';
+import { MemberI, MessageI } from '../types';
 import {
   SetMessages,
   SET_MESSAGES,

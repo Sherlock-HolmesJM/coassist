@@ -5,7 +5,7 @@ import { Link } from 'react-router-dom';
 import { capitalize } from '../util';
 import { context } from '../context/context';
 import { setMembers } from '../context/actions';
-import { MemberI, MemberType } from '../types/member';
+import { MemberI, MemberType } from '../types';
 import { db } from '../services';
 import { getMemberStatus } from './message/messageModel';
 
