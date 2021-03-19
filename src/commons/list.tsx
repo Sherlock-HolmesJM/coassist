@@ -53,14 +53,10 @@ const Div = styled.div`
   margin: 10px;
   position: relative;
 
-  .badge-container {
-    position: absolute;
-    top: 25px;
-    right: 1px;
-  }
   .title {
     font-size: clamp(1.2rem, 4vw, 1.75rem);
     padding: 5px;
+    margin-bottom: 20px;
   }
   li {
     display: flex;
@@ -68,6 +64,11 @@ const Div = styled.div`
     padding: 5px;
   }
 
+  .badge-container {
+    position: absolute;
+    top: 35px;
+    right: 1px;
+  }
   .badge {
     font-size: 14px;
     cursor: pointer;
@@ -80,17 +81,6 @@ const Div = styled.div`
   }
 
   @media print {
-    .title {
-      font-size: 1.4rem;
-    }
-    li {
-      font-size: 1.2rem;
-    }
-    .badge-container {
-      font-size: 20px;
-      top: 19px;
-      right: -90px;
-    }
     .badge {
       border: none;
     }
