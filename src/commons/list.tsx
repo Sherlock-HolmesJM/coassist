@@ -17,10 +17,12 @@ const List: React.FC<ListProps> = (props) => {
 
   return (
     <Div className='list'>
-      <h3 className='title'>{capitalize(title)} </h3>
-      <div className='badge-container'>
-        <span className='badge bg-warning m-1'>Ts: {ts.length}</span>
-        <span className='badge bg-warning'>TEs: {tes.length}</span>
+      <div className='title-container'>
+        <h3 className='title'>{capitalize(title)} </h3>
+        <div className='badge-container'>
+          <span className='badge bg-warning m-1'>Ts: {ts.length}</span>
+          <span className='badge bg-warning'>TEs: {tes.length}</span>
+        </div>
       </div>
       <ul className='list-group'>
         {sorted.map((item) => (
@@ -53,6 +55,13 @@ const Div = styled.div`
   margin: 10px;
   position: relative;
 
+  .title-container {
+    display: flex;
+    justify-content: space-between;
+  }
+  .badge-container {
+    align-self: flex-end;
+  }
   .title {
     font-size: clamp(1.2rem, 4vw, 1.75rem);
     padding: 5px;
@@ -63,21 +72,9 @@ const Div = styled.div`
     justify-content: space-between;
     padding: 5px;
   }
-
-  .badge-container {
-    position: absolute;
-    top: 35px;
-    right: 1px;
-  }
   .badge {
     font-size: 14px;
     cursor: pointer;
-  }
-
-  @media screen and (max-width: 679px) {
-    .badge-container {
-      top: 15px;
-    }
   }
 
   @media print {

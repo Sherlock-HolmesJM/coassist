@@ -19,9 +19,11 @@ const List: React.FC<ListProps> = (props) => {
 
   return (
     <Div className='list'>
-      <h3 className='title'>{capitalize(title)} </h3>
-      <div className='badge badge-secondary bg-summary'>
-        T:TE - {ts}:{tes}
+      <div className='title-container'>
+        <h3 className='title'>{capitalize(title)} </h3>
+        <div className='badge badge-secondary bg-summary'>
+          T:TE - {ts}:{tes}
+        </div>
       </div>
       <ul className='list-group'>
         {workers
@@ -72,20 +74,24 @@ const Div = styled.div`
   margin: 5px;
   position: relative;
 
-  .bg-summary {
-    position: absolute;
-    top: 23px;
-    right: 1px;
-  }
   .badge-container {
     position: absolute;
     top: 25px;
     right: 1px;
   }
+  .title-container {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0;
+  }
   .title {
     font-size: clamp(1.2rem, 4vw, 1.75rem);
     padding: 5px;
   }
+  .bg-summary {
+    align-self: flex-end;
+  }
+
   li {
     display: flex;
     justify-content: space-between;
