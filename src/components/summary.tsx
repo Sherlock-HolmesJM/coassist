@@ -59,7 +59,7 @@ const Div = styled.div`
   }
 
   width: 310px;
-  // margin: 10px;
+  margin-bottom: 10px;
   border: 1px solid purple;
   align-self: baseline;
 
