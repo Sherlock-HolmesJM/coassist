@@ -9,7 +9,7 @@ const Login: React.FC<Props> = (props) => {
   return (
     <Main>
       <Lottie className='mb-4 img-div' animationData={loginBot} />
-      <h1 className='h3 mb-4 fw-normal'>Hello...</h1>
+      <h1 className='h3 mb-4 fw-normal'>Hello Collator...</h1>
       <div className='btn-group'>
         {/* <Link className='btn btn-primary' to='/home'>
           Sign-in-in

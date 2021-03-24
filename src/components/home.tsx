@@ -7,11 +7,13 @@ import { useContext } from 'react';
 import { context } from '../context/context';
 import { setCG } from '../context/actions';
 import { updateCGNames } from '../services/database';
+// import { createSheet, collectData } from '../utils/sheet';
+import Summary from './summary';
 
 export interface Props {}
 
 const Home: React.FC<Props> = (props) => {
-  const { collatorName, groupName, dispatch } = useContext(context);
+  const { collatorName, groupName, dispatch, messages } = useContext(context);
 
   const handleChange = (e: any, collatorName: string, groupName: string) => {
     collatorName =
@@ -30,12 +32,17 @@ const Home: React.FC<Props> = (props) => {
         <div className='header-content'>
           <h1 className='header-title'>Collator's Assistant</h1>
           <h4 className='header-welcome'>
-            <em>Welcome Collator</em>
+            <em>What would you like to do next?</em>
           </h4>
         </div>
-        <Lottie className='bot' animationData={homeBot} />
+        <Lottie
+          className='bot'
+          animationData={homeBot}
+          // onClick={() => createSheet(messages, collatorName)}
+        />
       </header>
       <main className='main'>
+        <Summary />
         <div className='list-group'>
           <input
             type='text'
@@ -53,6 +60,10 @@ const Home: React.FC<Props> = (props) => {
               handleChange(e, e.currentTarget.value.trim(), groupName)
             }
           />
+          {/* <input
+            type='file'
+            onChange={(e) => collectData(e, messages, collatorName)}
+          /> */}
           <Link
             to='/members'
             className='list-group-item list-group-item-action'
@@ -100,7 +111,7 @@ const Section = styled.section`
     text-transform: capitalize;
   }
   .bot {
-    flex-basis: min(100px, 50%);
+    flex-basis: min(100px, 60%);
     margin: 10px;
     background: gray;
     border-radius: 10px;
@@ -108,11 +119,13 @@ const Section = styled.section`
 
   .main {
     display: flex;
-    justify-content: center;
+    flex-wrap: wrap;
+    justify-content: space-around;
+    margin-top: 10px;
   }
   .list-group {
     width: min(400px, 100%);
-    margin: 20px;
+    // margin: 20px;
   }
 `;
 

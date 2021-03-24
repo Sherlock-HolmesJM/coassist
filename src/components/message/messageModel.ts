@@ -1,9 +1,35 @@
 import { MemberI, MemberType, MessageI, Worker } from '../../types';
-import { capitalize } from '../../util';
+import { capitalize } from '../../utils';
 
 // export function getWorkers(members: MemberI[], message: string) {
 //   return members.filter((m) => m.works.find((w) => w.name === message));
 // }
+
+export const updateStatus = (message: MessageI) => {
+  const { workers } = message;
+
+  const ts = workers.filter((w) => w.type === 'T');
+  const tes = workers.filter((w) => w.type === 'TE');
+
+  if (ts.length === 0 && tes.length > 0) {
+    message.transcribed = true;
+  } else {
+    const wdt = ts.filter((w) => w.done === true).length;
+    message.transcribed = wdt === ts.length;
+  }
+
+  const wdte = tes.filter((w) => w.done === true).length;
+  message.edited = wdte === tes.length;
+
+  message.status =
+    message.transcribed && message.edited ? 'done' : getStatus(workers);
+
+  console.log(message);
+};
+
+const getStatus = (workers: Worker[]) => {
+  return workers.find((w) => w.done === false) ? 'in-progress' : 'undone';
+};
 
 export const getNewMembers = (member: MemberI, members: MemberI[]) => {
   const newMembers = [...members];
@@ -23,31 +49,25 @@ export const getMemberStatus = (muid: number, messages: MessageI[]) => {
   const msg = messages.find((m) =>
     m.workers.filter((w) => w.memuid === muid).find((w) => w.done === false)
   );
-
-  console.log(
-    muid,
-    ' is working on ',
-    msg?.workers.find((w) => w.memuid === muid)
-  );
   // returns false if name is still working on a message.
   return msg ? false : true;
 };
 
-export const getMessageStatus = (message: MessageI) => {
-  const totalWorks = message.workers.length;
-  const workDone = message.workers.reduce(
-    (a, wkr) => a + (wkr.done ? 1 : 0),
-    0
-  );
-  let status = message.status;
+// export const getMessageStatus = (message: MessageI) => {
+//   const totalWorks = message.workers.length;
+//   const workDone = message.workers.reduce(
+//     (a, wkr) => a + (wkr.done ? 1 : 0),
+//     0
+//   );
+//   let status = message.status;
 
-  if (totalWorks === workDone && workDone !== 0) status = 'done';
-  else if (totalWorks === workDone && workDone === 0) status = 'undone';
-  else status = 'in-progress';
+//   if (totalWorks === workDone && workDone !== 0) status = 'done';
+//   else if (totalWorks === workDone && workDone === 0) status = 'undone';
+//   else status = 'in-progress';
 
-  console.log({ totalWorks, workDone, status });
-  return status;
-};
+//   console.log({ totalWorks, workDone, status });
+//   return status;
+// };
 
 export const checkWork = (
   workers: Worker[],

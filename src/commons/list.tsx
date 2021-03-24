@@ -1,4 +1,4 @@
-import { capitalize } from '../util';
+import { capitalize } from '../utils';
 import styled from 'styled-components';
 import { MemberI } from '../types';
 

@@ -62,7 +62,7 @@ function Message(props: Props) {
     const newMembers = mm.getNewMembers(newMember, members);
     dispatch(setMM(newMessages, newMembers));
     db.updateMember(newMember);
-    db.updateMessage({ muid: newMessage.muid, status: newMessage.status });
+    db.updateMessage(newMessage);
     db.setWorker(worker);
   };
 
@@ -85,7 +85,7 @@ function Message(props: Props) {
 
     const newMessage = { ...message };
     newMessage.workers = message.workers.filter((w) => w.wuid !== worker.wuid);
-    newMessage.status = mm.getMessageStatus(newMessage);
+    mm.updateStatus(newMessage);
     const megs = mm.getNewMessages(newMessage, messages);
 
     const member = { ...mem, free: mm.getMemberStatus(worker.memuid, megs) };
@@ -93,10 +93,7 @@ function Message(props: Props) {
 
     db.updateMember(member);
     db.removeWorker(worker.msguid, worker.wuid);
-    db.updateMessage({
-      muid: newMessage.muid,
-      status: newMessage.status,
-    });
+    db.updateMessage(newMessage);
     dispatch(setMM(megs, membs));
   };
 
@@ -123,7 +120,7 @@ function Message(props: Props) {
       (w) => w.wuid !== worker.wuid
     );
     newMessage.workers.push(worker);
-    newMessage.status = mm.getMessageStatus(newMessage);
+    mm.updateStatus(newMessage);
 
     const newMessages = mm.getNewMessages(newMessage, messages);
     const mem = {
@@ -133,10 +130,7 @@ function Message(props: Props) {
     const newMembers = mm.getNewMembers(mem, members);
     dispatch(setMM(newMessages, newMembers));
     db.updateMember(mem);
-    db.updateMessage({
-      muid: newMessage.muid,
-      status: newMessage.status,
-    });
+    db.updateMessage(newMessage);
   };
 
   const parseInput = (value: string) =>

@@ -3,12 +3,14 @@ import { Route, Switch } from 'react-router-dom';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'font-awesome/css/font-awesome.css';
-import Login from './components/login';
-import Home from './components/home';
-import Members from './components/members';
-import Assignments from './components/assignment';
-import Message from './components/message/message';
-import Error from './components/error';
+import {
+  Login,
+  Members,
+  Home,
+  Message,
+  Error,
+  Assignments,
+} from './components';
 
 function App() {
   return (

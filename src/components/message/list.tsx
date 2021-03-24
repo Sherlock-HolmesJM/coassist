@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { capitalize } from '../../util';
+import { capitalize } from '../../utils';
 import { Worker } from '../../types';
 
 export interface ListProps {
@@ -14,9 +14,15 @@ export interface ListProps {
 const List: React.FC<ListProps> = (props) => {
   const { title, workers, onMark, onDelete, onUpdate } = props;
 
+  const tes = workers.filter((w) => w.type === 'TE').length;
+  const ts = workers.filter((w) => w.type === 'T').length;
+
   return (
     <Div className='list'>
       <h3 className='title'>{capitalize(title)} </h3>
+      <div className='badge badge-secondary bg-summary'>
+        T:TE - {ts}:{tes}
+      </div>
       <ul className='list-group'>
         {workers
           .sort((a, b) => a.part.localeCompare(b.part))
@@ -66,6 +72,11 @@ const Div = styled.div`
   margin: 5px;
   position: relative;
 
+  .bg-summary {
+    position: absolute;
+    top: 23px;
+    right: 1px;
+  }
   .badge-container {
     position: absolute;
     top: 25px;

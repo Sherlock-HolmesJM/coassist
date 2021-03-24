@@ -12,8 +12,9 @@ export interface MessageI {
   size: number;
   duration: number;
   workers: Worker[];
-  Ts: Worker[];
-  TEs: Worker[];
+  transcribed: boolean;
+  edited: boolean;
+  parts: number;
 }
 
 export interface Messages {

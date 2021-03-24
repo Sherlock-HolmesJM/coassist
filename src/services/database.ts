@@ -1,7 +1,7 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import 'firebase/database';
-import { MemberI, MessageI, MessageStatus, Worker } from '../types';
+import { MemberI, MessageI, Worker } from '../types';
 import { transform, transformMembers } from './transformer';
 
 const uid = () => firebase.auth().currentUser?.uid;
@@ -56,14 +56,15 @@ export const setMessage = (message: MessageI) =>
     .set(message)
     .catch((e) => console.log(e.message));
 
-export const updateMessage = (message: {
-  muid: number;
-  status: MessageStatus;
-}) => {
+export const updateMessage = (message: MessageI) => {
   firebase
     .database()
     .ref(path() + 'messages/' + message.muid)
-    .update(message)
+    .update({
+      status: message.status,
+      transcribed: message.transcribed,
+      edited: message.edited,
+    })
     .catch((e) => console.log(e.message));
 };
 

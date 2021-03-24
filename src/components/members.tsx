@@ -2,7 +2,7 @@ import React, { useContext, useRef, useState } from 'react';
 import styled from 'styled-components';
 import List from '../commons/list';
 import { Link } from 'react-router-dom';
-import { capitalize } from '../util';
+import { capitalize } from '../utils';
 import { context } from '../context/context';
 import { setMembers } from '../context/actions';
 import { MemberI, MemberType } from '../types';
