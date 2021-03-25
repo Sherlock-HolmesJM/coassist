@@ -3,7 +3,15 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import { MessageI, MemberI } from '../types';
 import { db } from '../services';
-import { SET_MESSAGES, AllActions, SET_MEMBERS, SET_MM, SET_CG } from './types';
+import {
+  SET_MESSAGES,
+  AllActions,
+  SET_MEMBERS,
+  SET_MM,
+  SET_CG,
+  SPIN,
+  SET_STATE,
+} from './types';
 import { RouteComponentProps, withRouter } from 'react-router';
 
 interface Props extends RouteComponentProps {}
@@ -13,6 +21,7 @@ export interface State {
   groupName: string;
   messages: MessageI[];
   members: MemberI[];
+  spin: boolean;
   dispatch: (a: any) => void;
 }
 
@@ -21,6 +30,7 @@ const state: State = {
   collatorName: "collator's name",
   messages: [],
   members: [],
+  spin: true,
   dispatch: () => '',
 };
 
@@ -43,6 +53,13 @@ class Provider extends PureComponent<Props, State> {
 
   reducer = (action: AllActions) => {
     switch (action.type) {
+      case SET_STATE:
+        return {
+          ...this.state,
+          ...action.payload,
+        };
+      case SPIN:
+        return { ...this.state, spin: action.payload };
       case SET_CG:
         return {
           ...this.state,
@@ -69,9 +86,7 @@ class Provider extends PureComponent<Props, State> {
     firebase.auth().onAuthStateChanged((user) => {
       if (user) {
         db.getData().then((data) => {
-          if (data) {
-            this.setState({ ...((data as unknown) as State) });
-          }
+          if (data) this.setState({ ...this.state, ...data, spin: false });
         });
         if (this.props.location.pathname === '/')
           this.props.history.replace('/home');

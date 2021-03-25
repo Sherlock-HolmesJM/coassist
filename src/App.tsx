@@ -1,16 +1,9 @@
-import React from 'react';
 import { Route, Switch } from 'react-router-dom';
 import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'font-awesome/css/font-awesome.css';
-import {
-  Login,
-  Members,
-  Home,
-  Message,
-  Error,
-  Assignments,
-} from './components';
+import { Login, Members, Home, Message, Error } from './components';
+import { Assignments } from './components';
 
 function App() {
   return (

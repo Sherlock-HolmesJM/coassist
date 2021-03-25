@@ -1,34 +1,30 @@
 import { MemberI, MessageI } from '../types';
-import {
-  SetMessages,
-  SET_MESSAGES,
-  SetMembers,
-  SET_MEMBERS,
-  SetMM,
-  SET_MM,
-  SetCG,
-  SET_CG,
-} from './types';
+import { State } from './context';
+import * as t from './types';
 
-export const setCG = (collatorName: string, groupName: string): SetCG => ({
-  type: SET_CG,
+export const setState = (data: State) => ({ type: t.SET_STATE, paylaod: data });
+
+export const toggleSpin = (spin: boolean) => ({ type: t.SPIN, payload: spin });
+
+export const setCG = (collatorName: string, groupName: string): t.SetCG => ({
+  type: t.SET_CG,
   payload: { collatorName, groupName },
 });
 
-export const setMM = (messages: MessageI[], members: MemberI[]): SetMM => ({
-  type: SET_MM,
+export const setMM = (messages: MessageI[], members: MemberI[]): t.SetMM => ({
+  type: t.SET_MM,
   payload: {
     messages,
     members,
   },
 });
 
-export const setMessages = (messages: MessageI[]): SetMessages => ({
-  type: SET_MESSAGES,
+export const setMessages = (messages: MessageI[]): t.SetMessages => ({
+  type: t.SET_MESSAGES,
   payload: messages,
 });
 
-export const setMembers = (members: MemberI[]): SetMembers => ({
-  type: SET_MEMBERS,
+export const setMembers = (members: MemberI[]): t.SetMembers => ({
+  type: t.SET_MEMBERS,
   payload: members,
 });

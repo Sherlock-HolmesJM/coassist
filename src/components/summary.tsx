@@ -7,48 +7,41 @@ interface Props {}
 function Summary(props: Props) {
   const { messages } = useContext(context);
 
-  const noAudios = messages.length;
-  const noAudiosUN = messages.filter((m) => m.status === 'undone').length;
-  const noAudiosDone = messages.filter((m) => m.status === 'done').length;
-  const noAudiosIP = messages.filter((m) => m.status === 'in-progress').length;
-  const noat = messages.filter((m) => m.transcribed).length;
-  const noatn = messages.filter((m) => !m.transcribed).length;
+  const total = messages.length;
+  const undone = messages.filter((m) => m.status === 'undone').length;
+  const done = messages.filter((m) => m.status === 'done').length;
+  const inProgress = messages.filter((m) => m.status === 'in-progress').length;
+  const transcribed = messages.filter((m) => m.transcribed).length;
+  const notTranscribed = messages.filter((m) => !m.transcribed).length;
+
+  const items = [
+    { name: 'Total No. of Audios', value: total, className: '' },
+    { name: 'No. of Audios Issued', value: inProgress, className: '' },
+    { name: 'No. of Audios Transcribed', value: transcribed, className: '' },
+    {
+      name: 'No. of Audios Not Transcribed',
+      value: notTranscribed,
+      className: 'summary-red',
+    },
+    { name: 'Total No. of Transcripts', value: total, className: '' },
+    { name: 'No. of Transcripts Issued', value: inProgress, className: '' },
+    { name: 'No. of Transcripts Edited', value: done, className: '' },
+    {
+      name: 'No. of Transcripts Not Edited',
+      value: inProgress + undone,
+      className: 'summary-red',
+    },
+  ];
 
   return (
     <Div>
-      <h4 className='title'>Summary</h4>
-      <div className='list'>
-        <div className='item-1 item'>Total No. of Audios</div>
-        <div className='item-2 item'>{noAudios}</div>
-      </div>
-      <div className='list'>
-        <div className='item-1 item'>No. of Audios Issued</div>
-        <div className='item-2 item'>{noAudiosIP + noAudiosDone}</div>
-      </div>
-      <div className='list'>
-        <div className='item-1 item'>No. of Audios Transcribed</div>
-        <div className='item-2 item'>{noat}</div>
-      </div>
-      <div className='list red'>
-        <div className='item-1 item'>No. of Audios Not Transcribed</div>
-        <div className='item-2 item'>{noatn}</div>
-      </div>
-      <div className='list'>
-        <div className='item-1 item'>Total No. of Transcripts</div>
-        <div className='item-2 item'>{noAudios}</div>
-      </div>
-      <div className='list'>
-        <div className='item-1 item'>No. of Transcripts Issued</div>
-        <div className='item-2 item'>{noAudiosIP + noAudiosDone}</div>
-      </div>
-      <div className='list'>
-        <div className='item-1 item'>No. of Transcripts Edited</div>
-        <div className='item-2 item'>{noAudiosDone}</div>
-      </div>
-      <div className='list red'>
-        <div className='item-1 item'>No. of Transcripts Unedited</div>
-        <div className='item-2 item'>{noAudiosUN + noAudiosIP}</div>
-      </div>
+      <h4 className='summary-title'>Summary</h4>
+      {items.map((item, i) => (
+        <div key={i} className={'summary-list ' + item.className}>
+          <div className='summary-item-1'>{item.name}</div>
+          <div className='summary-item-2'>{item.value}</div>
+        </div>
+      ))}
     </Div>
   );
 }
@@ -63,28 +56,27 @@ const Div = styled.div`
   border: 1px solid purple;
   align-self: baseline;
 
-  .title {
+  .summary-title {
     text-align: center;
     background: purple;
     color: white;
     padding: 2px 0;
   }
-
-  .list {
+  .summary-list {
     display: flex;
     font-weight: 700;
     border-top: 1px solid purple;
   }
-  .red {
+  .summary-red {
     color: red;
   }
-  .item-1 {
+  .summary-item-1 {
     flex-basis: 80%;
     text-align: right;
     padding: 2px 5px;
     border-right: 1px solid purple;
   }
-  .item-2 {
+  .summary-item-2 {
     flex-basis: 20%;
     text-align: right;
     padding: 2px 5px;

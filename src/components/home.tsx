@@ -1,29 +1,37 @@
+import { useContext } from 'react';
 import Lottie from 'lottie-react';
 import styled from 'styled-components';
 import { homeBot } from '../media';
 import { Link } from 'react-router-dom';
 import { signOut } from '../services/auth';
-import { useContext } from 'react';
-import { context } from '../context/context';
-import { setCG } from '../context/actions';
+import { context, State } from '../context/context';
+import { setCG, setState, toggleSpin } from '../context/actions';
 import { updateCGNames } from '../services/database';
-// import { createSheet, collectData } from '../utils/sheet';
 import Summary from './summary';
+import Loader from '../commons/loader';
+import { getData } from '../services/database';
 
 export interface Props {}
 
 const Home: React.FC<Props> = (props) => {
-  const { collatorName, groupName, dispatch, messages } = useContext(context);
+  const { collatorName, groupName, dispatch, spin } = useContext(context);
 
   const handleChange = (e: any, collatorName: string, groupName: string) => {
-    collatorName =
-      collatorName === '' ? "collator's name" : collatorName.toLowerCase();
-    groupName = groupName === '' ? 'group name' : groupName.toLowerCase();
-
     if (e.key === 'Enter') {
+      collatorName =
+        collatorName === '' ? "collator's name" : collatorName.toLowerCase();
+      groupName = groupName === '' ? 'group name' : groupName.toLowerCase();
       dispatch(setCG(collatorName, groupName));
       updateCGNames(collatorName, groupName);
     }
+  };
+
+  const handleReload = () => {
+    dispatch(toggleSpin(true));
+    getData().then((d) => {
+      dispatch(toggleSpin(false));
+      if (d) dispatch(setState(d as State));
+    });
   };
 
   return (
@@ -35,11 +43,10 @@ const Home: React.FC<Props> = (props) => {
             <em>What would you like to do next?</em>
           </h4>
         </div>
-        <Lottie
-          className='bot'
-          animationData={homeBot}
-          // onClick={() => createSheet(messages, collatorName)}
-        />
+        <div className='bot'>
+          <Lottie animationData={homeBot} onClick={handleReload} />
+          <Loader spin={spin} />
+        </div>
       </header>
       <main className='main'>
         <Summary />
@@ -111,10 +118,13 @@ const Section = styled.section`
     text-transform: capitalize;
   }
   .bot {
+    position: relative;
     flex-basis: min(100px, 60%);
     margin: 10px;
     background: gray;
     border-radius: 10px;
+    display: flex;
+    justify-content: center;
   }
 
   .main {

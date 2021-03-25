@@ -1,9 +1,22 @@
 import { MemberI, MessageI } from '../types';
+import { State } from './context';
 
 export const SET_MEMBERS = 'SET_MEMBERS';
 export const SET_MESSAGES = 'SET_MESSAGES';
 export const SET_MM = 'SET_MM';
 export const SET_CG = 'CG';
+export const SPIN = 'TOGGLE_SPIN';
+export const SET_STATE = 'SET_STATE';
+
+export interface SetState {
+  type: typeof SET_STATE;
+  payload: State;
+}
+
+export interface Spin {
+  type: typeof SPIN;
+  payload: boolean;
+}
 
 export interface SetCG {
   type: typeof SET_CG;
@@ -31,4 +44,10 @@ export interface SetMessages {
   payload: MessageI[];
 }
 
-export type AllActions = SetMembers | SetMessages | SetMM | SetCG;
+export type AllActions =
+  | SetMembers
+  | SetMessages
+  | SetMM
+  | SetCG
+  | Spin
+  | SetState;
