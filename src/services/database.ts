@@ -62,8 +62,8 @@ export const updateMessage = (message: MessageI) => {
     .ref(path() + 'messages/' + message.muid)
     .update({
       status: message.status,
-      transcribed: message.transcribed,
       edited: message.edited,
+      transcribed: message.transcribed,
     })
     .catch((e) => console.log(e.message));
 };

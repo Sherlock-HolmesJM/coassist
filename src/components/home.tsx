@@ -132,6 +132,7 @@ const Section = styled.section`
     flex-wrap: wrap;
     justify-content: space-around;
     margin-top: 10px;
+    padding: 10px;
   }
   .list-group {
     width: min(400px, 100%);

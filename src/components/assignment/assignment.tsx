@@ -39,8 +39,8 @@ function Assignment(props: Props) {
       teuid: -1,
       tuid: -1,
       parts: 1,
-      transcribed: false,
-      edited: false,
+      transcribed: 'no',
+      edited: 'no',
     };
     const newMessages = [...messages, message];
 

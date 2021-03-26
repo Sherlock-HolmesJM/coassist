@@ -58,6 +58,7 @@ function Message(props: Props) {
     };
 
     newMessage.workers.push(worker);
+    mm.updateStatus(newMessage);
     const newMessages = mm.getNewMessages(newMessage, messages);
     const newMembers = mm.getNewMembers(newMember, members);
     dispatch(setMM(newMessages, newMembers));
@@ -156,7 +157,6 @@ function Message(props: Props) {
             required
           />
           <select required className='form-select' ref={workerRef}>
-            {/* <option value=''></option> */}
             {freeMembers.map((m, i) => (
               <option key={i} value={m.muid}>
                 {`${m.name.toUpperCase()} - ${m.type}`}

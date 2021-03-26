@@ -12,19 +12,21 @@ export const updateStatus = (message: MessageI) => {
   const tes = workers.filter((w) => w.type === 'TE');
 
   if (ts.length === 0 && tes.length > 0) {
-    message.transcribed = true;
+    message.transcribed = 'yes';
   } else {
     const wdt = ts.filter((w) => w.done === true).length;
-    message.transcribed = wdt === ts.length;
+    message.transcribed =
+      ts.length === 0 ? 'no' : wdt === ts.length ? 'yes' : 'in-progress';
   }
 
   const wdte = tes.filter((w) => w.done === true).length;
-  message.edited = wdte === tes.length;
+  message.edited =
+    tes.length === 0 ? 'no' : wdte === tes.length ? 'yes' : 'in-progress';
 
   message.status =
-    message.transcribed && message.edited ? 'done' : getStatus(workers);
-
-  console.log(message);
+    message.transcribed === 'yes' && message.edited === 'yes'
+      ? 'done'
+      : getStatus(workers);
 };
 
 const getStatus = (workers: Worker[]) => {

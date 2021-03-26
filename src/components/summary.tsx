@@ -8,28 +8,33 @@ function Summary(props: Props) {
   const { messages } = useContext(context);
 
   const total = messages.length;
-  const undone = messages.filter((m) => m.status === 'undone').length;
-  const done = messages.filter((m) => m.status === 'done').length;
-  const inProgress = messages.filter((m) => m.status === 'in-progress').length;
-  const transcribed = messages.filter((m) => m.transcribed).length;
-  const notTranscribed = messages.filter((m) => !m.transcribed).length;
+
+  const tIP = messages.filter((m) => m.edited === 'in-progress').length;
+  const tEdited = messages.filter((m) => m.edited === 'yes').length;
+
+  const aTrans = messages.filter((m) => m.transcribed === 'yes').length;
+  const aIP = messages.filter((m) => m.transcribed === 'in-progress').length;
 
   const items = [
-    { name: 'Total No. of Audios', value: total, className: '' },
-    { name: 'No. of Audios Issued', value: inProgress, className: '' },
-    { name: 'No. of Audios Transcribed', value: transcribed, className: '' },
+    { name: 'Total No. of Audios', value: total, classes: '' },
+    { name: 'No. of Audios Issued', value: aTrans + aIP, classes: '' },
+    { name: 'No. of Audios Transcribed', value: aTrans, classes: '' },
     {
       name: 'No. of Audios Not Transcribed',
-      value: notTranscribed,
-      className: 'summary-red',
+      value: total - aTrans,
+      classes: 'summary-red',
     },
-    { name: 'Total No. of Transcripts', value: total, className: '' },
-    { name: 'No. of Transcripts Issued', value: inProgress, className: '' },
-    { name: 'No. of Transcripts Edited', value: done, className: '' },
+    { name: 'Total No. of Transcripts', value: total, classes: '' },
+    {
+      name: 'No. of Transcripts Issued',
+      value: tIP + tEdited,
+      classes: '',
+    },
+    { name: 'No. of Transcripts Edited', value: tEdited, classes: '' },
     {
       name: 'No. of Transcripts Not Edited',
-      value: inProgress + undone,
-      className: 'summary-red',
+      value: total - tEdited,
+      classes: 'summary-red',
     },
   ];
 
@@ -37,7 +42,7 @@ function Summary(props: Props) {
     <Div>
       <h4 className='summary-title'>Summary</h4>
       {items.map((item, i) => (
-        <div key={i} className={'summary-list ' + item.className}>
+        <div key={i} className={'summary-list ' + item.classes}>
           <div className='summary-item-1'>{item.name}</div>
           <div className='summary-item-2'>{item.value}</div>
         </div>

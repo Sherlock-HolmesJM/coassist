@@ -12,8 +12,8 @@ export interface MessageI {
   size: number;
   duration: number;
   workers: Worker[];
-  transcribed: boolean;
-  edited: boolean;
+  transcribed: 'yes' | 'in-progress' | 'no';
+  edited: 'yes' | 'in-progress' | 'no';
   parts: number;
 }
 
