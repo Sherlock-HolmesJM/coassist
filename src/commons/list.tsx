@@ -1,6 +1,7 @@
 import { capitalize } from '../utils';
 import styled from 'styled-components';
 import { MemberI } from '../types';
+import { ClickBadge } from '../commons/badge';
 
 export interface ListProps {
   items: MemberI[];
@@ -30,18 +31,16 @@ const List: React.FC<ListProps> = (props) => {
             {capitalize(item.name)} - {item.type}
             {onMark && onDelete && (
               <div>
-                <span
-                  className='badge m-2 bg-success'
+                <ClickBadge
+                  color='success'
                   onClick={() => onMark(item)}
-                >
-                  M
-                </span>
-                <span
-                  className='badge bg-danger'
+                  text='M'
+                />
+                <ClickBadge
+                  color='danger'
                   onClick={() => onDelete(item.muid)}
-                >
-                  X
-                </span>
+                  text='X'
+                />
               </div>
             )}
           </li>
@@ -71,10 +70,6 @@ const Div = styled.div`
     display: flex;
     justify-content: space-between;
     padding: 5px;
-  }
-  .badge {
-    font-size: 14px;
-    cursor: pointer;
   }
 
   @media print {

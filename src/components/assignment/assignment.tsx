@@ -7,6 +7,7 @@ import { setMessages, setMM } from '../../context/actions';
 import { MessageI, MessageStatus } from '../../types';
 import { db } from '../../services';
 import { getMemberStatus } from '../message/messageModel';
+import { ClickBadge } from '../../commons/badge';
 
 interface Props {}
 
@@ -108,12 +109,12 @@ function Assignment(props: Props) {
               <Link to={`/assignments:${m.name}`} className='link'>
                 {m.name} - <em>{m.status}</em>
               </Link>
-              <span
-                className={`badge bg-color bg-${getColor(m.status)}`}
+              <ClickBadge
+                classes='bg-color'
+                color={getColor(m.status)}
                 onClick={() => handleDelete(m)}
-              >
-                X
-              </span>
+                text='X'
+              />
             </div>
           ))}
         </div>
@@ -156,13 +157,8 @@ const Section = styled.section`
     text-transform: capitalize;
     border: 2px gray red;
   }
-
-  .badge {
-    color: white;
-  }
   .bg-color {
     float: right;
-    cursor: pointer;
   }
   .list-container {
     padding: 10px;

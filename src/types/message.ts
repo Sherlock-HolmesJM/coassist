@@ -21,4 +21,4 @@ export interface Messages {
   [key: string]: MessageI;
 }
 
-export type MessageStatus = 'done' | 'undone' | 'in-progress';
+export type MessageStatus = 'done' | 'undone' | 'in-progress' | 'transcribed';

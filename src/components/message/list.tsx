@@ -1,6 +1,7 @@
 import styled from 'styled-components';
 import { capitalize } from '../../utils';
 import { Worker } from '../../types';
+import { ClickBadge } from '../../commons/badge';
 
 export interface ListProps {
   workers: Worker[];
@@ -41,26 +42,23 @@ const List: React.FC<ListProps> = (props) => {
                   </div>
                 </div>
                 <div>
-                  <span
-                    className={`badge bg-${
-                      worker.done ? 'success' : 'secondary'
-                    }`}
+                  <ClickBadge
+                    color={worker.done ? 'success' : 'secondary'}
                     onClick={() => onMark(worker)}
-                  >
-                    {worker.done ? 'D' : 'IP'}
-                  </span>
-                  <span
-                    className='badge bg-warning'
-                    onClick={() => onUpdate(worker)}
-                  >
-                    {!worker.done && 'U'}
-                  </span>
-                  <span
-                    className='badge bg-danger'
+                    text={worker.done ? 'D' : 'IP'}
+                  />
+                  {!worker.done && (
+                    <ClickBadge
+                      color='warning'
+                      onClick={() => onUpdate(worker)}
+                      text='U'
+                    />
+                  )}
+                  <ClickBadge
+                    color='danger'
                     onClick={() => onDelete(worker)}
-                  >
-                    X
-                  </span>
+                    text='X'
+                  />
                 </div>
               </li>
             );
@@ -96,13 +94,6 @@ const Div = styled.div`
     display: flex;
     justify-content: space-between;
     padding: 5px;
-  }
-
-  .badge {
-    color: white;
-    cursor: pointer;
-    margin: 4px;
-    font-size: 14px;
   }
 
   @media print {

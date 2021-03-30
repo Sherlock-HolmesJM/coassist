@@ -23,14 +23,15 @@ export const updateStatus = (message: MessageI) => {
   message.edited =
     tes.length === 0 ? 'no' : wdte === tes.length ? 'yes' : 'in-progress';
 
+  const worker = workers.find((w) => w.done === false);
   message.status =
     message.transcribed === 'yes' && message.edited === 'yes'
       ? 'done'
-      : getStatus(workers);
-};
-
-const getStatus = (workers: Worker[]) => {
-  return workers.find((w) => w.done === false) ? 'in-progress' : 'undone';
+      : worker
+      ? 'in-progress'
+      : message.transcribed === 'yes'
+      ? 'transcribed'
+      : 'undone';
 };
 
 export const getNewMembers = (member: MemberI, members: MemberI[]) => {
