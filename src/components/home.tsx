@@ -6,10 +6,9 @@ import { Link } from 'react-router-dom';
 import { signOut } from '../services/auth';
 import { context, State } from '../context/context';
 import { setCG, setState, toggleSpin } from '../context/actions';
-import { updateCGNames } from '../services/database';
 import Summary from './summary';
 import Loader from '../commons/loader';
-import { getData } from '../services/database';
+import { db } from '../services/database';
 
 export interface Props {}
 
@@ -22,13 +21,13 @@ const Home: React.FC<Props> = (props) => {
         collatorName === '' ? "collator's name" : collatorName.toLowerCase();
       groupName = groupName === '' ? 'group name' : groupName.toLowerCase();
       dispatch(setCG(collatorName, groupName));
-      updateCGNames(collatorName, groupName);
+      db.updateCGNames(collatorName, groupName);
     }
   };
 
   const handleReload = () => {
     dispatch(toggleSpin(true));
-    getData().then((d) => {
+    db.getData().then((d) => {
       dispatch(toggleSpin(false));
       if (d) dispatch(setState(d as State));
     });

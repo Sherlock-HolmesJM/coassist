@@ -1,7 +1,7 @@
 import { Worker } from './worker';
 
 export interface MessageI {
-  muid: number;
+  uid: number;
   name: string;
   status: MessageStatus;
   dateReceived: string;

@@ -32,7 +32,7 @@ const MembersComp: React.FC<MembersProps> = (props) => {
     if (index !== -1) return alert(`${capitalize(name)} is already a member.`);
 
     const newMember: MemberI = {
-      muid: Date.now(),
+      uid: Date.now(),
       name,
       type,
       active: false,
@@ -49,7 +49,7 @@ const MembersComp: React.FC<MembersProps> = (props) => {
   const handleMark = (member: MemberI) => {
     const newMember: MemberI = {
       ...member,
-      free: getMemberStatus(member.muid, messages),
+      free: getMemberStatus(member.uid, messages),
       active: !member.active,
     };
 
@@ -63,7 +63,7 @@ const MembersComp: React.FC<MembersProps> = (props) => {
   const handleDelete = (muid: number) => {
     const result = prompt('Are you sure?');
     if (result === null) return;
-    const newMembers = members.filter((m) => m.muid !== muid);
+    const newMembers = members.filter((m) => m.uid !== muid);
     dispatch(setMembers(newMembers));
     db.deleteMember(muid);
   };

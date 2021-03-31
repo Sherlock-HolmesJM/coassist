@@ -36,7 +36,7 @@ function Message(props: Props) {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const member = freeMembers.find((w) => w.muid === getWUID());
+    const member = freeMembers.find((w) => w.uid === getWUID());
     if (!member) return;
 
     const messagePart = getPart();
@@ -44,14 +44,14 @@ function Message(props: Props) {
 
     const newMessage: MessageI = { ...message, status: 'in-progress' };
     const newMember = { ...member, free: false };
-    const { muid, name, type } = newMember;
+    const { uid: muid, name, type } = newMember;
 
     const worker: Worker = {
       memuid: muid,
       name,
       type,
-      wuid: Date.now(),
-      msguid: message.muid,
+      uid: Date.now(),
+      msguid: message.uid,
       msgname: messageName,
       part: messagePart,
       done: false,
@@ -68,7 +68,7 @@ function Message(props: Props) {
   };
 
   const handleMark = (worker: Worker) => {
-    const mem = members.find((m) => m.muid === worker.memuid);
+    const mem = members.find((m) => m.uid === worker.memuid);
     if (!mem) return;
 
     const wkr: Worker = { ...worker, done: !worker.done };
@@ -81,11 +81,11 @@ function Message(props: Props) {
     const response = prompt('Are you sure?');
     if (response === null) return;
 
-    const mem = members.find((m) => m.muid === worker.memuid);
+    const mem = members.find((m) => m.uid === worker.memuid);
     if (!mem) return;
 
     const newMessage = { ...message };
-    newMessage.workers = message.workers.filter((w) => w.wuid !== worker.wuid);
+    newMessage.workers = message.workers.filter((w) => w.uid !== worker.uid);
     mm.updateStatus(newMessage);
     const megs = mm.getNewMessages(newMessage, messages);
 
@@ -93,7 +93,7 @@ function Message(props: Props) {
     const membs = mm.getNewMembers(member, members);
 
     db.updateMember(member);
-    db.removeWorker(worker.msguid, worker.wuid);
+    db.removeWorker(worker.msguid, worker.uid);
     db.updateMessage(newMessage);
     dispatch(setMM(megs, membs));
   };
@@ -105,9 +105,7 @@ function Message(props: Props) {
     const newWorker: Worker = { ...worker, part: messagePart };
 
     const newMessage = { ...message };
-    newMessage.workers = newMessage.workers.filter(
-      (w) => w.wuid !== worker.wuid
-    );
+    newMessage.workers = newMessage.workers.filter((w) => w.uid !== worker.uid);
     newMessage.workers.push(newWorker);
 
     const newMessages = mm.getNewMessages(newMessage, messages);
@@ -117,9 +115,7 @@ function Message(props: Props) {
 
   const update = (member: MemberI, worker: Worker) => {
     const newMessage: MessageI = { ...message };
-    newMessage.workers = newMessage.workers.filter(
-      (w) => w.wuid !== worker.wuid
-    );
+    newMessage.workers = newMessage.workers.filter((w) => w.uid !== worker.uid);
     newMessage.workers.push(worker);
     mm.updateStatus(newMessage);
 
@@ -158,7 +154,7 @@ function Message(props: Props) {
           />
           <select required className='form-select' ref={workerRef}>
             {freeMembers.map((m, i) => (
-              <option key={i} value={m.muid}>
+              <option key={i} value={m.uid}>
                 {`${m.name.toUpperCase()} - ${m.type}`}
               </option>
             ))}

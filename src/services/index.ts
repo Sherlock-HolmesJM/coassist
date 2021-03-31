@@ -1,3 +1,3 @@
-import * as db from './database';
+import { db } from './database';
 
 export { db };

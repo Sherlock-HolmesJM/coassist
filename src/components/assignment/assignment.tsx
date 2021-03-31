@@ -28,7 +28,7 @@ function Assignment(props: Props) {
       return alert(`${capitalize(filename)} is already being worked on.`);
 
     const message: MessageI = {
-      muid: Date.now(),
+      uid: Date.now(),
       name: filename,
       status: 'undone',
       workers: [],
@@ -61,14 +61,14 @@ function Assignment(props: Props) {
     } else {
       const newMembers = [...members];
       newMembers.forEach((mem) => {
-        mem.free = getMemberStatus(mem.muid, newMessages);
+        mem.free = getMemberStatus(mem.uid, newMessages);
       });
 
       dispatch(setMM(newMessages, newMembers));
       db.updateMembers(newMembers);
     }
 
-    db.removeMessage(message.muid);
+    db.removeMessage(message.uid);
   };
 
   const getColor = (status: MessageStatus) =>

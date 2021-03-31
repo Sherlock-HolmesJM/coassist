@@ -36,7 +36,7 @@ export const updateStatus = (message: MessageI) => {
 
 export const getNewMembers = (member: MemberI, members: MemberI[]) => {
   const newMembers = [...members];
-  let index = newMembers.findIndex((m) => m.muid === member.muid);
+  let index = newMembers.findIndex((m) => m.uid === member.uid);
   newMembers[index] = member;
   return newMembers;
 };

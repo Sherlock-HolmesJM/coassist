@@ -7,20 +7,23 @@ import {
   Workers,
 } from '../types';
 
-interface ServerState {
+export interface ServerState {
   groupName: string;
   collatorName: string;
   members: Members;
   messages: Messages;
 }
 
-export const transformMembers = (members: MemberI[]) => {
-  const transMembers: Members = {};
-  members.forEach((m) => (transMembers[m.muid] = m));
-  return transMembers;
+type A = MemberI | Worker | MessageI;
+type O = Members | Workers | Messages;
+
+export const arrayToObject = (list: A[]) => {
+  const result: O = {};
+  list.forEach((m) => (result[m.uid] = m));
+  return result;
 };
 
-export const revert = <G, T>(object: G): T[] => {
+export const objectToArray = <G, T>(object: G): T[] => {
   if (!object) return [];
   return Object.entries(object).reduce((a: T[], n) => [...a, n[1]], []);
 };
@@ -31,12 +34,14 @@ export const transform = (data: ServerState) => {
   let messages: MessageI[] = [];
   let members: MemberI[] = [];
 
-  if (members) members = revert<Members, MemberI>(membs);
+  if (members) members = objectToArray<Members, MemberI>(membs);
   if (messages) {
-    messages = revert<Messages, MessageI>(msgs);
+    messages = objectToArray<Messages, MessageI>(msgs);
     messages.forEach(
       (m) =>
-        (m.workers = revert<Workers, Worker>((m.workers as unknown) as Workers))
+        (m.workers = objectToArray<Workers, Worker>(
+          (m.workers as unknown) as Workers
+        ))
     );
   }
 

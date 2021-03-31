@@ -32,7 +32,7 @@ const List: React.FC<ListProps> = (props) => {
           .sort((a, b) => a.type.length - b.type.length)
           .map((worker) => {
             return (
-              <li className='list-group-item' key={worker.wuid}>
+              <li className='list-group-item' key={worker.uid}>
                 <div>
                   <div>
                     {capitalize(worker.name)} - {worker.type}:

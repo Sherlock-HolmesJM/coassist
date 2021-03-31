@@ -27,7 +27,7 @@ const List: React.FC<ListProps> = (props) => {
       </div>
       <ul className='list-group'>
         {sorted.map((item) => (
-          <li className='list-group-item' key={item.muid}>
+          <li className='list-group-item' key={item.uid}>
             {capitalize(item.name)} - {item.type}
             {onMark && onDelete && (
               <div>
@@ -38,7 +38,7 @@ const List: React.FC<ListProps> = (props) => {
                 />
                 <ClickBadge
                   color='danger'
-                  onClick={() => onDelete(item.muid)}
+                  onClick={() => onDelete(item.uid)}
                   text='X'
                 />
               </div>

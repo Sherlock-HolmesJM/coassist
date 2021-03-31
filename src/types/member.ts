@@ -6,7 +6,7 @@ export interface Members {
 }
 
 export interface MemberI {
-  muid: number;
+  uid: number;
   name: string;
   type: MemberType;
   active: boolean;
