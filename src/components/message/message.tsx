@@ -12,7 +12,7 @@ interface Props {}
 
 function Message(props: Props) {
   const { members, dispatch, messages } = useContext(context);
-  const messageName = useParams<{ slug: string }>().slug.replace(':', '');
+  const msgUID = useParams<{ slug: string }>().slug.replace(':', '');
 
   const splitRef = useRef<HTMLInputElement>(null);
   const workerRef = useRef<HTMLSelectElement>(null);
@@ -23,9 +23,9 @@ function Message(props: Props) {
     if (splitRef.current) splitRef.current.value = split;
   };
 
-  const filename = messageName + '-';
   const freeMembers = members.filter((m) => m.active && m.free);
-  const message = messages.find((m) => m.name === messageName);
+  const message = messages.find((m) => m.uid === +msgUID);
+  const filename = message?.name + '-';
   const workers = message?.workers ?? [];
 
   useEffect(() => {
@@ -52,7 +52,7 @@ function Message(props: Props) {
       type,
       uid: Date.now(),
       msguid: message.uid,
-      msgname: messageName,
+      msgname: message.name,
       part: messagePart,
       done: false,
     };
@@ -133,7 +133,7 @@ function Message(props: Props) {
   const parseInput = (value: string) =>
     value.slice(filename.length, value.length);
   const getPart = () =>
-    parseInput(getSplit()) === '' ? messageName : getSplit();
+    parseInput(getSplit()) === '' ? message.name : getSplit();
 
   return (
     <Section>

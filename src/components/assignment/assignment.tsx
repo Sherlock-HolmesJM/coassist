@@ -106,7 +106,7 @@ function Assignment(props: Props) {
         <div className='list-group-k'>
           {sorted.map((m) => (
             <div key={m.name} className='list-group-item'>
-              <Link to={`/assignments:${m.name}`} className='link'>
+              <Link to={`/assignments:${m.uid}`} className='link'>
                 {m.name} - <em>{m.status}</em>
               </Link>
               <ClickBadge
