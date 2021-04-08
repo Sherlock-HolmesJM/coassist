@@ -39,7 +39,7 @@ function Summary(props: Props) {
   ];
 
   return (
-    <Div>
+    <Div className='no-print'>
       <h4 className='summary-title'>Summary</h4>
       {items.map((item, i) => (
         <div key={i} className={'summary-list ' + item.classes}>

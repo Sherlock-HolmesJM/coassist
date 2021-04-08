@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useState } from 'react';
 import Lottie from 'lottie-react';
 import styled from 'styled-components';
 import { homeBot } from '../media';
@@ -9,11 +9,13 @@ import { setCG, setState, toggleSpin } from '../context/actions';
 import Summary from './summary';
 import Loader from '../commons/loader';
 import { db } from '../services/database';
+import Report from './report';
 
 export interface Props {}
 
 const Home: React.FC<Props> = (props) => {
   const { collatorName, groupName, dispatch, spin } = useContext(context);
+  const [report, setReport] = useState(false);
 
   const handleChange = (e: any, collatorName: string, groupName: string) => {
     if (e.key === 'Enter') {
@@ -35,7 +37,7 @@ const Home: React.FC<Props> = (props) => {
 
   return (
     <Section>
-      <header className='header'>
+      <header className='header no-print'>
         <div className='header-content'>
           <h1 className='header-title'>Collator's Assistant</h1>
           <h4 className='header-welcome'>
@@ -49,7 +51,7 @@ const Home: React.FC<Props> = (props) => {
       </header>
       <main className='main'>
         <Summary />
-        <div className='list-group'>
+        <div className='list-group no-print'>
           <input
             type='text'
             className='list-group-item input-text'
@@ -84,12 +86,19 @@ const Home: React.FC<Props> = (props) => {
             Assignments
           </Link>
           <button
+            onClick={() => setReport(!report)}
+            className='list-group-item list-group-item-action'
+          >
+            report
+          </button>
+          <button
             onClick={signOut}
             className='list-group-item list-group-item-action'
           >
             Logout
           </button>
         </div>
+        <Report report={report} />
       </main>
     </Section>
   );
@@ -134,8 +143,18 @@ const Section = styled.section`
     padding: 10px;
   }
   .list-group {
+    margin-bottom: 20px;
     width: min(400px, 100%);
     // margin: 20px;
+  }
+  .list-group * {
+    text-transform: capitalize;
+  }
+
+  @media print {
+    .no-print {
+      display: none;
+    }
   }
 `;
 

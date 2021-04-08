@@ -3,16 +3,9 @@ import firebase from 'firebase/app';
 import 'firebase/auth';
 import { MessageI, MemberI } from '../types';
 import { db } from '../services';
-import {
-  SET_MESSAGES,
-  AllActions,
-  SET_MEMBERS,
-  SET_MM,
-  SET_CG,
-  SPIN,
-  SET_STATE,
-} from './types';
+import { AllActions } from './types';
 import { RouteComponentProps, withRouter } from 'react-router';
+import { reducer } from './reducer';
 
 interface Props extends RouteComponentProps {}
 
@@ -47,39 +40,8 @@ class Provider extends PureComponent<Props, State> {
   }
 
   dispatch = (action: AllActions) => {
-    const newState = this.reducer(action);
+    const newState = reducer(this.state, action);
     this.setState(newState);
-  };
-
-  reducer = (action: AllActions) => {
-    switch (action.type) {
-      case SET_STATE:
-        return {
-          ...this.state,
-          ...action.payload,
-        };
-      case SPIN:
-        return { ...this.state, spin: action.payload };
-      case SET_CG:
-        return {
-          ...this.state,
-          ...action.payload,
-        };
-      case SET_MEMBERS:
-        return {
-          ...this.state,
-          members: [...action.payload],
-        };
-      case SET_MESSAGES:
-        return {
-          ...this.state,
-          messages: [...action.payload],
-        };
-      case SET_MM:
-        return { ...this.state, ...action.payload };
-      default:
-        return this.state;
-    }
   };
 
   componentDidMount() {
