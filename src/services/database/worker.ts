@@ -7,10 +7,12 @@ export const setWorker = (worker: Worker) =>
   firebase
     .database()
     .ref(path() + '/messages/' + worker.msguid + '/workers/' + worker.uid)
-    .set(worker);
+    .set(worker)
+    .catch((e) => alert(e.message));
 
 export const removeWorker = (muid: number, wuid: number) =>
   firebase
     .database()
     .ref(path() + '/messages/' + muid + '/workers/' + wuid)
-    .remove();
+    .remove()
+    .catch((e) => alert(e.message));

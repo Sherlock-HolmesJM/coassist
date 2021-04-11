@@ -15,26 +15,33 @@ export const reducer = (state: State, action: AllActions) => {
       return {
         ...state,
         ...action.payload,
+        spin: false,
       };
+
     case SPIN:
       return { ...state, spin: action.payload };
+
     case SET_CG:
       return {
         ...state,
         ...action.payload,
       };
+
     case SET_MEMBERS:
       return {
         ...state,
         members: [...action.payload],
       };
+
     case SET_MESSAGES:
       return {
         ...state,
         messages: [...action.payload],
       };
+
     case SET_MM:
       return { ...state, ...action.payload };
+
     default:
       return state;
   }

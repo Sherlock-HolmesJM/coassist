@@ -2,9 +2,9 @@ import { useContext } from 'react';
 import styled from 'styled-components';
 import { context } from '../context/context';
 
-interface Props {}
+// interface Props {}
 
-function Summary(props: Props) {
+function Summary() {
   const { messages } = useContext(context);
 
   const total = messages.length;
@@ -56,7 +56,7 @@ const Div = styled.div`
     margin: 0;
   }
 
-  width: 310px;
+  width: min(90vw, 310px);
   margin-bottom: 20px;
   border: 1px solid purple;
   align-self: baseline;
@@ -71,6 +71,7 @@ const Div = styled.div`
     display: flex;
     font-weight: 700;
     border-top: 1px solid purple;
+    font-size: max(0.9rem, 1.2vw);
   }
   .summary-red {
     color: red;

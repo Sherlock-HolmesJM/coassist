@@ -8,22 +8,45 @@ import { MessageI, MessageStatus } from '../../types';
 import { db } from '../../services';
 import { getMemberStatus } from '../message/messageModel';
 import { ClickBadge } from '../../commons/badge';
+import { Transcriber, TranscriptEditor } from '../../types/worker';
 
-interface Props {}
+// interface Props {}
 
-function Assignment(props: Props) {
+function Assignment() {
   const { dispatch, messages, members } = useContext(context);
   const fileRef = useRef<HTMLInputElement>(null);
+  const sizeRef = useRef<HTMLInputElement>(null);
+  const hRef = useRef<HTMLInputElement>(null);
+  const mRef = useRef<HTMLInputElement>(null);
+  const sRef = useRef<HTMLInputElement>(null);
+
   const sorted = messages.sort((a, b) => b.status.localeCompare(a.status));
+
   const undone = messages.filter((m) => m.status === 'undone').length;
   const done = messages.filter((m) => m.status === 'done').length;
   const inProgress = messages.filter((m) => m.status === 'in-progress').length;
 
+  const getFilename = () => fileRef.current?.value.toLowerCase().trim() ?? '';
+
+  const getColor = (status: MessageStatus) =>
+    status === 'done'
+      ? 'danger'
+      : status === 'in-progress'
+      ? 'warning'
+      : 'success';
+
+  const getDuration = () => {
+    const h = hRef.current ? +hRef.current.value : 0;
+    const m = mRef.current ? +mRef.current.value : 0;
+    return h * 60 + m;
+  };
+
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
 
-    const filename = fileRef.current?.value.toLowerCase().trim() ?? '';
+    const filename = getFilename();
     const index = messages.findIndex((m) => m.name === filename);
+
     if (index !== -1)
       return alert(`${capitalize(filename)} is already being worked on.`);
 
@@ -33,16 +56,15 @@ function Assignment(props: Props) {
       status: 'undone',
       workers: [],
       category: 'sermon',
-      dateReceived: new Date().toJSON(),
-      dateReturned: new Date().toJSON(),
-      duration: -1,
-      size: -1,
-      teuid: -1,
-      tuid: -1,
-      parts: 1,
+      duration: getDuration(),
+      transcriber: {} as Transcriber,
+      transcriptEditor: {} as TranscriptEditor,
+      size: sizeRef.current ? +sizeRef.current.value : 1,
+      splits: 1,
       transcribed: 'no',
       edited: 'no',
     };
+
     const newMessages = [...messages, message];
 
     dispatch(setMessages(newMessages));
@@ -71,12 +93,35 @@ function Assignment(props: Props) {
     db.removeMessage(message.uid);
   };
 
-  const getColor = (status: MessageStatus) =>
-    status === 'done'
-      ? 'danger'
-      : status === 'in-progress'
-      ? 'warning'
-      : 'success';
+  const handleUpdate = (message: MessageI) => {
+    const result = prompt('Are you sure?');
+    if (result === null) return;
+
+    const size = sizeRef.current ? +sizeRef.current.value : -1;
+    const duration = getDuration();
+
+    const newMessage: MessageI = {
+      ...message,
+      duration: duration === 0 ? message.duration : duration,
+      size: size === -1 ? message.size : size,
+    };
+
+    const list = messages.filter((m) => m.uid !== message.uid);
+    list.push(newMessage);
+    dispatch(setMessages(list));
+    db.updateMessage(newMessage);
+    alert('Updated');
+  };
+
+  const handleChangeFocus = (e: any) => {
+    const { value, dataset } = e.currentTarget;
+
+    if (value.length === 2) {
+      if (+dataset.index === 1) mRef.current?.focus();
+      else if (+dataset.index === 2) sRef.current?.focus();
+      else if (+dataset.index === 3) sizeRef.current?.focus();
+    }
+  };
 
   return (
     <Section>
@@ -94,6 +139,52 @@ function Assignment(props: Props) {
             required
             ref={fileRef}
           />
+          <div className='form-control duration-holder'>
+            <p style={{ marginRight: '10px' }}>Duration (H:M:S)</p>
+            <input
+              type='number'
+              min='0'
+              max='12'
+              placeholder='00'
+              data-index='1'
+              ref={hRef}
+              required
+              className='duration'
+              onChange={handleChangeFocus}
+            />
+            :
+            <input
+              type='number'
+              min='0'
+              max='60'
+              placeholder='00'
+              data-index='2'
+              ref={mRef}
+              required
+              className='duration'
+              onChange={handleChangeFocus}
+            />
+            :
+            <input
+              type='number'
+              min='0'
+              max='60'
+              placeholder='00'
+              data-index='3'
+              ref={sRef}
+              required
+              className='duration'
+              onChange={handleChangeFocus}
+            />
+          </div>
+          <input
+            className='form-control size'
+            type='number'
+            placeholder='size (MB)'
+            ref={sizeRef}
+            required
+            min='0'
+          />
           <input className='btn btn-primary' type='submit' value='Add' />
         </form>
       </header>
@@ -109,12 +200,20 @@ function Assignment(props: Props) {
               <Link to={`/assignments:${m.uid}`} className='link'>
                 {m.name} - <em>{m.status}</em>
               </Link>
-              <ClickBadge
-                classes='bg-color'
-                color={getColor(m.status)}
-                onClick={() => handleDelete(m)}
-                text='X'
-              />
+              <div>
+                <ClickBadge
+                  classes='bg-color'
+                  color={getColor(m.status)}
+                  onClick={() => handleDelete(m)}
+                  text='x'
+                />
+                <ClickBadge
+                  classes='bg-color'
+                  color={getColor(m.status)}
+                  onClick={() => handleUpdate(m)}
+                  text='u'
+                />
+              </div>
             </div>
           ))}
         </div>
@@ -151,29 +250,43 @@ const Section = styled.section`
     justify-content: center;
     width: 100%;
   }
-
   .form-control {
     flex-basis: clamp(310px, 50%, 400px);
     text-transform: capitalize;
     border: 2px gray red;
   }
+  .duration-holder {
+    display: flex;
+  }
+  .duration {
+    width: 30px;
+    outline: none;
+    border: none;
+    padding: 6px;
+  }
+  input::-webkit-outer-spin-button,
+  input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
   .bg-color {
     float: right;
   }
   .list-container {
-    padding: 10px;
+    display: flex;
+    justify-content: center;
+    width: 100%;
   }
   .list-container > * {
     flex-basis: 400px;
   }
   .list-group-k {
-    display: flex;
-    flex-wrap: wrap;
-    justify-content: space-around;
+    flex-basis: 600px;
   }
   .list-group-item {
+    display: flex;
+    justify-content: space-between;
     text-transform: uppercase;
-    flex-basis: 550px;
+    /* flex-basis: 550px; */
   }
   .link {
     color: gray;

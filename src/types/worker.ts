@@ -14,3 +14,18 @@ export interface Worker {
   part: string;
   done: boolean;
 }
+
+interface T_And_TE {
+  name: string;
+  uid: number;
+  dateReceived: string;
+  dateReturned: string;
+}
+
+export interface Transcriber extends T_And_TE {
+  type: 'T';
+}
+
+export interface TranscriptEditor extends T_And_TE {
+  type: 'TE';
+}

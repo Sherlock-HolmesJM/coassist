@@ -1,20 +1,18 @@
-import { Worker } from './worker';
+import { Transcriber, TranscriptEditor, Worker } from './worker';
 
 export interface MessageI {
   uid: number;
   name: string;
   status: MessageStatus;
-  dateReceived: string;
-  dateReturned: string;
   category: 'sermon';
-  tuid: number;
-  teuid: number;
+  transcriber: Transcriber | undefined;
+  transcriptEditor: TranscriptEditor | undefined;
   size: number;
   duration: number;
   workers: Worker[];
   transcribed: 'yes' | 'in-progress' | 'no';
   edited: 'yes' | 'in-progress' | 'no';
-  parts: number;
+  splits: number;
 }
 
 export interface Messages {

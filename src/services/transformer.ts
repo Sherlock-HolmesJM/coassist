@@ -29,13 +29,15 @@ export const objectToArray = <G, T>(object: G): T[] => {
 };
 
 export const transform = (data: ServerState) => {
+  if (!data) return null;
+
   const { messages: msgs, members: membs } = data;
 
   let messages: MessageI[] = [];
   let members: MemberI[] = [];
 
-  if (members) members = objectToArray<Members, MemberI>(membs);
-  if (messages) {
+  if (membs) members = objectToArray<Members, MemberI>(membs);
+  if (msgs) {
     messages = objectToArray<Messages, MessageI>(msgs);
     messages.forEach(
       (m) =>

@@ -13,7 +13,7 @@ import Report from './report';
 
 export interface Props {}
 
-const Home: React.FC<Props> = (props) => {
+const Home: React.FC<Props> = () => {
   const { collatorName, groupName, dispatch, spin } = useContext(context);
   const [report, setReport] = useState(false);
 
@@ -29,9 +29,8 @@ const Home: React.FC<Props> = (props) => {
 
   const handleReload = () => {
     dispatch(toggleSpin(true));
-    db.getData().then((d) => {
-      dispatch(toggleSpin(false));
-      if (d) dispatch(setState(d as State));
+    db.getData().then((data) => {
+      dispatch(setState(data as State));
     });
   };
 
@@ -107,8 +106,7 @@ const Home: React.FC<Props> = (props) => {
 const Section = styled.section`
   .header {
     display: flex;
-    justify-content: center;
-    flex-wrap: wrap;
+    justify-content: space-evenly;
     border-bottom: 1px groove gray;
   }
   .header-content {
@@ -116,10 +114,10 @@ const Section = styled.section`
     text-align: center;
   }
   .header-title {
-    font-size: clamp(1.2rem, 5vw, 2.5rem);
+    font-size: clamp(1.2rem, 4vw, 2.5rem);
   }
   .header-welcome {
-    font-size: clamp(1rem, 4vw, 1.5rem);
+    font-size: clamp(0.8rem, 3vw, 1.5rem);
     color: gray;
   }
   .input-text {
@@ -133,6 +131,7 @@ const Section = styled.section`
     border-radius: 10px;
     display: flex;
     justify-content: center;
+    border-radius: 50%;
   }
 
   .main {
@@ -144,8 +143,7 @@ const Section = styled.section`
   }
   .list-group {
     margin-bottom: 20px;
-    width: min(400px, 100%);
-    // margin: 20px;
+    width: min(90vw, 310px);
   }
   .list-group * {
     text-transform: capitalize;

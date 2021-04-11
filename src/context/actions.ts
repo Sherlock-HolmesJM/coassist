@@ -2,9 +2,15 @@ import { MemberI, MessageI } from '../types';
 import { State } from './context';
 import * as t from './types';
 
-export const setState = (data: State) => ({ type: t.SET_STATE, paylaod: data });
+export const setState = (data: State): t.SetState => ({
+  type: t.SET_STATE,
+  payload: data,
+});
 
-export const toggleSpin = (spin: boolean) => ({ type: t.SPIN, payload: spin });
+export const toggleSpin = (spin: boolean): t.Spin => ({
+  type: t.SPIN,
+  payload: spin,
+});
 
 export const setCG = (collatorName: string, groupName: string): t.SetCG => ({
   type: t.SET_CG,

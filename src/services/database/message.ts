@@ -8,7 +8,7 @@ export const setMessage = (message: MessageI) =>
     .database()
     .ref(path() + 'messages/' + message.uid)
     .set(message)
-    .catch((e) => console.log(e.message));
+    .catch((e) => alert(e.message));
 
 export const updateMessages = () => {};
 
@@ -16,12 +16,8 @@ export const updateMessage = (message: MessageI) => {
   firebase
     .database()
     .ref(path() + 'messages/' + message.uid)
-    .update({
-      status: message.status,
-      edited: message.edited,
-      transcribed: message.transcribed,
-    })
-    .catch((e) => console.log(e.message));
+    .update(message)
+    .catch((e) => alert(e.message));
 };
 
 export const removeMessage = (muid: number) =>
@@ -29,4 +25,4 @@ export const removeMessage = (muid: number) =>
     .database()
     .ref(path() + 'messages/' + muid)
     .remove()
-    .catch((e) => console.log(e.message));
+    .catch((e) => alert(e.message));

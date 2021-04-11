@@ -2,7 +2,7 @@ import React, { PureComponent, ReactNode } from 'react';
 import firebase from 'firebase/app';
 import 'firebase/auth';
 import { MessageI, MemberI } from '../types';
-import { db } from '../services';
+import { getData } from '../services';
 import { AllActions } from './types';
 import { RouteComponentProps, withRouter } from 'react-router';
 import { reducer } from './reducer';
@@ -46,13 +46,14 @@ class Provider extends PureComponent<Props, State> {
 
   componentDidMount() {
     firebase.auth().onAuthStateChanged((user) => {
-      if (user) {
-        db.getData().then((data) => {
-          if (data) this.setState({ ...this.state, ...data, spin: false });
-        });
-        if (this.props.location.pathname === '/')
-          this.props.history.replace('/home');
-      } else this.props.history.replace('/');
+      if (!user) return this.props.history.replace('/');
+
+      getData().then((data) => {
+        this.setState({ ...this.state, ...data, spin: false });
+      });
+
+      if (this.props.location.pathname === '/')
+        this.props.history.replace('/home');
     });
   }
 
@@ -65,5 +66,5 @@ class Provider extends PureComponent<Props, State> {
   }
 }
 
-export default withRouter(Provider);
 export { context };
+export default withRouter(Provider);

@@ -9,10 +9,17 @@ export const getData = () =>
     .ref(path())
     .get()
     .then((r) => transform(r.val()))
-    .catch((e) => null);
+    .catch((e) => {
+      alert(e.message);
+      return null;
+    });
 
 export const updateCGNames = (collatorName: string, groupName: string) =>
-  firebase.database().ref(path()).update({
-    collatorName,
-    groupName,
-  });
+  firebase
+    .database()
+    .ref(path())
+    .update({
+      collatorName,
+      groupName,
+    })
+    .catch((e) => alert(e.message));

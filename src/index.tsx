@@ -4,7 +4,7 @@ import firebase from 'firebase/app';
 // import reportWebVitals from './reportWebVitals';
 import { BrowserRouter } from 'react-router-dom';
 import Provider from './context/context';
-import config from './services/config';
+import { config } from './services';
 import './index.css';
 import App from './App';
 

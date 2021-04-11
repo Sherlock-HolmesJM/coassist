@@ -17,9 +17,10 @@ const Loader: React.FC<LoaderProps> = (props) => {
 
 const Div = styled.div`
   position: absolute;
+  width: 100%;
 
   img {
-    width: 110px;
+    width: 100%;
   }
 `;
 
