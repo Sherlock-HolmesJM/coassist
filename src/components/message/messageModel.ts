@@ -6,6 +6,8 @@ const updateTorTE = (message: MessageI, ts: Worker[], tes: Worker[]) => {
   const { length: tel } = tes;
 
   message.transcriptEditor.name = tel === 1 ? tes[0].name : 'TEs';
+  message.transcriber.name = tl === 1 ? ts[0].name : 'Ts';
+
   if (message.status === 'done') {
     message.transcriptEditor.dateReturned = new Date().toJSON();
   } else {
@@ -13,7 +15,6 @@ const updateTorTE = (message: MessageI, ts: Worker[], tes: Worker[]) => {
     message.transcriptEditor.dateIssued = dateIssued ?? new Date().toJSON();
   }
 
-  message.transcriber.name = tl === 1 ? ts[0].name : 'Ts';
   if (message.status === 'transcribed') {
     message.transcriber.dateReturned = new Date().toJSON();
   } else {
