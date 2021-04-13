@@ -15,17 +15,18 @@ export interface Worker {
   done: boolean;
 }
 
-interface T_And_TE {
+export interface T_And_TE {
   name: string;
   uid: number;
-  dateReceived: string;
+  dateIssued: string;
   dateReturned: string;
+  type: 'T' | 'TE';
 }
 
-export interface Transcriber extends T_And_TE {
-  type: 'T';
-}
-
-export interface TranscriptEditor extends T_And_TE {
-  type: 'TE';
-}
+export const createTorTE = (type: 'T' | 'TE'): T_And_TE => ({
+  name: '',
+  uid: 1,
+  dateIssued: '',
+  dateReturned: '',
+  type,
+});

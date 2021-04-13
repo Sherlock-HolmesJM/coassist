@@ -1,9 +1,26 @@
 import { MemberI, MemberType, MessageI, Worker } from '../../types';
 import { capitalize } from '../../utils';
 
-// export function getWorkers(members: MemberI[], message: string) {
-//   return members.filter((m) => m.works.find((w) => w.name === message));
-// }
+const updateTorTE = (message: MessageI, ts: Worker[], tes: Worker[]) => {
+  const { length: tl } = ts;
+  const { length: tel } = tes;
+
+  message.transcriptEditor.name = tel === 1 ? tes[0].name : 'TEs';
+  if (message.status === 'done') {
+    message.transcriptEditor.dateReturned = new Date().toJSON();
+  } else {
+    const { dateIssued } = message.transcriptEditor;
+    message.transcriptEditor.dateIssued = dateIssued ?? new Date().toJSON();
+  }
+
+  message.transcriber.name = tl === 1 ? ts[0].name : 'Ts';
+  if (message.status === 'transcribed') {
+    message.transcriber.dateReturned = new Date().toJSON();
+  } else {
+    const { dateIssued } = message.transcriber;
+    message.transcriber.dateIssued = dateIssued ?? new Date().toJSON();
+  }
+};
 
 export const updateStatus = (message: MessageI) => {
   const { workers } = message;
@@ -24,6 +41,7 @@ export const updateStatus = (message: MessageI) => {
     tes.length === 0 ? 'no' : wdte === tes.length ? 'yes' : 'in-progress';
 
   const worker = workers.find((w) => w.done === false);
+
   message.status =
     message.transcribed === 'yes' && message.edited === 'yes'
       ? 'done'
@@ -32,6 +50,8 @@ export const updateStatus = (message: MessageI) => {
       : message.transcribed === 'yes'
       ? 'transcribed'
       : 'undone';
+
+  updateTorTE(message, ts, tes);
 };
 
 export const getNewMembers = (member: MemberI, members: MemberI[]) => {

@@ -8,9 +8,7 @@ import { MemberI, MessageI, Worker } from '../../types';
 import { db } from '../../services';
 import * as mm from './messageModel';
 
-interface Props {}
-
-function Message(props: Props) {
+function Message() {
   const { members, dispatch, messages } = useContext(context);
   const msgUID = useParams<{ slug: string }>().slug.replace(':', '');
 
@@ -68,12 +66,25 @@ function Message(props: Props) {
   };
 
   const handleMark = (worker: Worker) => {
-    const mem = members.find((m) => m.uid === worker.memuid);
-    if (!mem) return;
+    const obj = members.find((m) => m.uid === worker.memuid);
+    if (!obj) return;
 
     const wkr: Worker = { ...worker, done: !worker.done };
 
-    update(mem, wkr);
+    const newMessage: MessageI = { ...message };
+    newMessage.workers = newMessage.workers.filter((w) => w.uid !== worker.uid);
+    newMessage.workers.push(worker);
+    mm.updateStatus(newMessage);
+
+    const newMessages = mm.getNewMessages(newMessage, messages);
+    const mem = {
+      ...obj,
+      free: mm.getMemberStatus(worker.memuid, newMessages),
+    };
+    const newMembers = mm.getNewMembers(mem, members);
+    dispatch(setMM(newMessages, newMembers));
+    db.updateMember(mem);
+    db.updateMessage(newMessage);
     db.setWorker(wkr);
   };
 
@@ -113,27 +124,15 @@ function Message(props: Props) {
     db.setWorker(newWorker);
   };
 
-  const update = (member: MemberI, worker: Worker) => {
-    const newMessage: MessageI = { ...message };
-    newMessage.workers = newMessage.workers.filter((w) => w.uid !== worker.uid);
-    newMessage.workers.push(worker);
-    mm.updateStatus(newMessage);
+  const update = (member: MemberI, worker: Worker) => {};
 
-    const newMessages = mm.getNewMessages(newMessage, messages);
-    const mem = {
-      ...member,
-      free: mm.getMemberStatus(worker.memuid, newMessages),
-    };
-    const newMembers = mm.getNewMembers(mem, members);
-    dispatch(setMM(newMessages, newMembers));
-    db.updateMember(mem);
-    db.updateMessage(newMessage);
+  const parseInput = (value: string) => {
+    return value.slice(filename.length, value.length);
   };
 
-  const parseInput = (value: string) =>
-    value.slice(filename.length, value.length);
-  const getPart = () =>
-    parseInput(getSplit()) === '' ? message.name : getSplit();
+  const getPart = () => {
+    return parseInput(getSplit()) === '' ? message.name : getSplit();
+  };
 
   return (
     <Section>
@@ -152,6 +151,7 @@ function Message(props: Props) {
             onChange={(e) => setSplit(filename + parseInput(e.target.value))}
             required
           />
+
           <select required className='form-select' ref={workerRef}>
             {freeMembers.map((m, i) => (
               <option key={i} value={m.uid}>

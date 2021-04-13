@@ -1,16 +1,13 @@
-import React, { useContext, useRef } from 'react';
+import React, { useContext, useRef, useState } from 'react';
 import styled from 'styled-components';
 import { Link } from 'react-router-dom';
 import { capitalize } from '../../utils';
 import { context } from '../../context/context';
 import { setMessages, setMM } from '../../context/actions';
-import { MessageI, MessageStatus } from '../../types';
+import { createTorTE, MessageI, MessageStatus, T_And_TE } from '../../types';
 import { db } from '../../services';
 import { getMemberStatus } from '../message/messageModel';
 import { ClickBadge } from '../../commons/badge';
-import { Transcriber, TranscriptEditor } from '../../types/worker';
-
-// interface Props {}
 
 function Assignment() {
   const { dispatch, messages, members } = useContext(context);
@@ -19,6 +16,8 @@ function Assignment() {
   const hRef = useRef<HTMLInputElement>(null);
   const mRef = useRef<HTMLInputElement>(null);
   const sRef = useRef<HTMLInputElement>(null);
+  const splitRef = useRef<HTMLSelectElement>(null);
+  const [showform, setShowform] = useState(false);
 
   const sorted = messages.sort((a, b) => b.status.localeCompare(a.status));
 
@@ -34,6 +33,10 @@ function Assignment() {
       : status === 'in-progress'
       ? 'warning'
       : 'success';
+
+  const getSplitLength = () => {
+    return splitRef.current ? +splitRef.current.value : 30;
+  };
 
   const getDuration = () => {
     const h = hRef.current ? +hRef.current.value : 0;
@@ -57,17 +60,19 @@ function Assignment() {
       workers: [],
       category: 'sermon',
       duration: getDuration(),
-      transcriber: {} as Transcriber,
-      transcriptEditor: {} as TranscriptEditor,
+      transcriber: createTorTE('T'),
+      transcriptEditor: createTorTE('TE'),
       size: sizeRef.current ? +sizeRef.current.value : 1,
       splits: 1,
       transcribed: 'no',
       edited: 'no',
+      splitLength: getSplitLength(),
+      originalLength: `${hRef.current?.value}:${mRef.current?.value}:${sRef.current?.value}`,
     };
 
-    const newMessages = [...messages, message];
+    const list = [...messages, message];
 
-    dispatch(setMessages(newMessages));
+    dispatch(setMessages(list));
     fileRef.current?.focus();
     if (fileRef.current) fileRef.current.value = '';
     db.setMessage(message);
@@ -124,69 +129,108 @@ function Assignment() {
   };
 
   return (
-    <Section>
+    <Section showform={showform}>
       <header className='header'>
         <nav className='nav'>
           <Link to='/home' className='btn btn-link'>
             Back
           </Link>
+          <button className='btn btn-primary' onClick={() => setShowform(true)}>
+            New Message
+          </button>
         </nav>
-        <form onSubmit={handleSubmit} className='form'>
-          <input
-            className='form-control'
-            type='text'
-            placeholder='filename'
-            required
-            ref={fileRef}
-          />
-          <div className='form-control duration-holder'>
-            <p style={{ marginRight: '10px' }}>Duration (H:M:S)</p>
-            <input
-              type='number'
-              min='0'
-              max='12'
-              placeholder='00'
-              data-index='1'
-              ref={hRef}
-              required
-              className='duration'
-              onChange={handleChangeFocus}
-            />
-            :
-            <input
-              type='number'
-              min='0'
-              max='60'
-              placeholder='00'
-              data-index='2'
-              ref={mRef}
-              required
-              className='duration'
-              onChange={handleChangeFocus}
-            />
-            :
-            <input
-              type='number'
-              min='0'
-              max='60'
-              placeholder='00'
-              data-index='3'
-              ref={sRef}
-              required
-              className='duration'
-              onChange={handleChangeFocus}
-            />
-          </div>
-          <input
-            className='form-control size'
-            type='number'
-            placeholder='size (MB)'
-            ref={sizeRef}
-            required
-            min='0'
-          />
-          <input className='btn btn-primary' type='submit' value='Add' />
-        </form>
+        <div className='header-form-holder'>
+          <form onSubmit={handleSubmit} className='form'>
+            <div className='m-2'>
+              <input
+                className='form-control'
+                type='text'
+                placeholder='filename'
+                required
+                ref={fileRef}
+              />
+            </div>
+            <div className='m-2'>
+              <div className='form-control duration-holder'>
+                <p
+                  onClick={() => hRef.current?.focus()}
+                  style={{ marginRight: '10px' }}
+                >
+                  Duration (H:M:S)
+                </p>
+                <input
+                  type='number'
+                  min='0'
+                  max='12'
+                  placeholder='00'
+                  data-index='1'
+                  ref={hRef}
+                  required
+                  className='duration'
+                  onChange={handleChangeFocus}
+                />
+                :
+                <input
+                  type='number'
+                  min='0'
+                  max='60'
+                  placeholder='00'
+                  data-index='2'
+                  ref={mRef}
+                  required
+                  className='duration'
+                  onChange={handleChangeFocus}
+                />
+                :
+                <input
+                  type='number'
+                  min='0'
+                  max='60'
+                  placeholder='00'
+                  data-index='3'
+                  ref={sRef}
+                  required
+                  className='duration'
+                  onChange={handleChangeFocus}
+                />
+              </div>
+            </div>
+            <div className='m-2'>
+              <input
+                className='form-control size'
+                type='number'
+                placeholder='size (MB)'
+                ref={sizeRef}
+                required
+                min='0'
+              />
+            </div>
+            <div className='m-2'>
+              <div className='form-control header-splitlength-div'>
+                <label
+                  className='header-splitlength-label'
+                  htmlFor='splitlength'
+                >
+                  Split length:
+                </label>
+                <select className='select' id='splitlength' ref={splitRef}>
+                  <option value='30'>30 Mins</option>
+                  <option value='60'>60 Mins</option>
+                </select>
+              </div>
+            </div>
+            <div className='m-2 btn-group'>
+              <input className='btn btn-primary' type='submit' value='Add' />
+              <input className='btn btn-primary' type='button' value='Update' />
+              <input
+                className='btn btn-primary'
+                type='button'
+                value='Close'
+                onClick={() => setShowform(false)}
+              />
+            </div>
+          </form>
+        </div>
       </header>
       <div className='bg-container'>
         <div className='badge badge-secondary bg-summary'>
@@ -218,19 +262,30 @@ function Assignment() {
           ))}
         </div>
       </main>
-      <div className='hide'></div>
     </Section>
   );
 }
 
-const Section = styled.section`
-  // position: relative;
+const Section = styled.section<{ showform: boolean }>`
   .header {
     display: flex;
     padding: 10px;
     margin: 10px;
     background: gray;
     flex-wrap: wrap;
+  }
+  .header-form-holder {
+    position: relative;
+    display: ${({ showform }) => (showform ? 'flex' : 'none')};
+    justify-content: center;
+    width: 100%;
+  }
+  .header-splitlength-div {
+    display: flex;
+  }
+  .header-splitlength-label {
+    display: block;
+    margin-right: 10px;
   }
   .bg-container {
     display: flex;
@@ -245,10 +300,14 @@ const Section = styled.section`
     color: white;
   }
   .form {
+    position: absolute;
+    top: 20px;
     display: flex;
-    flex-wrap: wrap;
-    justify-content: center;
-    width: 100%;
+    flex-direction: column;
+    width: min(94vw, 500px);
+    background-color: gray;
+    padding: 5px;
+    z-index: 111;
   }
   .form-control {
     flex-basis: clamp(310px, 50%, 400px);
@@ -275,9 +334,7 @@ const Section = styled.section`
     display: flex;
     justify-content: center;
     width: 100%;
-  }
-  .list-container > * {
-    flex-basis: 400px;
+    padding: 10px;
   }
   .list-group-k {
     flex-basis: 600px;
@@ -294,6 +351,13 @@ const Section = styled.section`
   }
   .link:visited {
     color: gray;
+  }
+  .select {
+    outline: none;
+    border-radius: 5px;
+    color: gray;
+    border: none;
+    margin: 0;
   }
 `;
 
