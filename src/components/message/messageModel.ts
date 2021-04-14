@@ -1,25 +1,36 @@
-import { MemberI, MemberType, MessageI, Worker } from '../../types';
+import {
+  createTorTE,
+  MemberI,
+  MemberType,
+  MessageI,
+  Worker,
+} from '../../types';
 import { capitalize } from '../../utils';
 
 const updateTorTE = (message: MessageI, ts: Worker[], tes: Worker[]) => {
   const { length: tl } = ts;
   const { length: tel } = tes;
 
+  if (!message.transcriber) message.transcriber = createTorTE('T');
+  if (!message.transcriptEditor) message.transcriptEditor = createTorTE('TE');
+
   message.transcriptEditor.name = tel === 1 ? tes[0].name : 'TEs';
   message.transcriber.name = tl === 1 ? ts[0].name : 'Ts';
 
   if (message.status === 'done') {
-    message.transcriptEditor.dateReturned = new Date().toJSON();
+    const { dateReturned } = message.transcriptEditor;
+    message.transcriptEditor.dateReturned = dateReturned || new Date().toJSON();
   } else {
     const { dateIssued } = message.transcriptEditor;
-    message.transcriptEditor.dateIssued = dateIssued ?? new Date().toJSON();
+    message.transcriptEditor.dateIssued = dateIssued || new Date().toJSON();
   }
 
-  if (message.status === 'transcribed') {
-    message.transcriber.dateReturned = new Date().toJSON();
+  if (message.transcribed === 'yes') {
+    const { dateReturned } = message.transcriber;
+    message.transcriber.dateReturned = dateReturned || new Date().toJSON();
   } else {
     const { dateIssued } = message.transcriber;
-    message.transcriber.dateIssued = dateIssued ?? new Date().toJSON();
+    message.transcriber.dateIssued = dateIssued || new Date().toJSON();
   }
 };
 

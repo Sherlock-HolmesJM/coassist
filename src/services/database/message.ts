@@ -13,10 +13,13 @@ export const setMessage = (message: MessageI) =>
 export const updateMessages = () => {};
 
 export const updateMessage = (message: MessageI) => {
+  const m = { ...message, workers: [] } as any;
+  delete m.workers;
+
   firebase
     .database()
     .ref(path() + 'messages/' + message.uid)
-    .update(message)
+    .update(m)
     .catch((e) => alert(e.message));
 };
 

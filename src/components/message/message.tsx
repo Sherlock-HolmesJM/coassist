@@ -4,7 +4,7 @@ import styled from 'styled-components';
 import { context } from '../../context/context';
 import { setMessages, setMM } from '../../context/actions';
 import List from './list';
-import { MemberI, MessageI, Worker } from '../../types';
+import { MessageI, Worker } from '../../types';
 import { db } from '../../services';
 import * as mm from './messageModel';
 
@@ -72,8 +72,8 @@ function Message() {
     const wkr: Worker = { ...worker, done: !worker.done };
 
     const newMessage: MessageI = { ...message };
-    newMessage.workers = newMessage.workers.filter((w) => w.uid !== worker.uid);
-    newMessage.workers.push(worker);
+    const index = newMessage.workers.indexOf(worker);
+    newMessage.workers[index] = wkr;
     mm.updateStatus(newMessage);
 
     const newMessages = mm.getNewMessages(newMessage, messages);
@@ -83,6 +83,7 @@ function Message() {
     };
     const newMembers = mm.getNewMembers(mem, members);
     dispatch(setMM(newMessages, newMembers));
+
     db.updateMember(mem);
     db.updateMessage(newMessage);
     db.setWorker(wkr);
@@ -124,7 +125,7 @@ function Message() {
     db.setWorker(newWorker);
   };
 
-  const update = (member: MemberI, worker: Worker) => {};
+  // const update = (member: MemberI, worker: Worker) => {};
 
   const parseInput = (value: string) => {
     return value.slice(filename.length, value.length);

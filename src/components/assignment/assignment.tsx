@@ -4,7 +4,7 @@ import { Link } from 'react-router-dom';
 import { capitalize } from '../../utils';
 import { context } from '../../context/context';
 import { setMessages, setMM } from '../../context/actions';
-import { createTorTE, MessageI, MessageStatus, T_And_TE } from '../../types';
+import { createTorTE, MessageI, MessageStatus } from '../../types';
 import { db } from '../../services';
 import { getMemberStatus } from '../message/messageModel';
 import { ClickBadge } from '../../commons/badge';
