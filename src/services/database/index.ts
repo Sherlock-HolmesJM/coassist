@@ -1,15 +1,24 @@
 import firebase from 'firebase/app';
 import 'firebase/auth';
+import 'firebase/storage';
+
 import * as mem from './member';
 import * as msg from './message';
 import * as wrk from './worker';
 import * as data from './data';
 import { MemberI, MessageI, Worker } from '../../types';
 
-export const db = { ...mem, ...msg, ...wrk, ...data };
-
 export const uid = () => firebase.auth().currentUser?.uid;
 export const path = () => '/coassist/' + uid() + '/data/';
+
+const getTemplate = () => {
+  return firebase
+    .storage()
+    .ref('coassist/template.xlsx')
+    .getDownloadURL()
+    .then((url) => url)
+    .catch((e) => console.log(e));
+};
 
 export const chainupdateMMW = (
   worker: Worker,
@@ -20,3 +29,5 @@ export const chainupdateMMW = (
   msg.updateMessage(message);
   wrk.setWorker(worker);
 };
+
+export const db = { ...mem, ...msg, ...wrk, ...data, getTemplate };

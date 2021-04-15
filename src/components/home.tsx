@@ -9,13 +9,30 @@ import { setCG, setState, toggleSpin } from '../context/actions';
 import Summary from './summary';
 import Loader from '../commons/loader';
 import { db } from '../services/database';
+import { getExcel } from '../services/report';
 import Report from './report';
+import axios from 'axios';
+import { saveAs } from 'file-saver';
 
 export interface Props {}
 
 const Home: React.FC<Props> = () => {
-  const { collatorName, groupName, dispatch, spin } = useContext(context);
+  const { collatorName, groupName, dispatch, spin, messages } = useContext(
+    context
+  );
   const [report, setReport] = useState(false);
+
+  const handleExcelReport = async () => {
+    const url = 'http://localhost:5000/api/excel';
+    // const url = 'http://localhost:8888/api/excel';
+    try {
+      const { data } = await axios.get(url);
+      const buffer = await getExcel(data.data, messages, collatorName);
+      saveAs(new Blob([buffer]), `${groupName}_${collatorName}.xlsx`);
+    } catch (e) {
+      console.error(e);
+    }
+  };
 
   const handleChange = (e: any, collatorName: string, groupName: string) => {
     if (e.key === 'Enter') {
@@ -89,6 +106,12 @@ const Home: React.FC<Props> = () => {
             className='list-group-item list-group-item-action'
           >
             report
+          </button>
+          <button
+            className='list-group-item list-group-item-action'
+            onClick={handleExcelReport}
+          >
+            excel report
           </button>
           <button
             onClick={signOut}
