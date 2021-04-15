@@ -14,6 +14,7 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
 
   const messagesNotAllocated = messages.filter((m) => m.status === 'undone');
   const messagesInProgress = messages.filter((m) => m.status === 'in-progress');
+  console.log(messagesInProgress);
 
   let audiosTranscribed: Worker[] = [];
   let audiosInProgress: Worker[] = [];
@@ -45,26 +46,6 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
         <h5 className='uppercase title'>
           {groupName} report - {collatorName}
         </h5>
-        <h6 className='list-title'>Transcripts Being Edited</h6>
-        <ol>
-          {transcriptsInProgress.map((w) => (
-            <li key={w.part}>
-              <span className='uppercase'>{w.part}</span> --&gt;{' '}
-              <span className='ul-worker'>{w.name}</span>
-            </li>
-          ))}
-        </ol>
-      </div>
-      <div>
-        <h6 className='list-title'>Audios Being Transcribed</h6>
-        <ol>
-          {audiosInProgress.map((w) => (
-            <li key={w.part}>
-              <span className='uppercase'>{w.part}</span> --&gt;{' '}
-              <span className='ul-worker'>{w.name}</span>
-            </li>
-          ))}
-        </ol>
       </div>
       <div>
         <h6 className='list-title'>Audios Not Allocated</h6>
@@ -86,6 +67,33 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
           ))}
         </ol>
       </div>
+      <div>
+        <h5>DETAILS FOR THOSE IN-PROGRESS</h5>
+        <ol>
+          {messagesInProgress.map((m) => {
+            return (
+              <li key={m.uid}>
+                <h6 className='list-title'>{m.name.toUpperCase()}</h6>
+                <h6>Total hours: {m.originalLength}</h6>
+                <h6>Total Hours Not Completed: ''</h6>
+                <ol>
+                  {m.workers
+                    .filter((w) => !w.done)
+                    .map((w) => (
+                      <li key={w.uid}>
+                        <span className='uppercase'>
+                          {w.name} - {w.type}
+                        </span>{' '}
+                        <br />
+                        <span>{w.part.toUpperCase()}; 30 Minutes; Working</span>
+                      </li>
+                    ))}
+                </ol>
+              </li>
+            );
+          })}
+        </ol>
+      </div>
     </Div>
   );
 };
@@ -100,10 +108,10 @@ const Div = styled.div`
   .ul-worker {
     text-transform: capitalize;
   }
-  .list-title {
+  /* .list-title {
     margin-top: 20px;
     margin-bottom: 20px;
-  }
+  } */
 `;
 
 export default Report;
