@@ -13,6 +13,7 @@ import { getExcel } from '../services/report';
 import Report from './report';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
+import { capitalize } from '../utils';
 
 export interface Props {}
 
@@ -24,13 +25,15 @@ const Home: React.FC<Props> = () => {
 
   const handleExcelReport = async () => {
     const url = 'http://localhost:5000/api/excel';
-    // const url = 'http://localhost:8888/api/excel';
     try {
       const { data } = await axios.get(url);
       const buffer = await getExcel(data.data, messages, collatorName);
-      saveAs(new Blob([buffer]), `${groupName}_${collatorName}.xlsx`);
+      saveAs(
+        new Blob([buffer]),
+        `${capitalize(groupName)}_${capitalize(collatorName)}.xlsx`
+      );
     } catch (e) {
-      console.error(e);
+      alert(e);
     }
   };
 
