@@ -24,7 +24,8 @@ const Home: React.FC<Props> = () => {
   const [report, setReport] = useState(false);
 
   const handleExcelReport = async () => {
-    const url = 'http://localhost:5000/api/excel';
+    // const url = 'http://localhost:5000/api/excel';
+    const url = 'https://coassist.herokuapp.com/api/excel';
     try {
       const { data } = await axios.get(url);
       const buffer = await getExcel(data.data, messages, collatorName);
