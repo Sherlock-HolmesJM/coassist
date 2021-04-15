@@ -14,6 +14,7 @@ import Report from './report';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 import { capitalize } from '../utils';
+import { puff } from '../media';
 
 export interface Props {}
 
@@ -22,17 +23,20 @@ const Home: React.FC<Props> = () => {
     context
   );
   const [report, setReport] = useState(false);
+  const [selfspin, setSpin] = useState(false);
 
   const handleExcelReport = async () => {
     // const url = 'http://localhost:5000/api/excel';
     const url = 'https://coassist.herokuapp.com/api/excel';
     try {
+      setSpin(true);
       const { data } = await axios.get(url);
       const buffer = await getExcel(data.data, messages, collatorName);
       saveAs(
         new Blob([buffer]),
         `${capitalize(groupName)}_${capitalize(collatorName)}.xlsx`
       );
+      setSpin(false);
     } catch (e) {
       alert(e);
     }
@@ -57,6 +61,7 @@ const Home: React.FC<Props> = () => {
 
   return (
     <Section>
+      <Loader spin={selfspin} />
       <header className='header no-print'>
         <div className='header-content'>
           <h1 className='header-title'>Collator's Assistant</h1>
@@ -66,7 +71,7 @@ const Home: React.FC<Props> = () => {
         </div>
         <div className='bot'>
           <Lottie animationData={homeBot} onClick={handleReload} />
-          <Loader spin={spin} />
+          <img src={spin ? puff : ''} alt='' className='bot-loader' />
         </div>
       </header>
       <main className='main'>
@@ -88,10 +93,6 @@ const Home: React.FC<Props> = () => {
               handleChange(e, e.currentTarget.value.trim(), groupName)
             }
           />
-          {/* <input
-            type='file'
-            onChange={(e) => collectData(e, messages, collatorName)}
-          /> */}
           <Link
             to='/members'
             className='list-group-item list-group-item-action'
@@ -157,8 +158,13 @@ const Section = styled.section`
     background: gray;
     border-radius: 10px;
     display: flex;
+    align-items: center;
     justify-content: center;
     border-radius: 50%;
+  }
+  .bot-loader {
+    position: absolute;
+    width: 100%;
   }
 
   .main {

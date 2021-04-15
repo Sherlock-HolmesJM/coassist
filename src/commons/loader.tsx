@@ -9,18 +9,22 @@ const Loader: React.FC<LoaderProps> = (props) => {
   const { spin } = props;
 
   return (
-    <Div style={{ display: spin ? 'block' : 'none' }}>
+    <Div style={{ display: spin ? 'flex' : 'none' }}>
       <img src={puff} alt='loader' />
     </Div>
   );
 };
 
 const Div = styled.div`
-  position: absolute;
+  position: fixed;
+  top: 25px;
   width: 100%;
+  height: 70px;
+  justify-content: center;
+  align-items: center;
 
   img {
-    width: 100%;
+    width: 70px;
   }
 `;
 
