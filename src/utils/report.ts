@@ -1,7 +1,22 @@
-import { MessageI, T_And_TE } from '../types';
-import { columns } from './breakdown';
 import Excel from 'exceljs';
-import { range, summary, capitalize } from '../utils';
+import { MessageI, T_And_TE } from '../types';
+import range from './range';
+import summary from './summary';
+import capitalize from './capitalize';
+
+const columns = [
+  { name: 'Collator', filterButton: true },
+  { name: 'Transcriber', filterButton: true },
+  { name: 'File Name', filterButton: true },
+  { name: 'Category', filterButton: true },
+  { name: 'Date Issued', filterButton: true },
+  { name: 'Size (MB)', filterButton: true },
+  { name: 'Duration (Mins)', filterButton: true },
+  { name: 'Date Returned', filterButton: true },
+  { name: 'Transcript Editor', filterButton: true },
+  { name: 'Date Issued [TE]', filterButton: true },
+  { name: 'Date Returned [TE]', filterButton: true },
+];
 
 function updateSummary(workbook, messages) {
   const sheet = workbook.getWorksheet('Summary');
@@ -39,7 +54,7 @@ function getFields(message: MessageI, collatorName: string) {
   ];
 }
 
-export async function getExcel(
+async function getExcel(
   buffer: Excel.Buffer,
   messages: MessageI[],
   collatorName: string
@@ -65,3 +80,6 @@ export async function getExcel(
 
   return await workbook.xlsx.writeBuffer();
 }
+
+export { getExcel };
+export default getExcel;

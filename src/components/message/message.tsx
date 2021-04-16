@@ -52,6 +52,7 @@ function Message() {
       msguid: message.uid,
       msgname: message.name,
       part: messagePart,
+      splitLength: 30,
       done: false,
     };
 
@@ -152,7 +153,12 @@ function Message() {
             onChange={(e) => setSplit(filename + parseInput(e.target.value))}
             required
           />
-
+          <input
+            className='form-control'
+            type='number'
+            placeholder='split length'
+            required
+          />
           <select required className='form-select' ref={workerRef}>
             {freeMembers.map((m, i) => (
               <option key={i} value={m.uid}>

@@ -32,3 +32,5 @@ export const summary = (messages: MessageI[]) => {
     },
   ];
 };
+
+export default summary;

@@ -75,6 +75,9 @@ const MembersComp: React.FC<MembersProps> = (props) => {
           <Link to='/home' className='btn btn-link'>
             Back
           </Link>
+          <button className='btn btn-primary' onClick={() => window.print()}>
+            Get PDF
+          </button>
         </nav>
         <form onSubmit={handleSubmit} className='form'>
           <input

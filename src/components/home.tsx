@@ -9,7 +9,7 @@ import { setCG, setState, toggleSpin } from '../context/actions';
 import Summary from './summary';
 import Loader from '../commons/loader';
 import { db } from '../services/database';
-import { getExcel } from '../services/report';
+import { getExcel } from '../utils/report';
 import Report from './report';
 import axios from 'axios';
 import { saveAs } from 'file-saver';

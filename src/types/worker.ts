@@ -13,6 +13,7 @@ export interface Worker {
   msgname: string;
   part: string;
   done: boolean;
+  splitLength: number;
 }
 
 export interface T_And_TE {

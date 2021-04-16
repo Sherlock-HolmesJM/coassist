@@ -41,7 +41,15 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
   );
 
   return (
-    <Div>
+    <Div id='report'>
+      <div className='no-print btn-print-div'>
+        <button
+          className='btn btn-primary btn-print'
+          onClick={() => window.print()}
+        >
+          Get PDF
+        </button>
+      </div>
       <div>
         <h5 className='uppercase title'>
           {groupName} report - {collatorName}
@@ -99,6 +107,10 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
 };
 
 const Div = styled.div`
+  .btn-print-div {
+    display: flex;
+    justify-content: flex-end;
+  }
   .title {
     margin-bottom: 40px;
   }
@@ -112,6 +124,11 @@ const Div = styled.div`
     margin-top: 20px;
     margin-bottom: 20px;
   } */
+  @media print {
+    .no-print {
+      display: none;
+    }
+  }
 `;
 
 export default Report;
