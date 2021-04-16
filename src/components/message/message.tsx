@@ -1,4 +1,4 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { Link, Redirect, useParams } from 'react-router-dom';
 import styled from 'styled-components';
 import { context } from '../../context/context';
@@ -12,14 +12,19 @@ function Message() {
   const { members, dispatch, messages } = useContext(context);
   const msgUID = useParams<{ slug: string }>().slug.replace(':', '');
 
+  const [showform, setForm] = useState(false);
+
   const splitRef = useRef<HTMLInputElement>(null);
   const workerRef = useRef<HTMLSelectElement>(null);
+  const splitLengthRef = useRef<HTMLInputElement>(null);
 
   const getSplit = () => splitRef.current?.value.trim().toLowerCase() ?? '';
   const getWUID = () => (workerRef.current ? +workerRef.current.value : 111);
   const setSplit = (split: string) => {
     if (splitRef.current) splitRef.current.value = split;
   };
+  const getSplitLength = () =>
+    splitLengthRef.current ? +splitLengthRef.current.value : 0;
 
   const freeMembers = members.filter((m) => m.active && m.free);
   const message = messages.find((m) => m.uid === +msgUID);
@@ -52,7 +57,7 @@ function Message() {
       msguid: message.uid,
       msgname: message.name,
       part: messagePart,
-      splitLength: 30,
+      splitLength: getSplitLength(),
       done: false,
     };
 
@@ -137,37 +142,81 @@ function Message() {
   };
 
   return (
-    <Section>
+    <Section showform={showform}>
       <header className='header'>
         <nav className='nav'>
           <Link to='/assignments' className='btn btn-link'>
             Back
           </Link>
         </nav>
-        <form onSubmit={handleSubmit} className='form'>
-          <input
-            className='form-control'
-            type='text'
-            placeholder='filename'
-            ref={splitRef}
-            onChange={(e) => setSplit(filename + parseInput(e.target.value))}
-            required
-          />
-          <input
-            className='form-control'
-            type='number'
-            placeholder='split length'
-            required
-          />
-          <select required className='form-select' ref={workerRef}>
-            {freeMembers.map((m, i) => (
-              <option key={i} value={m.uid}>
-                {`${m.name.toUpperCase()} - ${m.type}`}
-              </option>
-            ))}
-          </select>
-          <input className='btn btn-primary' type='submit' value='Add' />
-        </form>
+        <button className='btn btn-primary' onClick={() => setForm(true)}>
+          Assign Split
+        </button>
+        <div className='form-container'>
+          <form onSubmit={handleSubmit} className='form'>
+            <div className='m-2 form-close-btn-div'>
+              <button
+                type='button'
+                className='btn btn-primary'
+                onClick={() => setForm(false)}
+              >
+                X
+              </button>
+            </div>
+            <div className='m-2'>
+              <input
+                className='form-control'
+                type='text'
+                placeholder='filename'
+                ref={splitRef}
+                onChange={(e) =>
+                  setSplit(filename + parseInput(e.target.value))
+                }
+                required
+              />
+            </div>
+            <div className='m-2'>
+              <div className='form-control header-splitlength-div'>
+                <label className='header-label' htmlFor='splitlength'>
+                  Split length (Mins):
+                </label>
+                <input
+                  type='number'
+                  ref={splitLengthRef}
+                  className='header-splitlength'
+                  required
+                />
+              </div>
+            </div>
+            <div className='m-2'>
+              <div className='form-control'>
+                <label
+                  htmlFor='select-worker'
+                  className='header-label form-label'
+                >
+                  Worker:
+                </label>
+                <select
+                  required
+                  id='select-worker'
+                  className='form-select'
+                  ref={workerRef}
+                >
+                  {freeMembers
+                    .sort((a, b) => a.type.length - b.type.length)
+                    .map((m, i) => (
+                      <option key={i} value={m.uid}>
+                        {`${m.name.toUpperCase()} - ${m.type}`}
+                      </option>
+                    ))}
+                </select>
+              </div>
+            </div>
+            <div className='m-2 form-btn-div'>
+              <input className='btn btn-primary' type='submit' value='Add' />
+            </div>
+          </form>
+        </div>
       </header>
       <div className='container'>
         <List
@@ -191,7 +240,7 @@ function Message() {
   );
 }
 
-const Section = styled.section`
+const Section = styled.section<{ showform: boolean }>`
   .header {
     display: flex;
     padding: 10px;
@@ -205,16 +254,55 @@ const Section = styled.section`
   .container > * {
     flex-basis: 400px;
   }
-  .form {
-    display: flex;
-    flex-wrap: wrap;
+  .form-container {
+    position: relative;
+    display: ${({ showform }) => (showform ? 'flex' : 'none')};
     justify-content: center;
     width: 100%;
+  }
+  .form {
+    position: absolute;
+    top: 20px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    width: min(94vw, 500px);
+    background: gray;
+    margin: 10px;
+    z-index: 111;
+  }
+  .form-select {
+    outline: none;
+    border: none;
+    border-bottom: 1px solid gray;
+    color: gray;
+  }
+  .header-splitlength-div {
+    display: flex;
+  }
+  .header-label {
+    margin-right: 10px;
+  }
+  .header-splitlength {
+    outline: none;
+    border: none;
+    border-bottom: 1px solid gray;
+    width: 50px;
+    color: gray;
+    font-size: 18px;
   }
   .form-control {
     flex-basis: clamp(310px, 50%, 400px);
     text-transform: uppercase;
     border: 2px gray red;
+  }
+  .form-btn-div {
+    display: flex;
+    justify-content: center;
+  }
+  .form-close-btn-div {
+    display: flex;
+    justify-content: flex-end;
   }
 `;
 
