@@ -5,8 +5,8 @@ export interface FormProps {
 }
 
 const Form = styled.div`
-  position: absolute;
-  top: 1px;
+  position: fixed;
+  top: 13%;
   display: flex;
   flex-direction: column;
   justify-content: center;
@@ -54,6 +54,18 @@ const Form = styled.div`
   .form-close-btn-div {
     display: flex;
     justify-content: flex-end;
+  }
+  .header-splitText {
+    display: none;
+  }
+
+  @media screen and (max-width: 409px) {
+    .header-splitText {
+      display: inline-block;
+    }
+    .header-fullText {
+      display: none;
+    }
   }
 `;
 

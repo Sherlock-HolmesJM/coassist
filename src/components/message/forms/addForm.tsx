@@ -5,6 +5,7 @@ import * as mm from '../messageModel';
 import { context } from '../../../context/context';
 import { setMM } from '../../../context/actions';
 import { db } from '../../../services';
+import { clipText } from '../../../utils';
 
 export interface AddProps extends FormProps {
   showform: boolean;
@@ -89,7 +90,16 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
         </div>
         <div className='m-2'>
           <div className='form-control header-splitlength-div'>
-            <label className='header-label' htmlFor='splitlength'>
+            <label
+              className='header-label header-splitText'
+              htmlFor='splitlength'
+            >
+              {clipText(filename)}
+            </label>
+            <label
+              className='header-label header-fullText'
+              htmlFor='splitlength'
+            >
               {filename}
             </label>
             <input

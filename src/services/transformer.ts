@@ -17,15 +17,23 @@ export interface ServerState {
 type A = MemberI | Worker | MessageI;
 type O = Members | Workers | Messages;
 
+/**
+ *
+ * @param list of type MemberI | Worker | MessageI
+ * @returns converts an object to array using the uid as key
+ */
 export const arrayToObject = (list: A[]) => {
   const result: O = {};
-  list.forEach((m) => (result[m.uid] = m));
+  const newList = JSON.parse(JSON.stringify(list)) as A[];
+  newList.forEach((m) => (result[m.uid] = m));
+  console.log(list, ' list');
   return result;
 };
 
 export const objectToArray = <G, T>(object: G): T[] => {
   if (!object) return [];
-  return Object.entries(object).reduce((a: T[], n) => [...a, n[1]], []);
+  const newObject = JSON.parse(JSON.stringify(object)) as G;
+  return Object.entries(newObject).reduce((a: T[], n) => [...a, n[1]], []);
 };
 
 export const transform = (data: ServerState) => {

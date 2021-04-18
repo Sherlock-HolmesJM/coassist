@@ -12,9 +12,8 @@ export const setMessage = (message: MessageI) =>
     .catch((e) => alert(e.message));
 
 export const updateMessages = (messages: MessageI[]) => {
-  const arr = JSON.parse(JSON.stringify(messages));
-  arr.forEach((m) => delete m.workers);
-  const obj = arrayToObject(arr);
+  const obj = arrayToObject(messages) as any;
+  for (const key in obj) obj[key].workers = arrayToObject(obj[key].workers);
 
   firebase
     .database()

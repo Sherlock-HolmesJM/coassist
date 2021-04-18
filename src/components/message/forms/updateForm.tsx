@@ -5,6 +5,7 @@ import * as mm from '../messageModel';
 import { context } from '../../../context/context';
 import { setMessages } from '../../../context/actions';
 import { db } from '../../../services';
+import { clipText } from '../../../utils';
 
 interface UpdateProps extends FormProps {
   worker: Worker;
@@ -22,8 +23,9 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
   useEffect(() => {
     if (worker) {
       setSplit(worker.part.replace(filename, ''));
-      setSplitLength(worker.splitLength);
+      setSplitLength(worker.splitLength ?? 0);
     }
+    // eslint-disable-next-line
   }, [worker]);
 
   if (!worker) return null;
@@ -52,6 +54,7 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
 
     db.setWorker(newWorker);
     alert('Done');
+    setWorker(null);
   };
 
   return (
@@ -68,7 +71,16 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
         </div>
         <div className='m-2'>
           <div className='form-control header-splitlength-div'>
-            <label className='header-label' htmlFor='splitlength'>
+            <label
+              className='header-label header-splitText'
+              htmlFor='splitlength'
+            >
+              {clipText(filename)}
+            </label>
+            <label
+              className='header-label header-fullText'
+              htmlFor='splitlength'
+            >
               {filename}
             </label>
             <input
@@ -91,6 +103,7 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
               onChange={(e) => setSplitLength(+e.target.value)}
               value={splitLength}
               className='header-splitlength'
+              onFocus={(e) => e.currentTarget.select()}
               required
             />
           </div>

@@ -103,6 +103,7 @@ function Message() {
           onDelete={handleDelete}
           onUpdate={setWorker}
           onMark={handleMark}
+          length={message.originalLength}
         />
         <List
           workers={workers.filter((w) => w.done)}
@@ -111,6 +112,7 @@ function Message() {
           onDelete={handleDelete}
           onUpdate={setWorker}
           onMark={handleMark}
+          length={message.originalLength}
         />
       </div>
     </Section>

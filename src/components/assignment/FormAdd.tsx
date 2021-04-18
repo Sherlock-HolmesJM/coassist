@@ -136,6 +136,7 @@ const FormAdd: React.FC<FormProps> = (props) => {
             required
             className='duration'
             onChange={handleChangeFocus}
+            onFocus={(e) => e.currentTarget.select()}
           />
           :
           <input
@@ -148,6 +149,7 @@ const FormAdd: React.FC<FormProps> = (props) => {
             required
             className='duration'
             onChange={handleChangeFocus}
+            onFocus={(e) => e.currentTarget.select()}
           />
           :
           <input
@@ -160,6 +162,7 @@ const FormAdd: React.FC<FormProps> = (props) => {
             required
             className='duration'
             onChange={handleChangeFocus}
+            onFocus={(e) => e.currentTarget.select()}
           />
         </div>
       </div>
@@ -171,6 +174,7 @@ const FormAdd: React.FC<FormProps> = (props) => {
           ref={sizeRef}
           required
           min='0'
+          onFocus={(e) => e.currentTarget.select()}
         />
       </div>
       <div className='m-2 btn-group'>

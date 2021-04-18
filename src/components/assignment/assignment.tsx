@@ -20,6 +20,8 @@ function Assignment() {
   const undone = messages.filter((m) => m.status === 'undone').length;
   const done = messages.filter((m) => m.status === 'done').length;
   const inProgress = messages.filter((m) => m.status === 'in-progress').length;
+  const incomplete = messages.filter((m) => m.status === 'incomplete').length;
+  const transcribed = messages.filter((m) => m.status === 'transcribed').length;
 
   const getColor = (status: MessageStatus) =>
     status === 'done'
@@ -66,7 +68,26 @@ function Assignment() {
       </header>
       <div className='bg-container'>
         <div className='badge badge-secondary bg-summary'>
-          UN:IP:D - {undone}:{inProgress}:{done}
+          <div className='badge-content'>
+            <span>Undone:</span>
+            <span>{undone}</span>
+          </div>
+          <div className='badge-content'>
+            <span>Transcribed:</span>
+            <span>{transcribed}</span>
+          </div>
+          <div className='badge-content'>
+            <span>Incomplete:</span>
+            <span>{incomplete}</span>
+          </div>
+          <div className='badge-content'>
+            <span>In-progress:</span>
+            <span>{inProgress}</span>
+          </div>
+          <div className='badge-content'>
+            <span>Done:</span>
+            <span>{done}</span>
+          </div>
         </div>
       </div>
       <main className='list-container'>
@@ -119,6 +140,13 @@ const Section = styled.section`
     display: block;
     margin-right: 10px;
   }
+  .badge-content {
+    display: flex;
+    justify-content: space-between;
+  }
+  .badge-content > * {
+    margin: 2px;
+  }
   .bg-container {
     display: flex;
     justify-content: flex-end;
@@ -132,9 +160,9 @@ const Section = styled.section`
     color: white;
   }
   .form {
-    position: absolute;
-    top: 20px;
+    position: fixed;
     display: flex;
+    top: 13%;
     flex-direction: column;
     width: min(94vw, 500px);
     background-color: gray;
@@ -147,7 +175,7 @@ const Section = styled.section`
   }
   .form-control {
     flex-basis: clamp(310px, 50%, 400px);
-    text-transform: capitalize;
+    text-transform: uppercase;
     border: 2px gray red;
   }
   .duration-holder {

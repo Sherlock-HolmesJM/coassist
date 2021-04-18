@@ -4,12 +4,15 @@ import { path } from './index';
 import { Worker } from '../../types';
 import { arrayToObject } from '../transformer';
 
-export const updateWorkers = (workers: Worker[]) =>
+export const updateWorkers = (workers: Worker[]) => {
+  if (workers.length === 0) return;
+
   firebase
     .database()
     .ref(path() + '/messages/' + workers[0].msguid + '/workers')
     .update(arrayToObject(workers))
     .catch((e) => alert(e.message));
+};
 
 export const setWorker = (worker: Worker) =>
   firebase

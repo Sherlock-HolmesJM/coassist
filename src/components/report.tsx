@@ -14,7 +14,6 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
 
   const messagesNotAllocated = messages.filter((m) => m.status === 'undone');
   const messagesInProgress = messages.filter((m) => m.status === 'in-progress');
-  console.log(messagesInProgress);
 
   let audiosTranscribed: Worker[] = [];
   let audiosInProgress: Worker[] = [];
@@ -40,6 +39,12 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
     (w) => !transcriptsEdited.find((t) => t.part === w.part)
   );
 
+  const getHMS = (duration: number) => {
+    const h = Math.floor(duration / 60);
+    const m = duration % 60;
+    return `${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m}:00`;
+  };
+
   return (
     <Div id='report'>
       <div className='no-print btn-print-div'>
@@ -56,7 +61,7 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
         </h5>
       </div>
       <div>
-        <h6 className='list-title'>Audios Not Allocated</h6>
+        <h6 className='list-title'>Audios Not Transcribed, Not Allocated</h6>
         <ol>
           {messagesNotAllocated.map((m) => (
             <li key={m.uid}>
@@ -66,11 +71,13 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
         </ol>
       </div>
       <div>
-        <h6 className='list-title'>Transcribed Audios Not Allocated</h6>
+        <h6 className='list-title'>Transcribed Splits Not Given To Editors</h6>
         <ol>
           {transcriptsNotAllocated.map((w) => (
             <li key={w.part}>
-              <span className='uppercase'>{w.part}</span>
+              <span className='uppercase'>
+                {w.part} - {w.splitLength} Mins
+              </span>
             </li>
           ))}
         </ol>
@@ -79,11 +86,19 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
         <h5>DETAILS FOR THOSE IN-PROGRESS</h5>
         <ol>
           {messagesInProgress.map((m) => {
+            const totaltrans = m.workers
+              .filter((w) => w.type === 'T' && w.done)
+              .reduce((acc, w) => acc + w.splitLength || 0, 0);
+            const totaledited = m.workers
+              .filter((w) => w.type === 'TE' && w.done)
+              .reduce((acc, w) => acc + w.splitLength || 0, 0);
+
             return (
-              <li key={m.uid}>
+              <li key={m.uid} className='li'>
                 <h6 className='list-title'>{m.name.toUpperCase()}</h6>
                 <h6>Total hours: {m.originalLength}</h6>
-                <h6>Total Hours Not Completed: ''</h6>
+                <h6>Total Hours Transcribed: {getHMS(totaltrans)}</h6>
+                <h6>Total Hours Edited: {getHMS(totaledited)}</h6>
                 <ol>
                   {m.workers
                     .filter((w) => !w.done)
@@ -91,9 +106,12 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
                       <li key={w.uid}>
                         <span className='uppercase'>
                           {w.name} - {w.type}
-                        </span>{' '}
+                        </span>
                         <br />
-                        <span>{w.part.toUpperCase()}; 30 Minutes; Working</span>
+                        <span>
+                          {w.part.toUpperCase()}; {w.splitLength} Minutes;
+                          Working
+                        </span>
                       </li>
                     ))}
                 </ol>
@@ -119,6 +137,9 @@ const Div = styled.div`
   }
   .ul-worker {
     text-transform: capitalize;
+  }
+  .li {
+    margin: 15px 0;
   }
   /* .list-title {
     margin-top: 20px;

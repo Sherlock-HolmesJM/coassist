@@ -10,10 +10,11 @@ export interface ListProps {
   onDelete: (worker: Worker) => void;
   onMark: (worker: Worker) => void;
   onUpdate: (worker: Worker) => void;
+  length: string;
 }
 
 const List: React.FC<ListProps> = (props) => {
-  const { title, workers, onMark, onDelete, onUpdate } = props;
+  const { title, workers, onMark, onDelete, onUpdate, length } = props;
 
   const tes = workers.filter((w) => w.type === 'TE').length;
   const ts = workers.filter((w) => w.type === 'T').length;
@@ -23,7 +24,7 @@ const List: React.FC<ListProps> = (props) => {
       <div className='title-container'>
         <h3 className='title'>{capitalize(title)} </h3>
         <div className='badge badge-secondary bg-summary'>
-          T:TE - {ts}:{tes}
+          T:TE - {ts}:{tes}; Length: {length}
         </div>
       </div>
       <ul className='list-group'>
@@ -40,6 +41,9 @@ const List: React.FC<ListProps> = (props) => {
                   <div>
                     <em>{worker.part.toUpperCase()}</em>
                   </div>
+                  <div>
+                    <em>{worker.splitLength} Mins</em>
+                  </div>
                 </div>
                 <div>
                   <ClickBadge
@@ -47,13 +51,11 @@ const List: React.FC<ListProps> = (props) => {
                     onClick={() => onMark(worker)}
                     text={worker.done ? 'D' : 'IP'}
                   />
-                  {!worker.done && (
-                    <ClickBadge
-                      color='warning'
-                      onClick={() => onUpdate(worker)}
-                      text='U'
-                    />
-                  )}
+                  <ClickBadge
+                    color='warning'
+                    onClick={() => onUpdate(worker)}
+                    text='U'
+                  />
                   <ClickBadge
                     color='danger'
                     onClick={() => onDelete(worker)}

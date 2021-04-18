@@ -67,12 +67,19 @@ const FormUpdate: React.FC<FormProps> = (props) => {
     const result = prompt('Are you sure?');
     if (result === null) return;
 
+    const name = fileRef.current?.value.trim().toLowerCase() ?? '';
+
+    const found = messages.find((m) => m.name === name);
+    if (found && found.uid !== message.uid)
+      return alert(`${name.toUpperCase()} has already been added`);
+
     const size = sizeRef.current ? +sizeRef.current.value : 0;
     const duration = getDuration();
     const { h, m, s } = getHMS();
 
     const newMessage: MessageI = {
       ...message,
+      name,
       duration,
       originalLength: `${h}:${m}:${s}`,
       size,
@@ -80,13 +87,23 @@ const FormUpdate: React.FC<FormProps> = (props) => {
 
     mm.updateStatus(newMessage);
 
+    if (name !== message.name) {
+      console.log(name, message.name);
+      newMessage.workers.forEach((w) => {
+        w.part = w.part.replace(w.msgname, newMessage.name);
+        w.msgname = newMessage.name;
+      });
+      db.updateWorkers(newMessage.workers);
+    }
+
     const index = messages.indexOf(message);
     const list = [...messages];
     list[index] = newMessage;
 
     dispatch(setMessages(list));
-    // db.updateMessage(newMessage);
-    // alert('Updated');
+    db.updateMessage(newMessage);
+    setMessage(null);
+    alert('Updated');
   };
 
   return (
@@ -164,6 +181,7 @@ const FormUpdate: React.FC<FormProps> = (props) => {
           ref={sizeRef}
           required
           min='0'
+          onFocus={(e) => e.currentTarget.select()}
         />
       </div>
       <div className='m-2 btn-group'>

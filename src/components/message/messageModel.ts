@@ -63,20 +63,20 @@ export const updateStatus = (message: MessageI) => {
   message.transcribed = transEditStatus(workers, duration, 'T');
   message.edited = transEditStatus(workers, duration, 'TE');
 
-  const { transcribed, edited } = message;
+  const { edited } = message;
 
   if (edited === 'yes') message.transcribed = 'yes';
 
   const worker = workers.some((w) => !w.done);
 
   message.status =
-    transcribed === 'yes' && edited === 'yes'
+    message.transcribed === 'yes' && edited === 'yes'
       ? 'done'
       : worker
       ? 'in-progress'
-      : transcribed === 'incomplete' || edited === 'incomplete'
+      : message.transcribed === 'incomplete' || edited === 'incomplete'
       ? 'incomplete'
-      : transcribed === 'yes'
+      : message.transcribed === 'yes'
       ? 'transcribed'
       : 'undone';
 
