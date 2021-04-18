@@ -61,15 +61,18 @@ const FormUpdate: React.FC<FormProps> = (props) => {
     const file = fileRef.current.files[0];
 
     if (!file) return alert(`File is ${file}. Try again.`);
-
-    setSpin(true);
+    if (file.type !== 'audio/mpeg')
+      return alert('Invalid file type. Try again with audio files.');
 
     const name = file.name.replace('.mp3', '');
     const size = Math.floor(file.size / 1024 / 1024);
+    nameRef.current.value = name;
+    sizeRef.current.value = size + '';
 
     const reader = new FileReader();
 
     reader.onload = (e) => {
+      setSpin(true);
       audio.src = e.target.result as any;
       audio.onloadedmetadata = (e) => {
         // audio.duration is in seconds
@@ -77,8 +80,6 @@ const FormUpdate: React.FC<FormProps> = (props) => {
         hRef.current.value = h;
         mRef.current.value = m;
         sRef.current.value = s;
-        nameRef.current.value = name;
-        sizeRef.current.value = size + '';
         setSpin(false);
       };
     };
@@ -88,7 +89,12 @@ const FormUpdate: React.FC<FormProps> = (props) => {
       alert(e);
     };
 
-    reader.readAsDataURL(file);
+    if (size <= 200) reader.readAsDataURL(file);
+    else {
+      alert(
+        `The File size of ${size}MB is too large to get the duration. You are going to have to get it yourself.`
+      );
+    }
   };
 
   const handleChangeFocus = (e: any) => {
