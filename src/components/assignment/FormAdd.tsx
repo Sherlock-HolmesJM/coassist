@@ -59,6 +59,9 @@ const FormAdd: React.FC<FormProps> = (props) => {
     const name = file.name.replace('.mp3', '');
     const size = Math.floor(file.size / 1024 / 1024);
 
+    nameRef.current.value = name;
+    sizeRef.current.value = size + '';
+
     const reader = new FileReader();
 
     reader.onload = (e) => {
@@ -70,8 +73,6 @@ const FormAdd: React.FC<FormProps> = (props) => {
         hRef.current.value = h;
         mRef.current.value = m;
         sRef.current.value = s;
-        nameRef.current.value = name;
-        sizeRef.current.value = size + '';
         setSpin(false);
       };
     };
