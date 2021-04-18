@@ -8,8 +8,10 @@ export interface LoaderProps {
 const Loader: React.FC<LoaderProps> = (props) => {
   const { spin } = props;
 
+  if (!spin) return null;
+
   return (
-    <Div style={{ display: spin ? 'flex' : 'none' }}>
+    <Div>
       <img src={puff} alt='loader' />
     </Div>
   );
@@ -20,6 +22,7 @@ const Div = styled.div`
   top: 25px;
   width: 100%;
   height: 70px;
+  display: flex;
   justify-content: center;
   align-items: center;
 

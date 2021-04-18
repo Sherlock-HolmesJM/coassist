@@ -60,12 +60,12 @@ const MembersComp: React.FC<MembersProps> = (props) => {
     db.updateMember(newMember);
   };
 
-  const handleDelete = (muid: number) => {
-    const result = prompt('Are you sure?');
+  const handleDelete = (member: MemberI) => {
+    const result = prompt(`Delete ${capitalize(member.name)}?`);
     if (result === null) return;
-    const newMembers = members.filter((m) => m.uid !== muid);
+    const newMembers = members.filter((m) => m.uid !== member.uid);
     dispatch(setMembers(newMembers));
-    db.deleteMember(muid);
+    db.deleteMember(member.uid);
   };
 
   return (

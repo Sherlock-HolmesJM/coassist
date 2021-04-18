@@ -9,6 +9,7 @@ import { getMemberStatus } from '../message/messageModel';
 import { ClickBadge } from '../../commons/badge';
 import FormAdd from './FormAdd';
 import FormUpdate from './formUpdate';
+import Loader from '../../commons/loader';
 
 function Assignment() {
   const { dispatch, messages, members } = useContext(context);
@@ -52,6 +53,7 @@ function Assignment() {
 
   return (
     <Section>
+      <Loader spin={false} />
       <header className='header'>
         <nav className='nav'>
           <Link to='/home' className='btn btn-link'>

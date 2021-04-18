@@ -6,7 +6,7 @@ import { ClickBadge } from '../commons/badge';
 export interface ListProps {
   items: MemberI[];
   title: string;
-  onDelete?: (muid: number) => void;
+  onDelete?: (member: MemberI) => void;
   onMark?: (member: MemberI) => void;
 }
 
@@ -38,7 +38,7 @@ const List: React.FC<ListProps> = (props) => {
                 />
                 <ClickBadge
                   color='danger'
-                  onClick={() => onDelete(item.uid)}
+                  onClick={() => onDelete(item)}
                   text='X'
                 />
               </div>

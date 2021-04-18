@@ -1,9 +1,10 @@
-import React, { useContext, useRef } from 'react';
-import { capitalize } from '../../utils';
+import React, { useContext, useRef, useState } from 'react';
+import { capitalize, secondsToHMS } from '../../utils';
 import { context } from '../../context/context';
 import { setMessages } from '../../context/actions';
 import { MessageI, createTorTE } from '../../types';
 import { db } from '../../services';
+import Loader from '../../commons/loader';
 
 export interface FormProps {
   setShowform: (value: boolean) => void;
@@ -15,7 +16,10 @@ const FormAdd: React.FC<FormProps> = (props) => {
 
   const { dispatch, messages } = useContext(context);
 
+  const [spin, setSpin] = useState(false);
+
   const fileRef = useRef<HTMLInputElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
   const sizeRef = useRef<HTMLInputElement>(null);
   const hRef = useRef<HTMLInputElement>(null);
   const mRef = useRef<HTMLInputElement>(null);
@@ -44,7 +48,42 @@ const FormAdd: React.FC<FormProps> = (props) => {
     }
   };
 
-  const getFilename = () => fileRef.current?.value.toLowerCase().trim() ?? '';
+  const handleAddFromFiles = () => {
+    const audio = document.createElement('audio');
+    const file = fileRef.current.files[0];
+
+    if (!file) return alert(`File is ${file}. Try again.`);
+
+    setSpin(true);
+
+    const name = file.name.replace('.mp3', '');
+    const size = Math.floor(file.size / 1024 / 1024);
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      audio.src = e.target.result as any;
+      audio.onloadedmetadata = (e) => {
+        // audio.duration is in seconds
+        const { h, m, s } = secondsToHMS(audio.duration);
+        hRef.current.value = h;
+        mRef.current.value = m;
+        sRef.current.value = s;
+        nameRef.current.value = name;
+        sizeRef.current.value = size + '';
+        setSpin(false);
+      };
+    };
+
+    reader.onerror = (e) => {
+      setSpin(false);
+      alert(e);
+    };
+
+    reader.readAsDataURL(file);
+  };
+
+  const getFilename = () => nameRef.current?.value.toLowerCase().trim() ?? '';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -75,11 +114,12 @@ const FormAdd: React.FC<FormProps> = (props) => {
     const list = [...messages, message];
 
     dispatch(setMessages(list));
-    fileRef.current?.focus();
-    if (fileRef.current) fileRef.current.value = '';
+    nameRef.current?.focus();
+    if (nameRef.current) nameRef.current.value = '';
     db.setMessage(message);
   };
 
+  // eslint-disable-next-line
   const handleAddMissing = () => {
     messages.forEach((m) => {
       m.duration = m.duration || 0;
@@ -101,6 +141,7 @@ const FormAdd: React.FC<FormProps> = (props) => {
 
   return (
     <form onSubmit={handleSubmit} className='form'>
+      <Loader spin={spin} />
       <div className='btn-close-div'>
         <input
           className='btn btn-danger'
@@ -115,7 +156,7 @@ const FormAdd: React.FC<FormProps> = (props) => {
           type='text'
           placeholder='filename'
           required
-          ref={fileRef}
+          ref={nameRef}
         />
       </div>
       <div className='m-2'>
@@ -177,14 +218,23 @@ const FormAdd: React.FC<FormProps> = (props) => {
           onFocus={(e) => e.currentTarget.select()}
         />
       </div>
+      <div className='m-2'>
+        <input
+          className='form-control'
+          type='file'
+          placeholder='Get File(s)'
+          ref={fileRef}
+          onChange={handleAddFromFiles}
+        />
+      </div>
       <div className='m-2 btn-group'>
         <input className='btn btn-primary' type='submit' value='Add' />
-        <input
+        {/* <input
           className='btn btn-light'
           type='button'
           value='Add Missing Fields'
           onClick={handleAddMissing}
-        />
+        /> */}
       </div>
     </form>
   );

@@ -1,9 +1,11 @@
-import React, { useContext, useEffect, useRef } from 'react';
+import React, { useContext, useEffect, useRef, useState } from 'react';
 import { context } from '../../context/context';
 import { setMessages } from '../../context/actions';
 import { MessageI } from '../../types';
 import { db } from '../../services';
 import * as mm from '../message/messageModel';
+import { secondsToHMS } from '../../utils';
+import Loader from '../../commons/loader';
 
 export interface FormProps {
   message: MessageI;
@@ -15,7 +17,10 @@ const FormUpdate: React.FC<FormProps> = (props) => {
 
   const { dispatch, messages } = useContext(context);
 
+  const [spin, setSpin] = useState(false);
+
   const fileRef = useRef<HTMLInputElement>(null);
+  const nameRef = useRef<HTMLInputElement>(null);
   const sizeRef = useRef<HTMLInputElement>(null);
   const hRef = useRef<HTMLInputElement>(null);
   const mRef = useRef<HTMLInputElement>(null);
@@ -24,7 +29,7 @@ const FormUpdate: React.FC<FormProps> = (props) => {
   useEffect(() => {
     if (!message) return;
 
-    if (fileRef) fileRef.current.value = message.name;
+    if (nameRef) nameRef.current.value = message.name;
     if (sizeRef) sizeRef.current.value = message.size + '';
     if (hRef && mRef && sRef) {
       const [h, m, s] = message.originalLength.split(':');
@@ -44,11 +49,46 @@ const FormUpdate: React.FC<FormProps> = (props) => {
   };
 
   const getHMS = () => {
-    const h = hRef.current ? +hRef.current.value : 0;
-    const m = mRef.current ? +mRef.current.value : 0;
-    const s = sRef.current ? +sRef.current.value : 0;
+    const h = hRef.current ? hRef.current.value : '00';
+    const m = mRef.current ? mRef.current.value : '00';
+    const s = sRef.current ? sRef.current.value : '00';
 
     return { h, m, s };
+  };
+
+  const handleAddFromFiles = () => {
+    const audio = document.createElement('audio');
+    const file = fileRef.current.files[0];
+
+    if (!file) return alert(`File is ${file}. Try again.`);
+
+    setSpin(true);
+
+    const name = file.name.replace('.mp3', '');
+    const size = Math.floor(file.size / 1024 / 1024);
+
+    const reader = new FileReader();
+
+    reader.onload = (e) => {
+      audio.src = e.target.result as any;
+      audio.onloadedmetadata = (e) => {
+        // audio.duration is in seconds
+        const { h, m, s } = secondsToHMS(audio.duration);
+        hRef.current.value = h;
+        mRef.current.value = m;
+        sRef.current.value = s;
+        nameRef.current.value = name;
+        sizeRef.current.value = size + '';
+        setSpin(false);
+      };
+    };
+
+    reader.onerror = (e) => {
+      setSpin(false);
+      alert(e);
+    };
+
+    reader.readAsDataURL(file);
   };
 
   const handleChangeFocus = (e: any) => {
@@ -67,7 +107,7 @@ const FormUpdate: React.FC<FormProps> = (props) => {
     const result = prompt('Are you sure?');
     if (result === null) return;
 
-    const name = fileRef.current?.value.trim().toLowerCase() ?? '';
+    const name = nameRef.current?.value.trim().toLowerCase() ?? '';
 
     const found = messages.find((m) => m.name === name);
     if (found && found.uid !== message.uid)
@@ -108,6 +148,7 @@ const FormUpdate: React.FC<FormProps> = (props) => {
 
   return (
     <form onSubmit={(e) => handleUpdate(e, message)} className='form'>
+      <Loader spin={spin} />
       <div className='btn-close-div'>
         <input
           className='btn btn-danger'
@@ -122,7 +163,7 @@ const FormUpdate: React.FC<FormProps> = (props) => {
           type='text'
           placeholder='filename'
           required
-          ref={fileRef}
+          ref={nameRef}
         />
       </div>
       <div className='m-2'>
@@ -182,6 +223,15 @@ const FormUpdate: React.FC<FormProps> = (props) => {
           required
           min='0'
           onFocus={(e) => e.currentTarget.select()}
+        />
+      </div>
+      <div className='m-2'>
+        <input
+          className='form-control'
+          type='file'
+          placeholder='Get File(s)'
+          ref={fileRef}
+          onChange={handleAddFromFiles}
         />
       </div>
       <div className='m-2 btn-group'>
