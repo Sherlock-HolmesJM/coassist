@@ -10,8 +10,8 @@ export interface MessageI {
   size: number;
   duration: number;
   workers: Worker[];
-  transcribed: 'yes' | 'in-progress' | 'no';
-  edited: 'yes' | 'in-progress' | 'no';
+  transcribed: 'yes' | 'in-progress' | 'no' | 'incomplete';
+  edited: 'yes' | 'in-progress' | 'no' | 'incomplete';
   splits: number;
   splitLength: number;
   originalLength: string;
@@ -21,4 +21,9 @@ export interface Messages {
   [key: string]: MessageI;
 }
 
-export type MessageStatus = 'done' | 'undone' | 'in-progress' | 'transcribed';
+export type MessageStatus =
+  | 'done'
+  | 'undone'
+  | 'in-progress'
+  | 'transcribed'
+  | 'incomplete';

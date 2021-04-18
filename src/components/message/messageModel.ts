@@ -34,32 +34,49 @@ const updateTorTE = (message: MessageI, ts: Worker[], tes: Worker[]) => {
   }
 };
 
+const transEditStatus = (
+  workers: Worker[],
+  duration: number,
+  type: 'T' | 'TE'
+) => {
+  const wks = workers.filter((w) => w.type === type);
+
+  const workDuration = wks
+    .filter((w) => w.done)
+    .reduce((acc, t) => acc + t.splitLength, 0);
+
+  return wks.length === 0
+    ? 'no' // no part has been assigned at all
+    : workDuration >= duration
+    ? 'yes' // all splits have been assigned and completed
+    : wks.some((w) => !w.done)
+    ? 'in-progress' // at least one split is being worked on
+    : 'incomplete'; // not all splits have been assigned and splits assigned have been completed
+};
+
 export const updateStatus = (message: MessageI) => {
-  const { workers } = message;
+  const { workers, duration } = message;
 
   const ts = workers.filter((w) => w.type === 'T');
   const tes = workers.filter((w) => w.type === 'TE');
 
-  if (ts.length === 0 && tes.length > 0) {
-    message.transcribed = 'yes';
-  } else {
-    const wdt = ts.filter((w) => w.done === true).length;
-    message.transcribed =
-      ts.length === 0 ? 'no' : wdt === ts.length ? 'yes' : 'in-progress';
-  }
+  message.transcribed = transEditStatus(workers, duration, 'T');
+  message.edited = transEditStatus(workers, duration, 'TE');
 
-  const wdte = tes.filter((w) => w.done === true).length;
-  message.edited =
-    tes.length === 0 ? 'no' : wdte === tes.length ? 'yes' : 'in-progress';
+  const { transcribed, edited } = message;
 
-  const worker = workers.find((w) => w.done === false);
+  if (edited === 'yes') message.transcribed = 'yes';
+
+  const worker = workers.some((w) => !w.done);
 
   message.status =
-    message.transcribed === 'yes' && message.edited === 'yes'
+    transcribed === 'yes' && edited === 'yes'
       ? 'done'
       : worker
       ? 'in-progress'
-      : message.transcribed === 'yes'
+      : transcribed === 'incomplete' || edited === 'incomplete'
+      ? 'incomplete'
+      : transcribed === 'yes'
       ? 'transcribed'
       : 'undone';
 
@@ -88,22 +105,13 @@ export const getMemberStatus = (muid: number, messages: MessageI[]) => {
   return msg ? false : true;
 };
 
-// export const getMessageStatus = (message: MessageI) => {
-//   const totalWorks = message.workers.length;
-//   const workDone = message.workers.reduce(
-//     (a, wkr) => a + (wkr.done ? 1 : 0),
-//     0
-//   );
-//   let status = message.status;
-
-//   if (totalWorks === workDone && workDone !== 0) status = 'done';
-//   else if (totalWorks === workDone && workDone === 0) status = 'undone';
-//   else status = 'in-progress';
-
-//   console.log({ totalWorks, workDone, status });
-//   return status;
-// };
-
+/**
+ *
+ * @param workers
+ * @param part
+ * @param type
+ * @returns true if a worker of type is working or done with this part; false if no worker of type is working on this part.
+ */
 export const checkWork = (
   workers: Worker[],
   part: string,
@@ -122,3 +130,27 @@ export const checkWork = (
 
   return false;
 };
+
+/**
+ *
+ * @param workers
+ * @param part
+ * @param worker
+ * @returns true if worker is working on this part or no worker is working on this part; false if another worker is working on this part
+ */
+export const checkWorker = (
+  workers: Worker[],
+  part: string,
+  worker: Worker
+) => {
+  if (worker.part === part) return true;
+  return !checkWork(workers, part, worker.type);
+};
+
+// export const parseInput = (value: string, filename: string) => {
+//   return value.slice(filename.length, value.length);
+// };
+
+// export const getPart = (split: string, messageName: string) => {
+//   return parseInput(split, messageName) === '' ? messageName : split;
+// };
