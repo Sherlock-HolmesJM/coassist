@@ -8,7 +8,7 @@ export interface ReportProps {
 }
 
 const Report: React.FC<ReportProps> = (props: ReportProps) => {
-  const { messages, groupName, collatorName } = useContext(context);
+  const { messages, groupName, collatorName, members } = useContext(context);
 
   if (!props.report) return null;
 
@@ -21,10 +21,10 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
   let transcriptsEdited: Worker[] = [];
 
   messagesInProgress.forEach((m) => {
-    const alist = m.workers.filter((w) => w.type === 'T' && !w.done);
-    const alistT = m.workers.filter((w) => w.type === 'T' && w.done);
-    const tlist = m.workers.filter((w) => w.type === 'TE' && !w.done);
-    const tlistE = m.workers.filter((w) => w.type === 'TE' && w.done);
+    const alist = m.workers.filter((m) => m.type === 'T' && !m.done);
+    const alistT = m.workers.filter((m) => m.type === 'T' && m.done);
+    const tlist = m.workers.filter((m) => m.type === 'TE' && !m.done);
+    const tlistE = m.workers.filter((m) => m.type === 'TE' && m.done);
 
     audiosInProgress = [...audiosInProgress, ...alist];
     audiosTranscribed = [...audiosTranscribed, ...alistT];
@@ -33,10 +33,10 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
   });
 
   let transcriptsNotAllocated = audiosTranscribed.filter(
-    (w) => !transcriptsInProgress.find((t) => t.part === w.part)
+    (m) => !transcriptsInProgress.find((t) => t.part === m.part)
   );
   transcriptsNotAllocated = transcriptsNotAllocated.filter(
-    (w) => !transcriptsEdited.find((t) => t.part === w.part)
+    (m) => !transcriptsEdited.find((t) => t.part === m.part)
   );
 
   const getHMS = (duration: number) => {
@@ -61,6 +61,21 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
         </h5>
       </div>
       <div>
+        <h6 className='list-title'>Free Team Members</h6>
+        <ol>
+          {members
+            .filter((m) => m.active && m.free)
+            .sort((a, b) => a.type.length - b.type.length)
+            .map((m) => (
+              <li key={m.uid}>
+                <span className='uppercase'>
+                  {m.name} - {m.type}
+                </span>
+              </li>
+            ))}
+        </ol>
+      </div>
+      <div>
         <h6 className='list-title'>Audios Not Transcribed, Not Allocated</h6>
         <ol>
           {messagesNotAllocated.map((m) => (
@@ -73,11 +88,21 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
       <div>
         <h6 className='list-title'>Transcribed Splits Not Given To Editors</h6>
         <ol>
-          {transcriptsNotAllocated.map((w) => (
-            <li key={w.part}>
+          {transcriptsNotAllocated.map((m) => (
+            <li key={m.part}>
               <span className='uppercase'>
-                {w.part} - {w.splitLength} Mins
+                {m.part} - {m.splitLength} Mins
               </span>
+            </li>
+          ))}
+        </ol>
+      </div>
+      <div>
+        <h6 className='list-title'>Messages In Progress</h6>
+        <ol>
+          {messagesInProgress.map((m) => (
+            <li key={m.uid}>
+              <span className='uppercase'>{m.name}</span>
             </li>
           ))}
         </ol>
@@ -87,11 +112,11 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
         <ol>
           {messagesInProgress.map((m) => {
             const totaltrans = m.workers
-              .filter((w) => w.type === 'T' && w.done)
-              .reduce((acc, w) => acc + w.splitLength || 0, 0);
+              .filter((m) => m.type === 'T' && m.done)
+              .reduce((acc, m) => acc + m.splitLength || 0, 0);
             const totaledited = m.workers
-              .filter((w) => w.type === 'TE' && w.done)
-              .reduce((acc, w) => acc + w.splitLength || 0, 0);
+              .filter((m) => m.type === 'TE' && m.done)
+              .reduce((acc, m) => acc + m.splitLength || 0, 0);
 
             return (
               <li key={m.uid} className='li'>
@@ -101,15 +126,15 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
                 <h6>Total Hours Edited: {getHMS(totaledited)}</h6>
                 <ol>
                   {m.workers
-                    .filter((w) => !w.done)
-                    .map((w) => (
-                      <li key={w.uid}>
+                    .filter((m) => !m.done)
+                    .map((m) => (
+                      <li key={m.uid}>
                         <span className='uppercase'>
-                          {w.name} - {w.type}
+                          {m.name} - {m.type}
                         </span>
                         <br />
                         <span>
-                          {w.part.toUpperCase()}; {w.splitLength} Minutes;
+                          {m.part.toUpperCase()}; {m.splitLength} Minutes;
                           Working
                         </span>
                       </li>
