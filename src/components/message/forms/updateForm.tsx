@@ -107,7 +107,7 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
             </label>
             <input
               type='number'
-              onChange={(e) => setSplitLength(+e.target.value)}
+              onChange={(e) => setSplitLength(parseInt(e.target.value))}
               value={splitLength}
               className='header-splitlength'
               onFocus={(e) => e.currentTarget.select()}

@@ -126,7 +126,7 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
             <input
               type='number'
               value={splitLength}
-              onChange={(e) => setSplitLength(+e.target.value)}
+              onChange={(e) => setSplitLength(parseInt(e.target.value))}
               className='header-splitlength'
               required
             />
