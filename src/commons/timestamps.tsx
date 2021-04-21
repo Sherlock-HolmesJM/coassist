@@ -13,10 +13,9 @@ const TimeStamps: React.FC<TimeStampsProps> = (props) => {
   const uniqueParts = [...new Set(parts)].sort((a, b) => a.localeCompare(b));
 
   // durations are in minutes
-  const durations = workers.reduce(
-    (acc, w, i) => {
-      const worker = workers.find((w) => w.part === uniqueParts[i]);
-      if (!worker) return acc;
+  const durations: number[] = uniqueParts.reduce(
+    (acc, p) => {
+      const worker = workers.find((w) => w.part === p);
       return [...acc, worker.splitLength + acc[acc.length - 1]];
     },
     [0]
@@ -26,8 +25,6 @@ const TimeStamps: React.FC<TimeStampsProps> = (props) => {
     (acc, d) => [...acc, secondsToHMS(d * 60)],
     []
   );
-
-  console.log(uniqueParts);
 
   return (
     <Div>

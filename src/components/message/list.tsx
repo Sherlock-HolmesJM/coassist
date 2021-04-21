@@ -14,7 +14,7 @@ export interface ListProps {
 }
 
 const List: React.FC<ListProps> = (props) => {
-  const { title, workers, onMark, onDelete, onUpdate, length } = props;
+  const { title, workers, onMark, onDelete, onUpdate } = props;
 
   const tes = workers.filter((w) => w.type === 'TE').length;
   const ts = workers.filter((w) => w.type === 'T').length;
