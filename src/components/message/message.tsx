@@ -8,6 +8,7 @@ import { MessageI, Worker } from '../../types';
 import { db } from '../../services';
 import * as mm from './messageModel';
 import { UpdateForm, AddForm } from './forms';
+import TimeStamps from '../../commons/timestamps';
 
 function Message() {
   const { members, dispatch, messages } = useContext(context);
@@ -119,6 +120,7 @@ function Message() {
           onUpdate={setWorker}
           onMark={handleMark}
         />
+        <TimeStamps workers={workers} />
       </div>
     </Section>
   );
