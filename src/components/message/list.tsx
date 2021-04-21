@@ -10,7 +10,7 @@ export interface ListProps {
   onDelete: (worker: Worker) => void;
   onMark: (worker: Worker) => void;
   onUpdate: (worker: Worker) => void;
-  length: string;
+  length?: string;
 }
 
 const List: React.FC<ListProps> = (props) => {
@@ -24,7 +24,7 @@ const List: React.FC<ListProps> = (props) => {
       <div className='title-container'>
         <h3 className='title'>{capitalize(title)} </h3>
         <div className='badge badge-secondary bg-summary'>
-          T:TE - {ts}:{tes}; Length: {length}
+          T:TE - {ts}:{tes}
         </div>
       </div>
       <ul className='list-group'>

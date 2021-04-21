@@ -5,7 +5,13 @@ import {
   MessageI,
   Worker,
 } from '../../types';
-import { capitalize } from '../../utils';
+import { capitalize, secondsToHMS } from '../../utils';
+
+export const getAssignedLength = (workers: Worker[]) => {
+  const duration = workers.reduce((acc, w) => acc + w.splitLength, 0);
+  const { h, m, s } = secondsToHMS(duration * 60);
+  return `${h}:${m}:${s}`;
+};
 
 const updateTorTE = (message: MessageI, ts: Worker[], tes: Worker[]) => {
   const { length: tl } = ts;

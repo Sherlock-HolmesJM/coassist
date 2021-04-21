@@ -4,7 +4,7 @@ import { setMessages } from '../../context/actions';
 import { MessageI } from '../../types';
 import { db } from '../../services';
 import * as mm from '../message/messageModel';
-import { secondsToHMS } from '../../utils';
+import { hmsToSeconds, secondsToHMS } from '../../utils';
 import Loader from '../../commons/loader';
 
 export interface FormProps {
@@ -41,20 +41,6 @@ const FormUpdate: React.FC<FormProps> = (props) => {
   }, [message]);
 
   if (!message) return null;
-
-  const getDuration = () => {
-    const h = hRef.current ? +hRef.current.value : 0;
-    const m = mRef.current ? +mRef.current.value : 0;
-    return h * 60 + m;
-  };
-
-  const getHMS = () => {
-    const h = hRef.current ? hRef.current.value : '00';
-    const m = mRef.current ? mRef.current.value : '00';
-    const s = sRef.current ? sRef.current.value : '00';
-
-    return { h, m, s };
-  };
 
   const handleAddFromFiles = () => {
     const audio = document.createElement('audio');
@@ -120,8 +106,12 @@ const FormUpdate: React.FC<FormProps> = (props) => {
       return alert(`${name.toUpperCase()} has already been added`);
 
     const size = sizeRef.current ? +sizeRef.current.value : 0;
-    const duration = getDuration();
-    const { h, m, s } = getHMS();
+    const duration = hmsToSeconds(
+      hRef.current.value,
+      mRef.current.value,
+      sRef.current.value
+    );
+    const { h, m, s } = secondsToHMS(duration);
 
     const newMessage: MessageI = {
       ...message,

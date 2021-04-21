@@ -30,12 +30,12 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
 
   if (!worker) return null;
 
-  const getPart = () => filename + split;
+  const getPart = (split) => filename + split;
 
   const handleUpdate = (e: any, worker: Worker) => {
     e.preventDefault();
 
-    const part = getPart();
+    const part = getPart(split);
 
     if (!mm.checkWorker(message.workers, part, worker)) return;
 
@@ -55,6 +55,13 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
     db.setWorker(newWorker);
     alert('Done');
     setWorker(null);
+  };
+
+  const handleChange = (value: string) => {
+    const v = value.trim().toLowerCase();
+    const worker = message.workers.find((w) => w.part === getPart(v));
+    setSplitLength(worker?.splitLength || 0);
+    setSplit(v);
   };
 
   return (
@@ -88,7 +95,7 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
               className='form-split'
               placeholder='S1'
               value={split}
-              onChange={(e) => setSplit(e.target.value.trim().toLowerCase())}
+              onChange={(e) => handleChange(e.target.value)}
               required
             />
           </div>

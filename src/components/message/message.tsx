@@ -20,6 +20,8 @@ function Message() {
   const message = messages.find((m) => m.uid === +msgUID);
   const filename = message?.name + '-';
   const workers = message?.workers ?? [];
+  const ts = workers.filter((w) => w.type === 'T');
+  const tes = workers.filter((w) => w.type === 'TE');
 
   if (!message) return <Redirect to='/assignments' />;
 
@@ -95,6 +97,11 @@ function Message() {
           showform={showform}
         />
       </div>
+      <div className='badge badge-secondary badge-assigned'>
+        <div>Assigned Length [Ts]: {mm.getAssignedLength(ts)}</div>
+        <div>Assigned Length [TEs]: {mm.getAssignedLength(tes)}</div>
+        <div>Original Length: {message.originalLength}</div>
+      </div>
       <div className='container'>
         <List
           workers={workers.filter((w) => !w.done)}
@@ -103,7 +110,6 @@ function Message() {
           onDelete={handleDelete}
           onUpdate={setWorker}
           onMark={handleMark}
-          length={message.originalLength}
         />
         <List
           workers={workers.filter((w) => w.done)}
@@ -112,7 +118,6 @@ function Message() {
           onDelete={handleDelete}
           onUpdate={setWorker}
           onMark={handleMark}
-          length={message.originalLength}
         />
       </div>
     </Section>
@@ -135,6 +140,15 @@ const Section = styled.section<{ showform: boolean }>`
     display: flex;
     justify-content: center;
     width: 100%;
+  }
+  .badge-assigned {
+    text-align: left;
+    margin-left: 10px;
+    padding: 5px;
+  }
+  .badge-assigned > * {
+    margin: 2px;
+    padding: 2px;
   }
   .container > * {
     flex-basis: 400px;

@@ -27,14 +27,14 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
   if (!showform) return null;
 
   const getWUID = () => (workerRef.current ? +workerRef.current.value : 111);
-  const getPart = () => filename + split;
+  const getPart = (split: string) => filename + split;
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     const member = freeMembers.find((w) => w.uid === getWUID());
     if (!member) return;
 
-    const part = getPart();
+    const part = getPart(split);
     if (mm.checkWork(message.workers, part, member.type)) return;
 
     const newMessage: MessageI = { ...message, status: 'in-progress' };
@@ -76,6 +76,13 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
     alert('Done');
   };
 
+  const handleChange = (value: string) => {
+    const v = value.trim().toLowerCase();
+    const worker = message.workers.find((w) => w.part === getPart(v));
+    setSplitLength(worker?.splitLength || 0);
+    setSplit(v);
+  };
+
   return (
     <Form>
       <form onSubmit={handleSubmit}>
@@ -106,7 +113,7 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
               type='text'
               className='form-split'
               placeholder='S1'
-              onChange={(e) => setSplit(e.target.value.trim().toLowerCase())}
+              onChange={(e) => handleChange(e.target.value)}
               required
             />
           </div>
@@ -118,6 +125,7 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
             </label>
             <input
               type='number'
+              value={splitLength}
               onChange={(e) => setSplitLength(+e.target.value)}
               className='header-splitlength'
               required

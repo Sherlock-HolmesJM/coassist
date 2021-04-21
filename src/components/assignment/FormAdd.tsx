@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from 'react';
-import { capitalize, secondsToHMS } from '../../utils';
+import { capitalize, secondsToHMS, hmsToSeconds } from '../../utils';
 import { context } from '../../context/context';
 import { setMessages } from '../../context/actions';
 import { MessageI, createTorTE } from '../../types';
@@ -28,14 +28,8 @@ const FormAdd: React.FC<FormProps> = (props) => {
 
   if (!showform) return null;
 
-  const getDuration = () => {
-    const h = hRef.current ? +hRef.current.value : 0;
-    const m = mRef.current ? +mRef.current.value : 0;
-    return h * 60 + m;
-  };
-
   const getSplitLength = () => {
-    return splitRef.current ? +splitRef.current.value : 30;
+    return splitRef.current ? +splitRef.current.value : 0;
   };
 
   const handleChangeFocus = (e: any) => {
@@ -107,7 +101,11 @@ const FormAdd: React.FC<FormProps> = (props) => {
       status: 'undone',
       workers: [],
       category: 'sermon',
-      duration: getDuration(),
+      duration: hmsToSeconds(
+        hRef.current.value,
+        mRef.current.value,
+        sRef.current.value
+      ),
       transcriber: createTorTE('T'),
       transcriptEditor: createTorTE('TE'),
       size: sizeRef.current ? +sizeRef.current.value : 1,
