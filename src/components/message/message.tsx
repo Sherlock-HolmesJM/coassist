@@ -78,6 +78,9 @@ function Message() {
           <Link to='/assignments' className='btn btn-link'>
             Back
           </Link>
+          <Link to='/members' className='btn btn-link'>
+            Members
+          </Link>
         </nav>
         <button className='btn btn-primary' onClick={() => setForm(true)}>
           Assign Split

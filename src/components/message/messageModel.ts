@@ -40,6 +40,14 @@ const updateTorTE = (message: MessageI, ts: Worker[], tes: Worker[]) => {
   }
 };
 
+const getSecond = (duration: number) => {
+  const h = Math.floor(duration / 3600);
+  const m = Math.floor((duration / 60) % 60);
+  let s = duration - (h * 3600 + m * 60);
+  s = s > 59 ? s % 60 : s;
+  return s;
+};
+
 const transEditStatus = (
   workers: Worker[],
   duration: number,
@@ -49,11 +57,11 @@ const transEditStatus = (
 
   const workDuration = wks
     .filter((w) => w.done)
-    .reduce((acc, t) => acc + t.splitLength, 0);
+    .reduce((acc, t) => acc + t.splitLength * 60, 0);
 
   return wks.length === 0
     ? 'no' // no part has been assigned at all
-    : workDuration >= duration
+    : workDuration >= duration - getSecond(duration)
     ? 'yes' // all splits have been assigned and completed
     : wks.some((w) => !w.done)
     ? 'in-progress' // at least one split is being worked on

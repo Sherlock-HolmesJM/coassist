@@ -59,6 +59,9 @@ function Assignment() {
           <Link to='/home' className='btn btn-link'>
             Back
           </Link>
+          <Link to='/members' className='btn btn-link'>
+            Members
+          </Link>
           <button className='btn btn-primary' onClick={() => setShowform(true)}>
             New Message
           </button>

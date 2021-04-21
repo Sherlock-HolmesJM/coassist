@@ -68,12 +68,32 @@ const MembersComp: React.FC<MembersProps> = (props) => {
     db.deleteMember(member.uid);
   };
 
+  const handleUpdate = (member: MemberI) => {
+    if (member.type === type) return;
+    const reply = prompt(
+      `Update ${member.name} - ${member.type} to ${member.name} - ${type}?`
+    );
+    if (reply === null) return;
+
+    const obj = { ...member, type };
+
+    const index = members.indexOf(member);
+    const newMembers = [...members];
+    newMembers[index] = obj;
+
+    dispatch(setMembers(newMembers));
+    db.updateMember(obj);
+  };
+
   return (
     <Section>
       <header className='header'>
         <nav className='nav'>
           <Link to='/home' className='btn btn-link'>
             Back
+          </Link>
+          <Link to='/assignments' className='btn btn-link'>
+            Assignment
           </Link>
           <button className='btn btn-primary' onClick={() => window.print()}>
             Get PDF
@@ -106,12 +126,14 @@ const MembersComp: React.FC<MembersProps> = (props) => {
           title='inactive members'
           onMark={handleMark}
           onDelete={handleDelete}
+          onUpdate={handleUpdate}
         />
         <List
           items={activeMembers}
           title='active members'
           onMark={handleMark}
           onDelete={handleDelete}
+          onUpdate={handleUpdate}
         />
       </div>
       <div className='hide'>
@@ -138,6 +160,9 @@ const Section = styled.section`
     margin: 10px;
     background: gray;
     flex-wrap: wrap;
+  }
+  .nav {
+    padding: 10px;
   }
   .btn-link {
     color: white;

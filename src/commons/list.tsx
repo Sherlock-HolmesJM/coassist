@@ -8,10 +8,11 @@ export interface ListProps {
   title: string;
   onDelete?: (member: MemberI) => void;
   onMark?: (member: MemberI) => void;
+  onUpdate?: (member: MemberI) => void;
 }
 
 const List: React.FC<ListProps> = (props) => {
-  const { title, items, onMark, onDelete } = props;
+  const { title, items, onMark, onDelete, onUpdate } = props;
   const ts = items.filter((m) => m.type === 'T');
   const tes = items.filter((m) => m.type === 'TE');
   const sorted = [...ts, ...tes];
@@ -29,20 +30,29 @@ const List: React.FC<ListProps> = (props) => {
         {sorted.map((item) => (
           <li className='list-group-item' key={item.uid}>
             {capitalize(item.name)} - {item.type}
-            {onMark && onDelete && (
-              <div>
+            <div>
+              {onMark && (
                 <ClickBadge
                   color='success'
                   onClick={() => onMark(item)}
                   text='M'
                 />
+              )}
+              {onUpdate && (
+                <ClickBadge
+                  color='warning'
+                  onClick={() => onUpdate(item)}
+                  text='U'
+                />
+              )}
+              {onDelete && (
                 <ClickBadge
                   color='danger'
                   onClick={() => onDelete(item)}
                   text='X'
                 />
-              </div>
-            )}
+              )}
+            </div>
           </li>
         ))}
       </ul>
