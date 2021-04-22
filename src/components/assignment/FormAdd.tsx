@@ -112,6 +112,7 @@ const FormAdd: React.FC<FormProps> = (props) => {
       splits: 1,
       transcribed: 'no',
       edited: 'no',
+      sent: 'no',
       splitLength: getSplitLength(),
       originalLength: `${hRef.current?.value}:${mRef.current?.value}:${sRef.current?.value}`,
     };

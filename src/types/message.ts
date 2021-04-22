@@ -15,6 +15,7 @@ export interface MessageI {
   splits: number;
   splitLength: number;
   originalLength: string;
+  sent: 'yes' | 'no';
 }
 
 export interface Messages {
