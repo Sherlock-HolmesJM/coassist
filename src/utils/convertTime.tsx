@@ -12,8 +12,6 @@ export const secondsToHMS = (seconds: number) => {
 
   s = s > 59 ? s % 60 : s;
 
-  console.log({ s });
-
   return { h, m, s: toTwoDigits(s) };
 };
 

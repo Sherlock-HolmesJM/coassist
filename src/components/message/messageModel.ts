@@ -3,6 +3,7 @@ import {
   MemberI,
   MemberType,
   MessageI,
+  T_And_TE,
   Worker,
 } from '../../types';
 import { capitalize, secondsToHMS } from '../../utils';
@@ -13,31 +14,40 @@ export const getAssignedLength = (workers: Worker[]) => {
   return `${h}:${m}:${s}`;
 };
 
-const updateTorTE = (message: MessageI, ts: Worker[], tes: Worker[]) => {
-  const { length: tl } = ts;
-  const { length: tel } = tes;
+const getT_TE_Name = (workers: Worker[]) => {
+  const names = workers.reduce((acc, worker) => [...acc, worker.name], []);
+  const uniqueNames = [...new Set(names)];
+  const { length } = uniqueNames;
+  return length === 1 ? uniqueNames[0] : length === 0 ? '' : 'Ts';
+};
 
+const getDateIssued = (object: T_And_TE) => {
+  if (object.name === '') {
+    object.dateIssued = '';
+    object.dateReturned = '';
+  } else {
+    const { dateIssued } = object;
+    object.dateIssued === dateIssued || new Date().toJSON();
+  }
+};
+
+const getDateReturned = (object: T_And_TE) => {
+  const { dateReturned } = object;
+  object.dateReturned = dateReturned || new Date().toJSON();
+};
+
+const updateTorTE = (message: MessageI, ts: Worker[], tes: Worker[]) => {
   if (!message.transcriber) message.transcriber = createTorTE('T');
   if (!message.transcriptEditor) message.transcriptEditor = createTorTE('TE');
 
-  message.transcriptEditor.name = tel === 1 ? tes[0].name : 'TEs';
-  message.transcriber.name = tl === 1 ? ts[0].name : 'Ts';
+  message.transcriptEditor.name = getT_TE_Name(tes);
+  message.transcriber.name = getT_TE_Name(ts);
 
-  if (message.status === 'done') {
-    const { dateReturned } = message.transcriptEditor;
-    message.transcriptEditor.dateReturned = dateReturned || new Date().toJSON();
-  } else {
-    const { dateIssued } = message.transcriptEditor;
-    message.transcriptEditor.dateIssued = dateIssued || new Date().toJSON();
-  }
+  if (message.status === 'done') getDateReturned(message.transcriptEditor);
+  else getDateIssued(message.transcriptEditor);
 
-  if (message.transcribed === 'yes') {
-    const { dateReturned } = message.transcriber;
-    message.transcriber.dateReturned = dateReturned || new Date().toJSON();
-  } else {
-    const { dateIssued } = message.transcriber;
-    message.transcriber.dateIssued = dateIssued || new Date().toJSON();
-  }
+  if (message.transcribed === 'yes') getDateReturned(message.transcriber);
+  else getDateIssued(message.transcriber);
 };
 
 const getSecond = (duration: number) => {
@@ -95,6 +105,8 @@ export const updateStatus = (message: MessageI) => {
       : 'undone';
 
   updateTorTE(message, ts, tes);
+
+  console.log(message);
 };
 
 export const getNewMembers = (member: MemberI, members: MemberI[]) => {
@@ -115,7 +127,7 @@ export const getMemberStatus = (muid: number, messages: MessageI[]) => {
   const msg = messages.find((m) =>
     m.workers.filter((w) => w.memuid === muid).find((w) => w.done === false)
   );
-  // returns false if name is still working on a message.
+  // returns false if member is still working on a message.
   return msg ? false : true;
 };
 
@@ -160,11 +172,3 @@ export const checkWorker = (
   if (worker.part === part) return true;
   return !checkWork(workers, part, worker.type);
 };
-
-// export const parseInput = (value: string, filename: string) => {
-//   return value.slice(filename.length, value.length);
-// };
-
-// export const getPart = (split: string, messageName: string) => {
-//   return parseInput(split, messageName) === '' ? messageName : split;
-// };
