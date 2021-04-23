@@ -3,6 +3,7 @@ import { MessageI, T_And_TE } from '../types';
 import range from './range';
 import summary from './summary';
 import capitalize from './capitalize';
+import { secondsToMinutes } from './convertTime';
 
 const columns = [
   { name: 'Collator', filterButton: true },
@@ -26,7 +27,7 @@ function updateSummary(workbook, messages) {
     []
   );
 
-  const rows = range(3, 10);
+  const rows = range(3, 11);
 
   rows.forEach((row, index) => {
     sheet.getRow(row).getCell(2).value = values[index][0];
@@ -46,7 +47,7 @@ function getFields(message: MessageI, collatorName: string) {
     capitalize(message.category) || 'Sermon',
     getDate(message.transcriber, 'dateIssued'),
     message.size || '',
-    Math.floor(message.duration / 60) || '',
+    secondsToMinutes(message.duration),
     getDate(message.transcriber, 'dateReturned'),
     capitalize(message.transcriptEditor?.name),
     getDate(message.transcriptEditor, 'dateIssued'),

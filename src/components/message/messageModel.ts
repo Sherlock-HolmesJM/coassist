@@ -94,7 +94,9 @@ export const updateStatus = (message: MessageI) => {
   const worker = workers.some((w) => !w.done);
 
   message.status =
-    message.transcribed === 'yes' && edited === 'yes'
+    message.sent2CGT === 'yes'
+      ? 'sent2CGT'
+      : message.transcribed === 'yes' && edited === 'yes'
       ? 'done'
       : worker
       ? 'in-progress'

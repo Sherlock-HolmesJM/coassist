@@ -8,6 +8,7 @@ export const summary = (messages: MessageI[]) => {
 
   const aTrans = messages.filter((m) => m.transcribed === 'yes').length;
   const aIP = messages.filter((m) => m.transcribed === 'in-progress').length;
+  const sent = messages.filter((m) => m.status === 'sent2CGT').length;
 
   return [
     { name: 'Total No. of Audios', value: total, classes: '' },
@@ -29,6 +30,11 @@ export const summary = (messages: MessageI[]) => {
       name: 'No. of Transcripts Not Edited',
       value: total - tEdited,
       classes: 'summary-red',
+    },
+    {
+      name: 'No. of Transcripts Sent to CGT',
+      value: sent,
+      classes: '',
     },
   ];
 };

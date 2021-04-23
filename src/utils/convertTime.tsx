@@ -1,3 +1,7 @@
+export const secondsToMinutes = (seconds: number) => {
+  return Math.floor(seconds / 60);
+};
+
 /**
  *
  * @param seconds time in seconds

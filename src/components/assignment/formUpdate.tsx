@@ -6,6 +6,7 @@ import { db } from '../../services';
 import * as mm from '../message/messageModel';
 import { hmsToSeconds, secondsToHMS } from '../../utils';
 import Loader from '../../commons/loader';
+import { determineSent } from './assignemntUtils';
 
 export interface FormProps {
   message: MessageI;
@@ -26,6 +27,8 @@ const FormUpdate: React.FC<FormProps> = (props) => {
   const mRef = useRef<HTMLInputElement>(null);
   const sRef = useRef<HTMLInputElement>(null);
 
+  const [sent2CGT, setSent2CGT] = useState('');
+
   useEffect(() => {
     if (!message) return;
 
@@ -37,6 +40,7 @@ const FormUpdate: React.FC<FormProps> = (props) => {
       mRef.current.value = m;
       sRef.current.value = s;
     }
+    setSent2CGT(message.sent2CGT ?? '');
     // eslint-disable-next-line
   }, [message]);
 
@@ -119,6 +123,7 @@ const FormUpdate: React.FC<FormProps> = (props) => {
       duration,
       originalLength: `${h}:${m}:${s}`,
       size,
+      sent2CGT: determineSent(message, sent2CGT as any),
     };
 
     mm.updateStatus(newMessage);
@@ -229,6 +234,23 @@ const FormUpdate: React.FC<FormProps> = (props) => {
           ref={fileRef}
           onChange={handleAddFromFiles}
         />
+      </div>
+      <div className='m-2'>
+        <div className='form-control'>
+          <label htmlFor='select-worker' className='header-label form-label'>
+            Sent to CGT:
+          </label>
+          <select
+            required
+            value={sent2CGT}
+            onChange={(e) => setSent2CGT(e.target.value)}
+            id='select-worker'
+            className='form-select'
+          >
+            <option value='no'>no</option>
+            <option value='yes'>yes</option>
+          </select>
+        </div>
       </div>
       <div className='m-2 btn-group'>
         <input className='btn btn-success' type='submit' value='Update' />

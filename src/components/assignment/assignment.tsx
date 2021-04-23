@@ -23,13 +23,20 @@ function Assignment() {
   const inProgress = messages.filter((m) => m.status === 'in-progress').length;
   const incomplete = messages.filter((m) => m.status === 'incomplete').length;
   const transcribed = messages.filter((m) => m.status === 'transcribed').length;
+  const sent = messages.filter((m) => m.status === 'sent2CGT').length;
 
   const getColor = (status: MessageStatus) =>
-    status === 'done'
-      ? 'danger'
+    status === 'sent2CGT'
+      ? 'info'
+      : status === 'undone'
+      ? 'success'
       : status === 'in-progress'
       ? 'warning'
-      : 'success';
+      : status === 'incomplete'
+      ? 'secondary'
+      : status === 'transcribed'
+      ? 'secondary'
+      : 'danger';
 
   const handleDelete = (message: MessageI) => {
     const result = prompt('Are you sure?');
@@ -92,6 +99,10 @@ function Assignment() {
           <div className='badge-content'>
             <span>Done:</span>
             <span>{done}</span>
+          </div>
+          <div className='badge-content'>
+            <span>Sent:</span>
+            <span>{sent}</span>
           </div>
         </div>
       </div>
@@ -178,10 +189,18 @@ const Section = styled.section`
     display: flex;
     justify-content: flex-end;
   }
+  .header-label {
+    margin-right: 10px;
+  }
   .form-control {
     flex-basis: clamp(310px, 50%, 400px);
     text-transform: uppercase;
     border: 2px gray red;
+  }
+  .form-select {
+    text-transform: capitalize;
+    outline: none;
+    border: none;
   }
   .duration-holder {
     display: flex;

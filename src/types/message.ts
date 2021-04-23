@@ -15,7 +15,7 @@ export interface MessageI {
   splits: number;
   splitLength: number;
   originalLength: string;
-  sent: 'yes' | 'no';
+  sent2CGT: 'yes' | 'no' | '';
 }
 
 export interface Messages {
@@ -23,8 +23,9 @@ export interface Messages {
 }
 
 export type MessageStatus =
-  | 'done'
   | 'undone'
+  | 'incomplete'
   | 'in-progress'
   | 'transcribed'
-  | 'incomplete';
+  | 'done'
+  | 'sent2CGT';

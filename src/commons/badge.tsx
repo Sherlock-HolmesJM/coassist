@@ -1,7 +1,15 @@
 import styled from 'styled-components';
 
 export interface BadgeProps {
-  color: 'warning' | 'danger' | 'primary' | 'secondary' | 'success';
+  color:
+    | 'warning'
+    | 'danger'
+    | 'primary'
+    | 'secondary'
+    | 'success'
+    | 'dark'
+    | 'light'
+    | 'info';
   text: string;
   classes?: string;
 }
