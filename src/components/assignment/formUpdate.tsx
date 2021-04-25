@@ -7,6 +7,8 @@ import * as mm from '../message/messageModel';
 import { secondsToHMS, swals } from '../../utils';
 import Loader from '../../commons/loader';
 import { getFileDetails, determineSent, updateWorkers } from './helper';
+import { SizeInput, NameInput, FileInput } from './inputs';
+import TimeInput from './timeInput';
 
 export interface FormProps {
   message: MessageI;
@@ -32,9 +34,6 @@ const FormUpdate: React.FC<FormProps> = (props) => {
   });
 
   const { name, size, duration, spin, time, sent } = data;
-  const { h, m, s } = time;
-
-  const fileRef = useRef<HTMLInputElement>(null);
 
   const [sent2CGT, setSent2CGT] = useState('');
 
@@ -49,28 +48,12 @@ const FormUpdate: React.FC<FormProps> = (props) => {
 
   if (!message) return null;
 
-  const handleAddFromFiles = () => {
-    const file = fileRef.current.files[0];
+  const handleAddFromFiles = (file: File) => {
     setData({ ...data, spin: true });
     getFileDetails(file, (name, size, duration) => {
       const time = secondsToHMS(duration);
       setData({ ...data, name, size, duration, time, spin: false });
     });
-  };
-
-  const handleChangeFocus = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, dataset } = e.target;
-    const t = dataset.type;
-    const type = t === 'h' ? 'm' : t === 'm' ? 's' : 'size';
-
-    if (value.length === 2)
-      (document.querySelector(`.focus.${type}`) as any)?.focus();
-  };
-
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { type } = e.target.dataset;
-
-    setData({ ...data, time: { ...data.time, [type]: e.target.value } });
   };
 
   const handleUpdate = (e: any, message: MessageI) => {
@@ -120,78 +103,21 @@ const FormUpdate: React.FC<FormProps> = (props) => {
             onClick={() => setMessage(null)}
           />
         </div>
-        <div className='m-2'>
-          <input
-            className='form-control'
-            type='text'
-            placeholder='filename'
-            required
-            value={name}
-            onChange={(e) => setData({ ...data, name: e.target.value })}
-          />
-        </div>
-        <div className='m-2'>
-          <div
-            className='form-control duration-holder'
-            onChange={handleChangeFocus}
-          >
-            <p onClick={undefined} style={{ marginRight: '10px' }}>
-              Duration (H:M:S)
-            </p>
-            <input
-              type='number'
-              placeholder='00'
-              data-type='h'
-              required
-              className='duration focus h'
-              value={h}
-              onFocus={(e) => e.target.select()}
-              onChange={handleTimeChange}
-            />
-            :
-            <input
-              type='number'
-              placeholder='00'
-              data-type='m'
-              required
-              value={m}
-              className='duration focus m'
-              onFocus={(e) => e.target.select()}
-              onChange={handleTimeChange}
-            />
-            :
-            <input
-              type='number'
-              placeholder='00'
-              data-type='s'
-              required
-              value={s}
-              className='duration focus s'
-              onFocus={(e) => e.target.select()}
-              onChange={handleTimeChange}
-            />
-          </div>
-        </div>
-        <div className='m-2'>
-          <input
-            className='form-control size focus'
-            type='number'
-            placeholder='size (MB)'
-            value={data.size}
-            onChange={(e) => setData({ ...data, size: +e.target.value })}
-            required
-            onFocus={(e) => e.currentTarget.select()}
-          />
-        </div>
-        <div className='m-2'>
-          <input
-            className='form-control'
-            type='file'
-            placeholder='Get File(s)'
-            ref={fileRef}
-            onChange={handleAddFromFiles}
-          />
-        </div>
+        <NameInput
+          value={name}
+          setName={(name) => setData({ ...data, name })}
+        />
+        <TimeInput
+          time={time}
+          setTime={(type, value) =>
+            setData({ ...data, time: { ...data.time, [type]: value } })
+          }
+        />
+        <SizeInput
+          value={size}
+          onChange={(e) => setData({ ...data, size: +e.target.value })}
+        />
+        <FileInput onChange={handleAddFromFiles} />
         <div className='m-2'>
           <div className='form-control'>
             <label htmlFor='select-worker' className='header-label form-label'>

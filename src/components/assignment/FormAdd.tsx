@@ -1,5 +1,5 @@
 import React, { useContext, useRef, useState } from 'react';
-import { capitalize, secondsToHMS, hmsToSeconds } from '../../utils';
+import { capitalize, secondsToHMS, swals } from '../../utils';
 import { context } from '../../context/context';
 import { setMessages } from '../../context/actions';
 import { MessageI, createTorTE } from '../../types';
@@ -99,6 +99,7 @@ const FormAdd: React.FC<FormProps> = (props) => {
     setData(initialData);
     db.setMessage(message);
     nameRef.current?.focus();
+    swals('', 'New file added');
   };
 
   return (
@@ -119,10 +120,15 @@ const FormAdd: React.FC<FormProps> = (props) => {
           placeholder='filename'
           required
           ref={nameRef}
+          value={name}
+          onChange={(e) => setData({ ...data, name: e.target.value })}
         />
       </div>
       <div className='m-2'>
-        <div className='form-control duration-holder'>
+        <div
+          className='form-control duration-holder'
+          onChange={handleChangeFocus}
+        >
           <p
             onClick={() => hRef.current?.focus()}
             style={{ marginRight: '10px' }}
@@ -137,8 +143,9 @@ const FormAdd: React.FC<FormProps> = (props) => {
             data-index='1'
             ref={hRef}
             required
+            value={h}
             className='duration'
-            onChange={handleChangeFocus}
+            onChange={handleTimeChange}
             onFocus={(e) => e.currentTarget.select()}
           />
           :
@@ -150,7 +157,8 @@ const FormAdd: React.FC<FormProps> = (props) => {
             data-index='2'
             required
             className='duration'
-            onChange={handleChangeFocus}
+            value={m}
+            onChange={handleTimeChange}
             onFocus={(e) => e.currentTarget.select()}
           />
           :
@@ -160,7 +168,8 @@ const FormAdd: React.FC<FormProps> = (props) => {
             data-index='3'
             required
             className='duration'
-            onChange={handleChangeFocus}
+            value={s}
+            onChange={handleTimeChange}
             onFocus={(e) => e.currentTarget.select()}
           />
         </div>
@@ -171,6 +180,8 @@ const FormAdd: React.FC<FormProps> = (props) => {
           type='number'
           placeholder='size (MB)'
           required
+          value={size}
+          onChange={(e) => setData({ ...data, size: +e.target.value })}
           onFocus={(e) => e.currentTarget.select()}
         />
       </div>
