@@ -3,13 +3,15 @@ import 'firebase/database';
 import { path } from './index';
 import { MessageI } from '../../types';
 import { arrayToObject } from '../transformer';
+import { swale, swals } from '../../utils';
 
 export const setMessage = (message: MessageI) =>
   firebase
     .database()
     .ref(path() + 'messages/' + message.uid)
     .set(message)
-    .catch((e) => alert(e.message));
+    .then(() => swals('', 'Saved.'))
+    .catch((e) => swale(e.message));
 
 export const updateMessages = (messages: MessageI[]) => {
   const obj = arrayToObject(messages) as any;
@@ -19,7 +21,8 @@ export const updateMessages = (messages: MessageI[]) => {
     .database()
     .ref(path() + 'messages')
     .update(obj)
-    .catch((e) => alert(e.message));
+    .then(() => swals('', 'Saved.'))
+    .catch((e) => swale(e.message));
 };
 
 export const updateMessage = (message: MessageI) => {
@@ -30,7 +33,8 @@ export const updateMessage = (message: MessageI) => {
     .database()
     .ref(path() + 'messages/' + message.uid)
     .update(m)
-    .catch((e) => alert(e.message));
+    .then(() => swals('', 'Saved.'))
+    .catch((e) => swale(e.message));
 };
 
 export const removeMessage = (muid: number) =>
@@ -38,4 +42,5 @@ export const removeMessage = (muid: number) =>
     .database()
     .ref(path() + 'messages/' + muid)
     .remove()
-    .catch((e) => alert(e.message));
+    .then(() => swals('', 'Saved.'))
+    .catch((e) => swale(e.message));

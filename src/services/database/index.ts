@@ -11,15 +11,6 @@ import { MemberI, MessageI, Worker } from '../../types';
 export const uid = () => firebase.auth().currentUser?.uid;
 export const path = () => '/coassist/' + uid() + '/data/';
 
-const getTemplate = () => {
-  return firebase
-    .storage()
-    .ref('coassist/template.xlsx')
-    .getDownloadURL()
-    .then((url) => url)
-    .catch((e) => console.log(e));
-};
-
 export const chainupdateMMW = (
   worker: Worker,
   message: MessageI,
@@ -30,4 +21,8 @@ export const chainupdateMMW = (
   wrk.setWorker(worker);
 };
 
-export const db = { ...mem, ...msg, ...wrk, ...data, getTemplate };
+export const db = { ...mem, ...msg, ...wrk, ...data };
+export * from './member';
+export * from './message';
+export * from './worker';
+export * from './data';

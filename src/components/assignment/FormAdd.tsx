@@ -5,86 +5,66 @@ import { setMessages } from '../../context/actions';
 import { MessageI, createTorTE } from '../../types';
 import { db } from '../../services';
 import Loader from '../../commons/loader';
+import { getFileDetails } from './helper';
 
 export interface FormProps {
   setShowform: (value: boolean) => void;
   showform: boolean;
 }
 
+const initialData = {
+  name: '',
+  size: 0,
+  splitLength: 0,
+  duration: 0,
+  spin: false,
+  time: {
+    h: '0',
+    m: '0',
+    s: '0',
+  },
+};
+
 const FormAdd: React.FC<FormProps> = (props) => {
   const { setShowform, showform } = props;
 
   const { dispatch, messages } = useContext(context);
 
-  const [spin, setSpin] = useState(false);
+  const [data, setData] = useState(initialData);
 
-  const fileRef = useRef<HTMLInputElement>(null);
+  const { name, size, duration, spin, time, splitLength } = data;
+  const { h, m, s } = time;
+
   const nameRef = useRef<HTMLInputElement>(null);
-  const sizeRef = useRef<HTMLInputElement>(null);
   const hRef = useRef<HTMLInputElement>(null);
-  const mRef = useRef<HTMLInputElement>(null);
-  const sRef = useRef<HTMLInputElement>(null);
-  const splitRef = useRef<HTMLSelectElement>(null);
 
   if (!showform) return null;
 
-  const getSplitLength = () => {
-    return splitRef.current ? +splitRef.current.value : 0;
+  const handleAddFromFiles = (e: any) => {
+    const file = e.target.files[0];
+    setData({ ...data, spin: true });
+    getFileDetails(file, (name, size, duration) => {
+      const time = secondsToHMS(duration);
+      setData({ ...data, name, size, duration, time, spin: false });
+    });
   };
 
-  const handleChangeFocus = (e: any) => {
-    const { value, dataset } = e.currentTarget;
+  const handleChangeFocus = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { value, dataset } = e.target;
+    const t = dataset.type;
+    const type = t === 'h' ? 'm' : t === 'm' ? 's' : 'size';
 
-    if (value.length === 2) {
-      if (+dataset.index === 1) mRef.current?.focus();
-      else if (+dataset.index === 2) sRef.current?.focus();
-      else if (+dataset.index === 3) sizeRef.current?.focus();
-    }
+    if (value.length === 2)
+      (document.querySelector(`.focus.${type}`) as any)?.focus();
   };
 
-  const handleAddFromFiles = () => {
-    const audio = document.createElement('audio');
-    const file = fileRef.current.files[0];
+  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const { type } = e.target.dataset;
 
-    if (!file) return alert(`File is ${file}. Try again.`);
-    if (file.type !== 'audio/mpeg')
-      return alert('Invalid file type. Try again with audio files.');
-
-    const name = file.name.replace('.mp3', '');
-    const size = Math.floor(file.size / 1024 / 1024);
-
-    nameRef.current.value = name;
-    sizeRef.current.value = size + '';
-
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      setSpin(true);
-      audio.src = e.target.result as any;
-      audio.onloadedmetadata = (e) => {
-        // audio.duration is in seconds
-        const { h, m, s } = secondsToHMS(audio.duration);
-        hRef.current.value = h;
-        mRef.current.value = m;
-        sRef.current.value = s;
-        setSpin(false);
-      };
-    };
-
-    reader.onerror = (e) => {
-      setSpin(false);
-      alert(e);
-    };
-
-    if (size <= 200) reader.readAsDataURL(file);
-    else {
-      alert(
-        `The File size of ${size}MB is too large to get the duration. You are going to have to get it yourself.`
-      );
-    }
+    setData({ ...data, time: { ...data.time, [type]: e.target.value } });
   };
 
-  const getFilename = () => nameRef.current?.value.toLowerCase().trim() ?? '';
+  const getFilename = () => name.toLowerCase().trim() ?? '';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -101,48 +81,24 @@ const FormAdd: React.FC<FormProps> = (props) => {
       status: 'undone',
       workers: [],
       category: 'sermon',
-      duration: hmsToSeconds(
-        hRef.current.value,
-        mRef.current.value,
-        sRef.current.value
-      ),
+      duration,
       transcriber: createTorTE('T'),
       transcriptEditor: createTorTE('TE'),
-      size: sizeRef.current ? +sizeRef.current.value : 1,
+      size,
       splits: 1,
       transcribed: 'no',
       edited: 'no',
       sent2CGT: '',
-      splitLength: getSplitLength(),
-      originalLength: `${hRef.current?.value}:${mRef.current?.value}:${sRef.current?.value}`,
+      splitLength,
+      originalLength: `${h}:${m}:${s}`,
     };
 
     const list = [...messages, message];
 
     dispatch(setMessages(list));
-    nameRef.current?.focus();
-    if (nameRef.current) nameRef.current.value = '';
+    setData(initialData);
     db.setMessage(message);
-  };
-
-  // eslint-disable-next-line
-  const handleAddMissing = () => {
-    messages.forEach((m) => {
-      m.duration = m.duration || 0;
-      m.originalLength = m.originalLength || '00:00:00';
-      m.transcriber = m.transcriber || createTorTE('T');
-      m.transcriptEditor = m.transcriptEditor || createTorTE('TE');
-      m.transcribed = m.transcribed || 'no';
-      m.edited = m.edited || 'no';
-      m.category = 'sermon';
-      m.size = m.size || 0;
-      m.splits = m.splits || 1;
-      m.splitLength = m.splitLength || 0;
-    });
-
-    dispatch(setMessages(messages));
-    db.updateMessages(messages);
-    alert('Missing fields added.');
+    nameRef.current?.focus();
   };
 
   return (
@@ -192,7 +148,6 @@ const FormAdd: React.FC<FormProps> = (props) => {
             max='60'
             placeholder='00'
             data-index='2'
-            ref={mRef}
             required
             className='duration'
             onChange={handleChangeFocus}
@@ -201,11 +156,8 @@ const FormAdd: React.FC<FormProps> = (props) => {
           :
           <input
             type='number'
-            min='0'
-            max='60'
             placeholder='00'
             data-index='3'
-            ref={sRef}
             required
             className='duration'
             onChange={handleChangeFocus}
@@ -218,9 +170,7 @@ const FormAdd: React.FC<FormProps> = (props) => {
           className='form-control size'
           type='number'
           placeholder='size (MB)'
-          ref={sizeRef}
           required
-          min='0'
           onFocus={(e) => e.currentTarget.select()}
         />
       </div>
@@ -229,18 +179,11 @@ const FormAdd: React.FC<FormProps> = (props) => {
           className='form-control'
           type='file'
           placeholder='Get File(s)'
-          ref={fileRef}
           onChange={handleAddFromFiles}
         />
       </div>
       <div className='m-2 btn-group'>
         <input className='btn btn-primary' type='submit' value='Add' />
-        {/* <input
-          className='btn btn-light'
-          type='button'
-          value='Add Missing Fields'
-          onClick={handleAddMissing}
-        /> */}
       </div>
     </form>
   );

@@ -1,9 +1,14 @@
-import Swal from 'sweetalert2';
-import withReactContent from 'sweetalert2-react-content';
+import { createTorTE, MessageI, Worker } from '../../types';
+import { swale, swali, swals } from '../../utils';
+import { db } from '../../services';
 
-const MySwal = withReactContent(Swal);
-
-const swale = (text: string) => MySwal.fire('Error', text, 'error');
+export const updateWorkers = (name: string, workers: Worker[]) => {
+  workers.forEach((w) => {
+    w.part = w.part.replace(w.msgname, name);
+    w.msgname = name;
+  });
+  db.updateWorkers(workers);
+};
 
 type CB = (name: string, size: number, duration: number) => void;
 
@@ -26,21 +31,15 @@ export const getFileDetails = (file: File, cb: CB) => {
 
   reader.onload = (e) => {
     audio.src = e.target.result as any;
-    audio.onloadedmetadata = () => cb(name, size, audio.duration); // audio.duration is in seconds
-    MySwal.fire({
-      title: 'Success',
-      text: 'Successfully read file details',
-      icon: 'success',
-    });
+    audio.onloadedmetadata = () => {
+      swals('Read file details');
+      cb(name, size, audio.duration); // audio.duration is in seconds
+    };
   };
 
   reader.onerror = (e) => {
     cb(name, size, 0);
-    MySwal.fire(
-      'Duration Error',
-      'An error occured while reading duration from file.',
-      'error'
-    );
+    swale(e.target.result as string, 'Duration error');
   };
 
   const memory = (navigator as any).deviceMemory;
@@ -48,10 +47,30 @@ export const getFileDetails = (file: File, cb: CB) => {
   if (size <= 200 && memory > 1) reader.readAsDataURL(file);
   else {
     cb(name, size, 0);
-    MySwal.fire(
-      'Info',
-      'Cannot read duration because file size is too large or memory is too low. Please get the duration yourself.',
-      'info'
+    swali(
+      'Cannot read duration because file size is too large or memory is too low. Please get it yourself.'
     );
   }
+};
+
+export const determineSent = (message: MessageI, sent: 'yes' | 'no' | '') => {
+  return message.transcribed === 'yes' && message.edited === 'yes' ? sent : '';
+};
+
+// eslint-disable-next-line
+export const addMissingProps = (messages: MessageI[]) => {
+  messages.forEach((m) => {
+    m.duration = m.duration || 0;
+    m.originalLength = m.originalLength || '00:00:00';
+    m.transcriber = m.transcriber || createTorTE('T');
+    m.transcriptEditor = m.transcriptEditor || createTorTE('TE');
+    m.transcribed = m.transcribed || 'no';
+    m.edited = m.edited || 'no';
+    m.category = 'sermon';
+    m.size = m.size || 0;
+    m.splits = m.splits || 1;
+    m.splitLength = m.splitLength || 0;
+  });
+
+  return messages;
 };
