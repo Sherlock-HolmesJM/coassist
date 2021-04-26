@@ -1,4 +1,6 @@
 import { ChangeEvent, FC } from 'react';
+import { Howl } from 'howler';
+import { swale } from '../../utils';
 
 export interface SizeProps {
   value: number;
@@ -14,7 +16,7 @@ export const SizeInput: FC<SizeProps> = (props) => {
         className='form-control size focus'
         type='number'
         placeholder='size (MB)'
-        value={value}
+        value={value || ''}
         onChange={onChange}
         required
         onFocus={(e) => e.currentTarget.select()}
@@ -41,7 +43,7 @@ export const NameInput: FC<NameProps> = (props) => {
         type='text'
         placeholder='filename'
         required
-        value={value}
+        value={value || ''}
         onChange={(e) => setName(e.target.value.trim().toLowerCase())}
       />
     </div>
@@ -51,21 +53,71 @@ export const NameInput: FC<NameProps> = (props) => {
 // File Input
 // File Input
 
+// type CB = (name: string, size: number, duration: number) => void;
+
 interface FileProps {
-  onChange: (file: File) => void;
+  callback: (name: string, size: number, duration: number) => void;
 }
 
 export const FileInput: FC<FileProps> = (props) => {
-  const { onChange } = props;
+  const { callback } = props;
+
+  const pickerOpts = {
+    types: [
+      {
+        description: 'Audios',
+        accept: {
+          'audio/*': ['.mp3'],
+        },
+      },
+    ],
+    excludeAcceptAllOption: true,
+    multiple: false,
+  };
+
+  const getFileInfo = async () => {
+    try {
+      const [handle] = await (window as any).showOpenFilePicker(pickerOpts);
+      const file = await handle.getFile();
+
+      const namesplit = file.name.split('.');
+      const format = namesplit[namesplit.length - 1].toLowerCase();
+
+      const size = Math.round(file.size / 1024 / 1024);
+      const name = file.name.replace('.mp3', '');
+
+      const memory = (navigator as any).deviceMemory;
+
+      if (memory < 2) return callback(name, size, 0);
+      if (size > 200) return callback(name, size, 0);
+
+      const reader = new FileReader();
+
+      reader.onload = (e) => {
+        const sound = new Howl({
+          src: e.target.result as any,
+          format,
+          html5: true,
+        });
+
+        sound.on('load', () => {
+          callback(name, size, sound.duration());
+        });
+      };
+
+      reader.readAsDataURL(file);
+    } catch (e) {
+      swale(e.message);
+      callback('', 0, 0);
+    }
+  };
 
   return (
-    <div className='m-2'>
-      <input
-        className='form-control'
-        type='file'
-        placeholder='Get File(s)'
-        onChange={(e) => onChange(e.target.files[0])}
-      />
-    </div>
+    <input
+      className='btn btn-info'
+      type='button'
+      value='Get File'
+      onClick={getFileInfo}
+    />
   );
 };

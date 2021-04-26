@@ -1,12 +1,12 @@
-import React, { useContext, useEffect, useRef, useState } from 'react';
+import React, { useContext, useEffect, useState } from 'react';
 import { context } from '../../context/context';
 import { setMessages } from '../../context/actions';
 import { MessageI } from '../../types';
 import { db } from '../../services';
 import * as mm from '../message/messageModel';
-import { secondsToHMS, swals } from '../../utils';
+import { secondsToHMS, swalconfirm, swale, swali, swals } from '../../utils';
 import Loader from '../../commons/loader';
-import { getFileDetails, determineSent, updateWorkers } from './helper';
+import { determineSent, updateWorkers } from './helper';
 import { SizeInput, NameInput, FileInput } from './inputs';
 import TimeInput from './timeInput';
 
@@ -48,19 +48,19 @@ const FormUpdate: React.FC<FormProps> = (props) => {
 
   if (!message) return null;
 
-  const handleAddFromFiles = (file: File) => {
-    setData({ ...data, spin: true });
-    getFileDetails(file, (name, size, duration) => {
-      const time = secondsToHMS(duration);
-      setData({ ...data, name, size, duration, time, spin: false });
-    });
+  const handleGetDetails = (name: string, size: number, duration: number) => {
+    if (duration === 0) swali('Could not get duration of audio.');
+    else swals('You may proceed.', 'Got details.');
+
+    const time = secondsToHMS(duration);
+    setData({ ...data, name, size, time });
   };
 
-  const handleUpdate = (e: any, message: MessageI) => {
+  const handleUpdate = async (e: any, message: MessageI) => {
     e.preventDefault();
 
-    const result = prompt('Are you sure?');
-    if (result === null) return;
+    const result = await swalconfirm('Yes, update it!');
+    if (!result.isConfirmed) return;
 
     const found = messages.find((m) => m.name === name);
     if (found && found.uid !== message.uid)
@@ -117,7 +117,6 @@ const FormUpdate: React.FC<FormProps> = (props) => {
           value={size}
           onChange={(e) => setData({ ...data, size: +e.target.value })}
         />
-        <FileInput onChange={handleAddFromFiles} />
         <div className='m-2'>
           <div className='form-control'>
             <label htmlFor='select-worker' className='header-label form-label'>
@@ -136,6 +135,7 @@ const FormUpdate: React.FC<FormProps> = (props) => {
           </div>
         </div>
         <div className='m-2 btn-group'>
+          <FileInput callback={handleGetDetails} />
           <input className='btn btn-success' type='submit' value='Update' />
         </div>
       </form>

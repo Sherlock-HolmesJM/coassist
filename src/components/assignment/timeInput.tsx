@@ -38,13 +38,13 @@ const Time: React.FC<TimeProps> = (props) => {
   );
 };
 
-interface Input {
+interface InputProps {
   handleTimeChange: (e: ChangeEvent<HTMLInputElement>) => void;
   value: number;
   type: string;
 }
 
-const Input: React.FC<Input> = (props) => {
+const Input: React.FC<InputProps> = (props) => {
   const { value, type, handleTimeChange } = props;
 
   return (
@@ -53,7 +53,7 @@ const Input: React.FC<Input> = (props) => {
       placeholder='00'
       data-type={type}
       required
-      value={value}
+      value={value || ''}
       className={`duration focus ${type}`}
       onFocus={(e) => e.target.select()}
       onChange={handleTimeChange}

@@ -1,6 +1,7 @@
 import { createTorTE, MessageI, Worker } from '../../types';
-import { swale, swali, swals } from '../../utils';
+import { swale, swali } from '../../utils';
 import { db } from '../../services';
+import { Howl } from 'howler';
 
 export const updateWorkers = (name: string, workers: Worker[]) => {
   workers.forEach((w) => {
@@ -13,16 +14,14 @@ export const updateWorkers = (name: string, workers: Worker[]) => {
 type CB = (name: string, size: number, duration: number) => void;
 
 export const getFileDetails = (file: File, cb: CB) => {
-  const audio = document.createElement('audio');
-
   if (!file) {
     swale(`File is ${file}. Try again.`);
     return cb('', 0, 0);
   }
-  if (file.type !== 'audio/mpeg') {
-    swale('Invalid file type. Try again with audio files.');
-    return cb('', 0, 0);
-  }
+  // if (file.type !== 'audio/mpeg') {
+  //   swale('Invalid file type. Try again with audio files.');
+  //   return cb('', 0, 0);
+  // }
 
   const name = file.name.replace('.mp3', '');
   const size = Math.floor(file.size / 1024 / 1024);
@@ -30,11 +29,19 @@ export const getFileDetails = (file: File, cb: CB) => {
   const reader = new FileReader();
 
   reader.onload = (e) => {
-    audio.src = e.target.result as any;
-    audio.onloadedmetadata = () => {
-      swals('Read file details');
-      cb(name, size, audio.duration); // audio.duration is in seconds
-    };
+    // audio.src = e.target.result as any;
+    // audio.onloadedmetadata = () => {
+    //   swals('Read file details');
+    //   cb(name, size, audio.duration); // audio.duration is in seconds
+    // };
+    console.log('here');
+    const sound = new Howl({
+      src: e.target.result as any,
+    });
+    sound.on('load', () => {
+      console.log(sound.duration());
+      sound.play();
+    });
   };
 
   reader.onerror = (e) => {

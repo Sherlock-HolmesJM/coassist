@@ -32,10 +32,8 @@ const Home: React.FC<Props> = () => {
       setSpin(true);
       const { data } = await axios.get(url);
       const buffer = await getExcel(data.data, messages, collatorName);
-      saveAs(
-        new Blob([buffer]),
-        `${capitalize(groupName)}_${capitalize(collatorName)}.xlsx`
-      );
+      const filename = `Transcript_Collator_${capitalize(collatorName)}.xlsx`;
+      saveAs(new Blob([buffer]), filename);
       setSpin(false);
     } catch (e) {
       alert(e);
@@ -43,13 +41,13 @@ const Home: React.FC<Props> = () => {
   };
 
   const handleChange = (e: any, collatorName: string, groupName: string) => {
-    if (e.key === 'Enter') {
-      collatorName =
-        collatorName === '' ? "collator's name" : collatorName.toLowerCase();
-      groupName = groupName === '' ? 'group name' : groupName.toLowerCase();
-      dispatch(setCG(collatorName, groupName));
-      db.updateCGNames(collatorName, groupName);
-    }
+    if (e.key !== 'Enter') return;
+
+    collatorName =
+      collatorName === '' ? "collator's name" : collatorName.toLowerCase();
+    groupName = groupName === '' ? 'group name' : groupName.toLowerCase();
+    dispatch(setCG(collatorName, groupName));
+    db.updateCGNames(collatorName, groupName);
   };
 
   const handleReload = () => {

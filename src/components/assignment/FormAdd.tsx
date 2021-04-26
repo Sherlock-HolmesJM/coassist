@@ -1,11 +1,12 @@
 import React, { useContext, useRef, useState } from 'react';
-import { capitalize, secondsToHMS, swals } from '../../utils';
+import { capitalize, secondsToHMS, swale, swali, swals } from '../../utils';
 import { context } from '../../context/context';
 import { setMessages } from '../../context/actions';
 import { MessageI, createTorTE } from '../../types';
 import { db } from '../../services';
 import Loader from '../../commons/loader';
-import { getFileDetails } from './helper';
+import { SizeInput, NameInput, FileInput } from './inputs';
+import TimeInput from './timeInput';
 
 export interface FormProps {
   setShowform: (value: boolean) => void;
@@ -15,7 +16,6 @@ export interface FormProps {
 const initialData = {
   name: '',
   size: 0,
-  splitLength: 0,
   duration: 0,
   spin: false,
   time: {
@@ -32,36 +32,17 @@ const FormAdd: React.FC<FormProps> = (props) => {
 
   const [data, setData] = useState(initialData);
 
-  const { name, size, duration, spin, time, splitLength } = data;
+  const { name, size, duration, spin, time } = data;
   const { h, m, s } = time;
-
-  const nameRef = useRef<HTMLInputElement>(null);
-  const hRef = useRef<HTMLInputElement>(null);
 
   if (!showform) return null;
 
-  const handleAddFromFiles = (e: any) => {
-    const file = e.target.files[0];
-    setData({ ...data, spin: true });
-    getFileDetails(file, (name, size, duration) => {
-      const time = secondsToHMS(duration);
-      setData({ ...data, name, size, duration, time, spin: false });
-    });
-  };
+  const handleGetDetails = (name: string, size: number, duration: number) => {
+    if (duration === 0) swali('Could not get duration of audio.');
+    else swals('You may proceed.', 'Got details.');
 
-  const handleChangeFocus = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { value, dataset } = e.target;
-    const t = dataset.type;
-    const type = t === 'h' ? 'm' : t === 'm' ? 's' : 'size';
-
-    if (value.length === 2)
-      (document.querySelector(`.focus.${type}`) as any)?.focus();
-  };
-
-  const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-    const { type } = e.target.dataset;
-
-    setData({ ...data, time: { ...data.time, [type]: e.target.value } });
+    const time = secondsToHMS(duration);
+    setData({ ...data, name, size, time });
   };
 
   const getFilename = () => name.toLowerCase().trim() ?? '';
@@ -73,7 +54,10 @@ const FormAdd: React.FC<FormProps> = (props) => {
     const index = messages.findIndex((m) => m.name === filename);
 
     if (index !== -1)
-      return alert(`${capitalize(filename)} is already being worked on.`);
+      return swale(
+        `${filename.toUpperCase()} has already been added.`,
+        'Duplicate message'
+      );
 
     const message: MessageI = {
       uid: Date.now(),
@@ -89,7 +73,7 @@ const FormAdd: React.FC<FormProps> = (props) => {
       transcribed: 'no',
       edited: 'no',
       sent2CGT: '',
-      splitLength,
+      splitLength: 0,
       originalLength: `${h}:${m}:${s}`,
     };
 
@@ -98,105 +82,41 @@ const FormAdd: React.FC<FormProps> = (props) => {
     dispatch(setMessages(list));
     setData(initialData);
     db.setMessage(message);
-    nameRef.current?.focus();
-    swals('', 'New file added');
+    swals('', 'New message added.');
   };
 
   return (
-    <form onSubmit={handleSubmit} className='form'>
+    <React.Fragment>
       <Loader spin={spin} />
-      <div className='btn-close-div'>
-        <input
-          className='btn btn-danger'
-          type='button'
-          value='X'
-          onClick={() => setShowform(false)}
-        />
-      </div>
-      <div className='m-2'>
-        <input
-          className='form-control'
-          type='text'
-          placeholder='filename'
-          required
-          ref={nameRef}
-          value={name}
-          onChange={(e) => setData({ ...data, name: e.target.value })}
-        />
-      </div>
-      <div className='m-2'>
-        <div
-          className='form-control duration-holder'
-          onChange={handleChangeFocus}
-        >
-          <p
-            onClick={() => hRef.current?.focus()}
-            style={{ marginRight: '10px' }}
-          >
-            Duration (H:M:S)
-          </p>
+      <form onSubmit={handleSubmit} className='form'>
+        <div className='btn-close-div'>
           <input
-            type='number'
-            min='0'
-            max='12'
-            placeholder='00'
-            data-index='1'
-            ref={hRef}
-            required
-            value={h}
-            className='duration'
-            onChange={handleTimeChange}
-            onFocus={(e) => e.currentTarget.select()}
-          />
-          :
-          <input
-            type='number'
-            min='0'
-            max='60'
-            placeholder='00'
-            data-index='2'
-            required
-            className='duration'
-            value={m}
-            onChange={handleTimeChange}
-            onFocus={(e) => e.currentTarget.select()}
-          />
-          :
-          <input
-            type='number'
-            placeholder='00'
-            data-index='3'
-            required
-            className='duration'
-            value={s}
-            onChange={handleTimeChange}
-            onFocus={(e) => e.currentTarget.select()}
+            className='btn btn-danger'
+            type='button'
+            value='X'
+            onClick={() => setShowform(false)}
           />
         </div>
-      </div>
-      <div className='m-2'>
-        <input
-          className='form-control size'
-          type='number'
-          placeholder='size (MB)'
-          required
+        <NameInput
+          value={name}
+          setName={(name) => setData({ ...data, name })}
+        />
+        <TimeInput
+          time={time}
+          setTime={(type, value) =>
+            setData({ ...data, time: { ...data.time, [type]: value } })
+          }
+        />
+        <SizeInput
           value={size}
           onChange={(e) => setData({ ...data, size: +e.target.value })}
-          onFocus={(e) => e.currentTarget.select()}
         />
-      </div>
-      <div className='m-2'>
-        <input
-          className='form-control'
-          type='file'
-          placeholder='Get File(s)'
-          onChange={handleAddFromFiles}
-        />
-      </div>
-      <div className='m-2 btn-group'>
-        <input className='btn btn-primary' type='submit' value='Add' />
-      </div>
-    </form>
+        <div className='m-2 btn-group'>
+          <FileInput callback={handleGetDetails} />
+          <input className='btn btn-primary' type='submit' value='Add' />
+        </div>
+      </form>
+    </React.Fragment>
   );
 };
 

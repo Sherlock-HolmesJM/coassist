@@ -16,6 +16,7 @@
     "file-saver": "^2.0.5",
     "firebase": "^8.3.0",
     "font-awesome": "^4.7.0",
+    "howler": "^2.2.1",
     "lottie-react": "^2.1.0",
     "react": "^17.0.1",
     "react-dom": "^17.0.1",
@@ -53,6 +54,7 @@
   },
   "devDependencies": {
     "@types/file-saver": "^2.0.1",
+    "@types/howler": "^2.2.2",
     "@types/react-router-dom": "^5.1.7",
     "@types/styled-components": "^5.1.8"
   }
