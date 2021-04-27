@@ -85,13 +85,11 @@ const MembersComp: React.FC<MembersProps> = (props) => {
     const { name, capacity, type, givenOut } = props;
 
     const obj = { ...member, type, capacity, givenOut };
-    obj.free = givenOut === '';
+    obj.free = obj.free ? givenOut === '' : false;
 
     const index = members.indexOf(member);
     const newMembers = [...members];
     newMembers[index] = obj;
-
-    console.log(obj);
 
     if (member.name !== name) {
       // update name in workers...
