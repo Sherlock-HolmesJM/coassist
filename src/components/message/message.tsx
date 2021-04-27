@@ -9,6 +9,7 @@ import { db } from '../../services';
 import * as mm from './messageModel';
 import { UpdateForm, AddForm } from './forms';
 import TimeStamps from '../../commons/timestamps';
+import { swalconfirm } from '../../utils';
 
 function Message() {
   const { members, dispatch, messages } = useContext(context);
@@ -17,7 +18,7 @@ function Message() {
   const [showform, setForm] = useState(false);
   const [worker, setWorker] = useState<Worker | null>();
 
-  const freeMembers = members.filter((m) => m.active && m.free);
+  const activemembers = members.filter((m) => m.active);
   const message = messages.find((m) => m.uid === +msgUID);
   const filename = message?.name + '-';
   const workers = message?.workers ?? [];
@@ -50,9 +51,12 @@ function Message() {
     db.setWorker(wkr);
   };
 
-  const handleDelete = (worker: Worker) => {
-    const response = prompt('Are you sure?');
-    if (response === null) return;
+  const handleDelete = async (worker: Worker) => {
+    const result = await swalconfirm(
+      `Yes, delete`,
+      `Delete ${worker.name.toUpperCase()}!`
+    );
+    if (!result.isConfirmed) return;
 
     const mem = members.find((m) => m.uid === worker.memuid);
     if (!mem) return;
@@ -96,7 +100,7 @@ function Message() {
         <AddForm
           filename={filename}
           message={message}
-          freeMembers={freeMembers}
+          activemembers={activemembers}
           setForm={setForm}
           showform={showform}
         />

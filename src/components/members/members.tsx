@@ -1,13 +1,15 @@
-import React, { useContext, useRef, useState } from 'react';
+import React, { useContext, useState } from 'react';
 import styled from 'styled-components';
-import List from '../commons/list';
+import List from '../../commons/list';
 import { Link } from 'react-router-dom';
-import { capitalize } from '../utils';
-import { context } from '../context/context';
-import { setMembers } from '../context/actions';
-import { MemberI, MemberType } from '../types';
-import { db } from '../services';
-import { getMemberStatus } from './message/messageModel';
+import { capitalize, swalconfirm, swale } from '../../utils';
+import { context } from '../../context/context';
+import { setMembers } from '../../context/actions';
+import { MemberI } from '../../types';
+import { db } from '../../services';
+import { getMemberStatus } from '../message/messageModel';
+import Addform from './memaform';
+import UpdateForm from './memuform';
 
 export interface MembersProps {}
 
@@ -16,20 +18,25 @@ const MembersComp: React.FC<MembersProps> = (props) => {
     context
   );
 
-  // const [name, setName] = useState('');
-  const [type, setType] = useState<MemberType>('T');
+  const [show, setShow] = useState<any>(false);
+  const [member, setMember] = useState<MemberI | false>(false);
 
-  const nameRef = useRef<HTMLInputElement>(null);
-
-  const activeMembers = members.filter((m) => m.active);
+  const activeMembers = members.filter((m) => m.active && !m.givenOut);
   const inactiveMembers = members.filter((m) => !m.active);
+  const givenOut = members.filter((m) => m.active && m.givenOut);
 
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
+  type Sig = {
+    name: string;
+    type: 'T' | 'TE';
+    capacity: number;
+    givenOut: string;
+  };
 
-    const name = nameRef.current?.value.toLowerCase().trim() ?? '';
+  const handleSubmit = (props: Sig) => {
+    const { name, capacity, type } = props;
+
     const index = members.findIndex((m) => m.name === name);
-    if (index !== -1) return alert(`${capitalize(name)} is already a member.`);
+    if (index !== -1) return swale(`${capitalize(name)} is already a member.`);
 
     const newMember: MemberI = {
       uid: Date.now(),
@@ -37,11 +44,12 @@ const MembersComp: React.FC<MembersProps> = (props) => {
       type,
       active: false,
       free: false,
+      capacity,
+      reason: '',
+      givenOut: '',
     };
     const newMembers: MemberI[] = [...members, newMember];
 
-    nameRef.current?.focus();
-    if (nameRef.current) nameRef.current.value = '';
     dispatch(setMembers(newMembers));
     db.setMember(newMember);
   };
@@ -60,26 +68,34 @@ const MembersComp: React.FC<MembersProps> = (props) => {
     db.updateMember(newMember);
   };
 
-  const handleDelete = (member: MemberI) => {
-    const result = prompt(`Delete ${capitalize(member.name)}?`);
-    if (result === null) return;
+  const handleDelete = async (member: MemberI) => {
+    const result = await swalconfirm(
+      `Yes, delete`,
+      `Delete ${member.name.toUpperCase()}!`
+    );
+    if (!result.isConfirmed) return;
+
     const newMembers = members.filter((m) => m.uid !== member.uid);
     dispatch(setMembers(newMembers));
     db.deleteMember(member.uid);
   };
 
-  const handleUpdate = (member: MemberI) => {
-    if (member.type === type) return;
-    const reply = prompt(
-      `Update ${member.name} - ${member.type} to ${member.name} - ${type}?`
-    );
-    if (reply === null) return;
+  const handleUpdate = async (props: Sig) => {
+    if (!member) return;
+    const { name, capacity, type, givenOut } = props;
 
-    const obj = { ...member, type };
+    const obj = { ...member, type, capacity, givenOut };
+    obj.free = givenOut === '';
 
     const index = members.indexOf(member);
     const newMembers = [...members];
     newMembers[index] = obj;
+
+    console.log(obj);
+
+    if (member.name !== name) {
+      // update name in workers...
+    }
 
     dispatch(setMembers(newMembers));
     db.updateMember(obj);
@@ -95,45 +111,39 @@ const MembersComp: React.FC<MembersProps> = (props) => {
           <Link to='/assignments' className='btn btn-link'>
             Assignment
           </Link>
+          <button className='btn btn-primary' onClick={() => setShow(true)}>
+            New Member
+          </button>
           <button className='btn btn-primary' onClick={() => window.print()}>
             Get PDF
           </button>
         </nav>
-        <form onSubmit={handleSubmit} className='form'>
-          <input
-            className='form-control'
-            type='text'
-            placeholder="member's name"
-            required
-            ref={nameRef}
-          />
-          <select
-            name='type'
-            id='type'
-            required
-            className='form-select'
-            onChange={(e) => setType(e.target.value as MemberType)}
-          >
-            <option value='T'>T</option>
-            <option value='TE'>TE</option>
-          </select>
-          <input className='btn btn-primary' type='submit' value='Add' />
-        </form>
       </header>
+      <Addform setShow={setShow} show={show} onAdd={handleSubmit} />
+      <UpdateForm
+        setMember={setMember}
+        member={member}
+        onUpdate={handleUpdate}
+      />
       <div className='container'>
         <List
           items={inactiveMembers}
           title='inactive members'
           onMark={handleMark}
           onDelete={handleDelete}
-          onUpdate={handleUpdate}
+          onUpdate={(member) => setMember(member)}
         />
         <List
           items={activeMembers}
           title='active members'
           onMark={handleMark}
           onDelete={handleDelete}
-          onUpdate={handleUpdate}
+          onUpdate={(member) => setMember(member)}
+        />
+        <List
+          items={givenOut}
+          title='Given Out'
+          onUpdate={(member) => setMember(member)}
         />
       </div>
       <div className='hide'>
@@ -145,6 +155,7 @@ const MembersComp: React.FC<MembersProps> = (props) => {
           <List items={members} title='all members' />
           <List items={activeMembers} title='active members' />
           <List items={inactiveMembers} title='inactive members' />
+          <List items={givenOut} title='Given Out' />
         </div>
       </div>
     </Section>

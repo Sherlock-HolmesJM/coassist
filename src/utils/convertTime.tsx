@@ -1,4 +1,7 @@
 export const secondsToMinutes = (seconds: number) => {
+  if (isNaN(seconds)) return 0;
+  if (!seconds) return 0;
+  if (seconds < 1) return 0;
   return Math.floor(seconds / 60);
 };
 
@@ -27,8 +30,11 @@ export const secondsToHMS = (seconds: number) => {
  * @returns seconds.
  */
 export const hmsToSeconds = (h: string, m: string, s: string) => {
-  if (h && m && s) return +h * 3600 + +m * 60 + +s;
-  return 0;
+  try {
+    return +h * 3600 + +m * 60 + +s;
+  } catch (e) {
+    return 0;
+  }
 };
 
 /**

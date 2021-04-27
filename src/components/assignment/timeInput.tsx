@@ -1,13 +1,16 @@
 import { ChangeEvent } from 'react';
 
+type HMS = 'h' | 'm' | 's';
+
 export interface TimeProps {
   time: { h: string; m: string; s: string };
-  setTime: (type: string, value: number) => void;
+  setTime: (type: HMS, value: number) => void;
+  placeholder?: string;
 }
 
 const Time: React.FC<TimeProps> = (props) => {
   const { h, m, s } = props.time;
-  const { setTime } = props;
+  const { setTime, placeholder } = props;
 
   const handleChangeFocus = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { value, dataset } = e.target;
@@ -20,7 +23,7 @@ const Time: React.FC<TimeProps> = (props) => {
 
   const handleTimeChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     const { type } = e.target.dataset;
-    setTime(type, +e.target.value);
+    setTime(type as HMS, +e.target.value);
   };
 
   return (
@@ -29,7 +32,9 @@ const Time: React.FC<TimeProps> = (props) => {
         className='form-control duration-holder'
         onChange={handleChangeFocus}
       >
-        <p style={{ marginRight: '10px' }}>Duration (H:M:S)</p>
+        <p style={{ marginRight: '10px' }}>
+          {placeholder ?? 'Duration (H:M:S)'}
+        </p>
         <Input value={+h} type='h' handleTimeChange={handleTimeChange} />:
         <Input value={+m} type='m' handleTimeChange={handleTimeChange} />:
         <Input value={+s} type='s' handleTimeChange={handleTimeChange} />
@@ -53,7 +58,7 @@ const Input: React.FC<InputProps> = (props) => {
       placeholder='00'
       data-type={type}
       required
-      value={value || ''}
+      value={value}
       className={`duration focus ${type}`}
       onFocus={(e) => e.target.select()}
       onChange={handleTimeChange}

@@ -11,6 +11,9 @@ export interface MemberI {
   type: MemberType;
   active: boolean;
   free: boolean;
+  capacity: number;
+  reason: string;
+  givenOut: string;
 }
 
 export default MemberI;

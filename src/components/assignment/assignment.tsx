@@ -10,6 +10,7 @@ import { ClickBadge } from '../../commons/badge';
 import FormAdd from './FormAdd';
 import FormUpdate from './formUpdate';
 import Loader from '../../commons/loader';
+import { swalconfirm } from '../../utils';
 
 function Assignment() {
   const { dispatch, messages, members } = useContext(context);
@@ -38,9 +39,13 @@ function Assignment() {
       ? 'secondary'
       : 'danger';
 
-  const handleDelete = (message: MessageI) => {
-    const result = prompt('Are you sure?');
-    if (result === null) return;
+  const handleDelete = async (message: MessageI) => {
+    const result = await swalconfirm(
+      `Yes, delete it`,
+      `Delete ${message.name.toUpperCase()}!`
+    );
+    if (!result.isConfirmed) return;
+
     const newMessages = messages.filter((m) => m.name !== message.name);
 
     if (message.status === 'undone') {
@@ -73,11 +78,11 @@ function Assignment() {
             New Message
           </button>
         </nav>
-        <div className='header-form-holder'>
-          <FormAdd setShowform={setShowform} showform={showform} />
-          <FormUpdate message={message} setMessage={setMessage} />
-        </div>
       </header>
+      <div>
+        <FormAdd setShowform={setShowform} showform={showform} />
+        <FormUpdate message={message} setMessage={setMessage} />
+      </div>
       <div className='bg-container'>
         <div className='badge badge-secondary bg-summary'>
           <div className='badge-content'>
@@ -143,19 +148,6 @@ const Section = styled.section`
     background: gray;
     flex-wrap: wrap;
   }
-  .header-form-holder {
-    position: relative;
-    display: flex;
-    justify-content: center;
-    width: 100%;
-  }
-  .header-splitlength-div {
-    display: flex;
-  }
-  .header-splitlength-label {
-    display: block;
-    margin-right: 10px;
-  }
   .badge-content {
     display: flex;
     justify-content: space-between;
@@ -175,46 +167,6 @@ const Section = styled.section`
   .btn-link {
     color: white;
   }
-  .form {
-    position: fixed;
-    display: flex;
-    top: 13%;
-    flex-direction: column;
-    width: min(94vw, 500px);
-    background-color: gray;
-    padding: 5px;
-    z-index: 111;
-  }
-  .btn-close-div {
-    display: flex;
-    justify-content: flex-end;
-  }
-  .header-label {
-    margin-right: 10px;
-  }
-  .form-control {
-    flex-basis: clamp(310px, 50%, 400px);
-    text-transform: uppercase;
-    border: 2px gray red;
-  }
-  .form-select {
-    text-transform: capitalize;
-    outline: none;
-    border: none;
-  }
-  .duration-holder {
-    display: flex;
-  }
-  .duration {
-    width: 30px;
-    outline: none;
-    border: none;
-    padding: 6px;
-  }
-  input::-webkit-outer-spin-button,
-  input::-webkit-inner-spin-button {
-    -webkit-appearance: none;
-  }
   .bg-color {
     float: right;
   }
@@ -231,7 +183,6 @@ const Section = styled.section`
     display: flex;
     justify-content: space-between;
     text-transform: uppercase;
-    /* flex-basis: 550px; */
   }
   .link {
     color: gray;
@@ -239,13 +190,6 @@ const Section = styled.section`
   }
   .link:visited {
     color: gray;
-  }
-  .select {
-    outline: none;
-    border-radius: 5px;
-    color: gray;
-    border: none;
-    margin: 0;
   }
 `;
 

@@ -1,4 +1,4 @@
-import { capitalize } from '../utils';
+import { capitalize, secondsToHMS, secondsToMinutes } from '../utils';
 import styled from 'styled-components';
 import { MemberI } from '../types';
 import { ClickBadge } from '../commons/badge';
@@ -17,6 +17,16 @@ const List: React.FC<ListProps> = (props) => {
   const tes = items.filter((m) => m.type === 'TE');
   const sorted = [...ts, ...tes];
 
+  if (sorted.length === 0) return null;
+
+  const formatCap = (capacity: number) => {
+    const mins = secondsToMinutes(capacity);
+    if (mins < 60) return `${mins}min`;
+
+    const { h, m } = secondsToHMS(capacity);
+    return `${+h}hr ${+m}min`;
+  };
+
   return (
     <Div className='list'>
       <div className='title-container'>
@@ -29,7 +39,19 @@ const List: React.FC<ListProps> = (props) => {
       <ul className='list-group'>
         {sorted.map((item) => (
           <li className='list-group-item' key={item.uid}>
-            {capitalize(item.name)} - {item.type}
+            <div>
+              <div>
+                {capitalize(item.name)} - {item.type}
+              </div>
+              <div>
+                <em>Capacity: {`${formatCap(item.capacity)}`}</em>
+              </div>
+              <div>
+                <em>
+                  {item.givenOut && `Given to: ${capitalize(item.givenOut)}`}
+                </em>
+              </div>
+            </div>
             <div>
               {onMark && (
                 <ClickBadge
