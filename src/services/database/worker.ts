@@ -3,6 +3,7 @@ import 'firebase/database';
 import { path } from './index';
 import { Worker } from '../../types';
 import { arrayToObject } from '../transformer';
+import { swale, swals } from '../../utils';
 
 export const updateWorkers = (workers: Worker[]) => {
   if (workers.length === 0) return;
@@ -11,7 +12,8 @@ export const updateWorkers = (workers: Worker[]) => {
     .database()
     .ref(path() + '/messages/' + workers[0].msguid + '/workers')
     .update(arrayToObject(workers))
-    .catch((e) => alert(e.message));
+    .then(() => swals('', 'Saved.'))
+    .catch((e) => swale(e.message));
 };
 
 export const setWorker = (worker: Worker) =>
@@ -19,11 +21,13 @@ export const setWorker = (worker: Worker) =>
     .database()
     .ref(path() + '/messages/' + worker.msguid + '/workers/' + worker.uid)
     .set(worker)
-    .catch((e) => alert(e.message));
+    .then(() => swals('', 'Saved.'))
+    .catch((e) => swale(e.message));
 
 export const removeWorker = (muid: number, wuid: number) =>
   firebase
     .database()
     .ref(path() + '/messages/' + muid + '/workers/' + wuid)
     .remove()
-    .catch((e) => alert(e.message));
+    .then(() => swals('', 'Saved.'))
+    .catch((e) => swale(e.message));

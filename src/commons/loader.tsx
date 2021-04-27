@@ -21,13 +21,13 @@ const Div = styled.div`
   position: fixed;
   top: 25px;
   width: 100%;
-  height: 70px;
+  height: 80px;
   display: flex;
   justify-content: center;
   align-items: center;
 
   img {
-    width: 70px;
+    width: 80px;
   }
 `;
 

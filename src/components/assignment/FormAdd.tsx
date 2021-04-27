@@ -1,90 +1,51 @@
 import React, { useContext, useRef, useState } from 'react';
-import { capitalize, secondsToHMS, hmsToSeconds } from '../../utils';
+import { capitalize, secondsToHMS, swale, swali, swals } from '../../utils';
 import { context } from '../../context/context';
 import { setMessages } from '../../context/actions';
 import { MessageI, createTorTE } from '../../types';
 import { db } from '../../services';
 import Loader from '../../commons/loader';
+import { SizeInput, NameInput, FileInput } from './inputs';
+import TimeInput from './timeInput';
 
 export interface FormProps {
   setShowform: (value: boolean) => void;
   showform: boolean;
 }
 
+const initialData = {
+  name: '',
+  size: 0,
+  duration: 0,
+  spin: false,
+  time: {
+    h: '0',
+    m: '0',
+    s: '0',
+  },
+};
+
 const FormAdd: React.FC<FormProps> = (props) => {
   const { setShowform, showform } = props;
 
   const { dispatch, messages } = useContext(context);
 
-  const [spin, setSpin] = useState(false);
+  const [data, setData] = useState(initialData);
 
-  const fileRef = useRef<HTMLInputElement>(null);
-  const nameRef = useRef<HTMLInputElement>(null);
-  const sizeRef = useRef<HTMLInputElement>(null);
-  const hRef = useRef<HTMLInputElement>(null);
-  const mRef = useRef<HTMLInputElement>(null);
-  const sRef = useRef<HTMLInputElement>(null);
-  const splitRef = useRef<HTMLSelectElement>(null);
+  const { name, size, duration, spin, time } = data;
+  const { h, m, s } = time;
 
   if (!showform) return null;
 
-  const getSplitLength = () => {
-    return splitRef.current ? +splitRef.current.value : 0;
+  const handleGetDetails = (name: string, size: number, duration: number) => {
+    if (duration === 0) swali('Could not get duration of audio.');
+    else swals('You may proceed.', 'Got details.');
+
+    const time = secondsToHMS(duration);
+    setData({ ...data, name, size, time });
   };
 
-  const handleChangeFocus = (e: any) => {
-    const { value, dataset } = e.currentTarget;
-
-    if (value.length === 2) {
-      if (+dataset.index === 1) mRef.current?.focus();
-      else if (+dataset.index === 2) sRef.current?.focus();
-      else if (+dataset.index === 3) sizeRef.current?.focus();
-    }
-  };
-
-  const handleAddFromFiles = () => {
-    const audio = document.createElement('audio');
-    const file = fileRef.current.files[0];
-
-    if (!file) return alert(`File is ${file}. Try again.`);
-    if (file.type !== 'audio/mpeg')
-      return alert('Invalid file type. Try again with audio files.');
-
-    const name = file.name.replace('.mp3', '');
-    const size = Math.floor(file.size / 1024 / 1024);
-
-    nameRef.current.value = name;
-    sizeRef.current.value = size + '';
-
-    const reader = new FileReader();
-
-    reader.onload = (e) => {
-      setSpin(true);
-      audio.src = e.target.result as any;
-      audio.onloadedmetadata = (e) => {
-        // audio.duration is in seconds
-        const { h, m, s } = secondsToHMS(audio.duration);
-        hRef.current.value = h;
-        mRef.current.value = m;
-        sRef.current.value = s;
-        setSpin(false);
-      };
-    };
-
-    reader.onerror = (e) => {
-      setSpin(false);
-      alert(e);
-    };
-
-    if (size <= 200) reader.readAsDataURL(file);
-    else {
-      alert(
-        `The File size of ${size}MB is too large to get the duration. You are going to have to get it yourself.`
-      );
-    }
-  };
-
-  const getFilename = () => nameRef.current?.value.toLowerCase().trim() ?? '';
+  const getFilename = () => name.toLowerCase().trim() ?? '';
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -93,7 +54,10 @@ const FormAdd: React.FC<FormProps> = (props) => {
     const index = messages.findIndex((m) => m.name === filename);
 
     if (index !== -1)
-      return alert(`${capitalize(filename)} is already being worked on.`);
+      return swale(
+        `${filename.toUpperCase()} has already been added.`,
+        'Duplicate message'
+      );
 
     const message: MessageI = {
       uid: Date.now(),
@@ -101,148 +65,58 @@ const FormAdd: React.FC<FormProps> = (props) => {
       status: 'undone',
       workers: [],
       category: 'sermon',
-      duration: hmsToSeconds(
-        hRef.current.value,
-        mRef.current.value,
-        sRef.current.value
-      ),
+      duration,
       transcriber: createTorTE('T'),
       transcriptEditor: createTorTE('TE'),
-      size: sizeRef.current ? +sizeRef.current.value : 1,
+      size,
       splits: 1,
       transcribed: 'no',
       edited: 'no',
       sent2CGT: '',
-      splitLength: getSplitLength(),
-      originalLength: `${hRef.current?.value}:${mRef.current?.value}:${sRef.current?.value}`,
+      splitLength: 0,
+      originalLength: `${h}:${m}:${s}`,
     };
 
     const list = [...messages, message];
 
     dispatch(setMessages(list));
-    nameRef.current?.focus();
-    if (nameRef.current) nameRef.current.value = '';
+    setData(initialData);
     db.setMessage(message);
-  };
-
-  // eslint-disable-next-line
-  const handleAddMissing = () => {
-    messages.forEach((m) => {
-      m.duration = m.duration || 0;
-      m.originalLength = m.originalLength || '00:00:00';
-      m.transcriber = m.transcriber || createTorTE('T');
-      m.transcriptEditor = m.transcriptEditor || createTorTE('TE');
-      m.transcribed = m.transcribed || 'no';
-      m.edited = m.edited || 'no';
-      m.category = 'sermon';
-      m.size = m.size || 0;
-      m.splits = m.splits || 1;
-      m.splitLength = m.splitLength || 0;
-    });
-
-    dispatch(setMessages(messages));
-    db.updateMessages(messages);
-    alert('Missing fields added.');
+    swals('', 'New message added.');
   };
 
   return (
-    <form onSubmit={handleSubmit} className='form'>
+    <React.Fragment>
       <Loader spin={spin} />
-      <div className='btn-close-div'>
-        <input
-          className='btn btn-danger'
-          type='button'
-          value='X'
-          onClick={() => setShowform(false)}
-        />
-      </div>
-      <div className='m-2'>
-        <input
-          className='form-control'
-          type='text'
-          placeholder='filename'
-          required
-          ref={nameRef}
-        />
-      </div>
-      <div className='m-2'>
-        <div className='form-control duration-holder'>
-          <p
-            onClick={() => hRef.current?.focus()}
-            style={{ marginRight: '10px' }}
-          >
-            Duration (H:M:S)
-          </p>
+      <form onSubmit={handleSubmit} className='form'>
+        <div className='btn-close-div'>
           <input
-            type='number'
-            min='0'
-            max='12'
-            placeholder='00'
-            data-index='1'
-            ref={hRef}
-            required
-            className='duration'
-            onChange={handleChangeFocus}
-            onFocus={(e) => e.currentTarget.select()}
-          />
-          :
-          <input
-            type='number'
-            min='0'
-            max='60'
-            placeholder='00'
-            data-index='2'
-            ref={mRef}
-            required
-            className='duration'
-            onChange={handleChangeFocus}
-            onFocus={(e) => e.currentTarget.select()}
-          />
-          :
-          <input
-            type='number'
-            min='0'
-            max='60'
-            placeholder='00'
-            data-index='3'
-            ref={sRef}
-            required
-            className='duration'
-            onChange={handleChangeFocus}
-            onFocus={(e) => e.currentTarget.select()}
+            className='btn btn-danger'
+            type='button'
+            value='X'
+            onClick={() => setShowform(false)}
           />
         </div>
-      </div>
-      <div className='m-2'>
-        <input
-          className='form-control size'
-          type='number'
-          placeholder='size (MB)'
-          ref={sizeRef}
-          required
-          min='0'
-          onFocus={(e) => e.currentTarget.select()}
+        <NameInput
+          value={name}
+          setName={(name) => setData({ ...data, name })}
         />
-      </div>
-      <div className='m-2'>
-        <input
-          className='form-control'
-          type='file'
-          placeholder='Get File(s)'
-          ref={fileRef}
-          onChange={handleAddFromFiles}
+        <TimeInput
+          time={time}
+          setTime={(type, value) =>
+            setData({ ...data, time: { ...data.time, [type]: value } })
+          }
         />
-      </div>
-      <div className='m-2 btn-group'>
-        <input className='btn btn-primary' type='submit' value='Add' />
-        {/* <input
-          className='btn btn-light'
-          type='button'
-          value='Add Missing Fields'
-          onClick={handleAddMissing}
-        /> */}
-      </div>
-    </form>
+        <SizeInput
+          value={size}
+          onChange={(e) => setData({ ...data, size: +e.target.value })}
+        />
+        <div className='m-2 btn-group'>
+          <FileInput callback={handleGetDetails} />
+          <input className='btn btn-primary' type='submit' value='Add' />
+        </div>
+      </form>
+    </React.Fragment>
   );
 };
 

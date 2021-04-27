@@ -1,5 +1,6 @@
 import firebase from 'firebase/app';
 import 'firebase/database';
+import { swale, swals } from '../../utils';
 import { transform } from '../transformer';
 import { path } from './index';
 
@@ -10,7 +11,7 @@ export const getData = () =>
     .get()
     .then((r) => transform(r.val()))
     .catch((e) => {
-      alert(e.message);
+      swale(e.message);
       return null;
     });
 
@@ -22,4 +23,5 @@ export const updateCGNames = (collatorName: string, groupName: string) =>
       collatorName,
       groupName,
     })
-    .catch((e) => alert(e.message));
+    .then(() => swals('', 'Saved.'))
+    .catch((e) => swale(e.message));
