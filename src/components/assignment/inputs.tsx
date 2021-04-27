@@ -2,20 +2,56 @@ import React, { ChangeEvent, FC } from 'react';
 import { Howl } from 'howler';
 import { swale, swali, swals } from '../../utils';
 
+export interface SelectProps {
+  onChange: (e: any) => void;
+  values: [string | number, string][];
+  label: string;
+  value?: string;
+}
+
+export const Select: React.FC<SelectProps> = (props) => {
+  const { onChange, label, values, value } = props;
+
+  return (
+    <div className='m-2'>
+      <div className='form-control-select'>
+        <div>{label}:</div>
+        <div>
+          <select
+            value={value || ''}
+            name='type'
+            id='type'
+            required
+            className='form-select'
+            onChange={onChange}
+          >
+            {values.map((val, ind) => (
+              <option key={ind} value={val[0]}>
+                {val[1]}
+              </option>
+            ))}
+          </select>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 export interface SizeProps {
   value: number;
+  placeholder?: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
 }
 
 export const SizeInput: FC<SizeProps> = (props) => {
-  const { value, onChange } = props;
+  const { value, onChange, placeholder } = props;
 
   return (
     <div className='m-2'>
       <input
         className='form-control size focus'
         type='number'
-        placeholder='size (MB)'
+        placeholder={placeholder ?? 'size (MB)'}
         value={value || ''}
         onChange={onChange}
         required
@@ -31,18 +67,20 @@ export const SizeInput: FC<SizeProps> = (props) => {
 interface NameProps {
   value: string;
   setName: (name: string) => void;
+  placeholder?: string;
+  required?: boolean;
 }
 
 export const NameInput: FC<NameProps> = (props) => {
-  const { value, setName } = props;
+  const { value, setName, placeholder, required } = props;
 
   return (
     <div className='m-2'>
       <input
         className='form-control'
         type='text'
-        placeholder='filename'
-        required
+        placeholder={placeholder || 'filename'}
+        required={required ?? true}
         value={value || ''}
         onChange={(e) => setName(e.target.value.trim().toLowerCase())}
       />

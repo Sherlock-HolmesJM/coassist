@@ -4,9 +4,9 @@ import { context } from '../../context/context';
 import { setMessages } from '../../context/actions';
 import { MessageI, createTorTE } from '../../types';
 import { db } from '../../services';
-import Loader from '../../commons/loader';
 import { SizeInput, NameInput, FileInput } from './inputs';
 import TimeInput from './timeInput';
+import FormContainer from '../../commons/formHolder';
 
 export interface FormProps {
   setShowform: (value: boolean) => void;
@@ -34,8 +34,6 @@ const FormAdd: React.FC<FormProps> = (props) => {
 
   const { name, size, duration, spin, time } = data;
   const { h, m, s } = time;
-
-  if (!showform) return null;
 
   const handleGetDetails = (name: string, size: number, duration: number) => {
     const time = secondsToHMS(duration);
@@ -82,18 +80,15 @@ const FormAdd: React.FC<FormProps> = (props) => {
     swals('', 'New message added.');
   };
 
+  const containerProps = {
+    setShow: setShowform,
+    show: showform,
+    spin,
+  };
+
   return (
-    <React.Fragment>
-      <Loader spin={spin} />
+    <FormContainer props={containerProps}>
       <form onSubmit={handleSubmit} className='form'>
-        <div className='btn-close-div'>
-          <input
-            className='btn btn-danger'
-            type='button'
-            value='X'
-            onClick={() => setShowform(false)}
-          />
-        </div>
         <NameInput
           value={name}
           setName={(name) => setData({ ...data, name })}
@@ -113,7 +108,7 @@ const FormAdd: React.FC<FormProps> = (props) => {
           <input className='btn btn-primary' type='submit' value='Add' />
         </div>
       </form>
-    </React.Fragment>
+    </FormContainer>
   );
 };
 

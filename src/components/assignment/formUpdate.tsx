@@ -5,10 +5,10 @@ import { MessageI } from '../../types';
 import { db } from '../../services';
 import * as mm from '../message/messageModel';
 import { secondsToHMS, swalconfirm, swals } from '../../utils';
-import Loader from '../../commons/loader';
 import { determineSent, updateWorkers } from './helper';
 import { SizeInput, NameInput, FileInput } from './inputs';
 import TimeInput from './timeInput';
+import FormContainer from '../../commons/formHolder';
 
 export interface FormProps {
   message: MessageI;
@@ -88,18 +88,15 @@ const FormUpdate: React.FC<FormProps> = (props) => {
     swals('', 'Updated');
   };
 
+  const containerProps = {
+    setShow: setMessage,
+    show: message ? true : false,
+    spin,
+  };
+
   return (
-    <React.Fragment>
-      <Loader spin={spin} />
+    <FormContainer props={containerProps}>
       <form onSubmit={(e) => handleUpdate(e, message)} className='form'>
-        <div className='btn-close-div'>
-          <input
-            className='btn btn-danger'
-            type='button'
-            value='X'
-            onClick={() => setMessage(null)}
-          />
-        </div>
         <NameInput
           value={name}
           setName={(name) => setData({ ...data, name })}
@@ -116,7 +113,7 @@ const FormUpdate: React.FC<FormProps> = (props) => {
         />
         <div className='m-2'>
           <div className='form-control'>
-            <label htmlFor='select-worker' className='header-label form-label'>
+            <label htmlFor='select-worker' className='holder-label form-label'>
               Sent to CGT:
             </label>
             <select
@@ -136,7 +133,7 @@ const FormUpdate: React.FC<FormProps> = (props) => {
           <input className='btn btn-success' type='submit' value='Update' />
         </div>
       </form>
-    </React.Fragment>
+    </FormContainer>
   );
 };
 
