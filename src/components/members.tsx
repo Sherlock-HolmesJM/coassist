@@ -2,7 +2,7 @@ import React, { useContext, useRef, useState } from 'react';
 import styled from 'styled-components';
 import List from '../commons/list';
 import { Link } from 'react-router-dom';
-import { capitalize } from '../utils';
+import { capitalize, swalconfirm } from '../utils';
 import { context } from '../context/context';
 import { setMembers } from '../context/actions';
 import { MemberI, MemberType } from '../types';
@@ -60,20 +60,26 @@ const MembersComp: React.FC<MembersProps> = (props) => {
     db.updateMember(newMember);
   };
 
-  const handleDelete = (member: MemberI) => {
-    const result = prompt(`Delete ${capitalize(member.name)}?`);
-    if (result === null) return;
+  const handleDelete = async (member: MemberI) => {
+    const result = await swalconfirm(
+      `Yes, delete`,
+      `Delete ${member.name.toUpperCase()}!`
+    );
+    if (!result.isConfirmed) return;
+
     const newMembers = members.filter((m) => m.uid !== member.uid);
     dispatch(setMembers(newMembers));
     db.deleteMember(member.uid);
   };
 
-  const handleUpdate = (member: MemberI) => {
+  const handleUpdate = async (member: MemberI) => {
     if (member.type === type) return;
-    const reply = prompt(
-      `Update ${member.name} - ${member.type} to ${member.name} - ${type}?`
+
+    const result = await swalconfirm(
+      `Yes, update`,
+      `Update ${member.name} - ${member.type} to ${member.name} - ${type}!`
     );
-    if (reply === null) return;
+    if (!result.isConfirmed) return;
 
     const obj = { ...member, type };
 

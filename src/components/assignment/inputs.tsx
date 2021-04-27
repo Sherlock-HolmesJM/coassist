@@ -68,7 +68,7 @@ export const FileInput: FC<FileProps> = (props) => {
 
       const format = file.name.split('.').pop().toLowerCase();
       const size = Math.round(file.size / 1024 / 1024);
-      const name = file.name.replace(format, '');
+      const name = file.name.replace('.' + format, '');
 
       const memory = (navigator as any).deviceMemory;
 

@@ -5,7 +5,7 @@ import * as mm from '../messageModel';
 import { context } from '../../../context/context';
 import { setMessages } from '../../../context/actions';
 import { db } from '../../../services';
-import { clipText } from '../../../utils';
+import { clipText, swalconfirm } from '../../../utils';
 
 interface UpdateProps extends FormProps {
   worker: Worker;
@@ -32,8 +32,11 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
 
   const getPart = (split) => filename + split;
 
-  const handleUpdate = (e: any, worker: Worker) => {
+  const handleUpdate = async (e: any, worker: Worker) => {
     e.preventDefault();
+
+    const result = await swalconfirm(`Yes, update`);
+    if (!result.isConfirmed) return;
 
     const part = getPart(split);
 
@@ -53,7 +56,6 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
     dispatch(setMessages(newMessages));
 
     db.setWorker(newWorker);
-    alert('Done');
     setWorker(null);
   };
 

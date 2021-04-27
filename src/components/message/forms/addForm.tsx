@@ -9,13 +9,13 @@ import { clipText } from '../../../utils';
 
 export interface AddProps extends FormProps {
   showform: boolean;
-  freeMembers: MemberI[];
+  activemembers: MemberI[];
   message: MessageI;
   setForm: (value: boolean) => void;
 }
 
 export const AddForm: React.FC<AddProps> = (props: AddProps) => {
-  const { setForm, filename, showform, freeMembers, message } = props;
+  const { setForm, filename, showform, activemembers, message } = props;
 
   const { dispatch, messages, members } = useContext(context);
 
@@ -31,7 +31,7 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
-    const member = freeMembers.find((w) => w.uid === getWUID());
+    const member = activemembers.find((w) => w.uid === getWUID());
     if (!member) return;
 
     const part = getPart(split);
@@ -143,7 +143,7 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
               className='form-select'
               ref={workerRef}
             >
-              {freeMembers
+              {activemembers
                 .sort((a, b) => a.type.length - b.type.length)
                 .map((m, i) => (
                   <option key={i} value={m.uid}>

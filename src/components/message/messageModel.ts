@@ -6,7 +6,7 @@ import {
   T_And_TE,
   Worker,
 } from '../../types';
-import { capitalize, secondsToHMS } from '../../utils';
+import { capitalize, secondsToHMS, swale } from '../../utils';
 
 export const getAssignedLength = (workers: Worker[]) => {
   const duration = workers.reduce((acc, w) => acc + w.splitLength, 0);
@@ -148,7 +148,10 @@ export const checkWork = (
   const wkr = workers.find((wkr) => wkr.type === type && wkr.part === part);
 
   const msgAlert = (name: string, d: 'done' | 'already') =>
-    alert(`${capitalize(name)} is ${d} working on this file - ${part}`);
+    swale(
+      `${capitalize(name)} is ${d} working on this file - ${part}`,
+      'Duplicate work'
+    );
 
   if (wkr) {
     if (wkr.done) msgAlert(wkr.name, 'done');

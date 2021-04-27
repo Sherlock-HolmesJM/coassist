@@ -10,6 +10,7 @@ import { ClickBadge } from '../../commons/badge';
 import FormAdd from './FormAdd';
 import FormUpdate from './formUpdate';
 import Loader from '../../commons/loader';
+import { swalconfirm } from '../../utils';
 
 function Assignment() {
   const { dispatch, messages, members } = useContext(context);
@@ -38,9 +39,13 @@ function Assignment() {
       ? 'secondary'
       : 'danger';
 
-  const handleDelete = (message: MessageI) => {
-    const result = prompt('Are you sure?');
-    if (result === null) return;
+  const handleDelete = async (message: MessageI) => {
+    const result = await swalconfirm(
+      `Yes, delete it`,
+      `Delete ${message.name.toUpperCase()}!`
+    );
+    if (!result.isConfirmed) return;
+
     const newMessages = messages.filter((m) => m.name !== message.name);
 
     if (message.status === 'undone') {
