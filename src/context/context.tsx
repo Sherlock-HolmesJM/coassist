@@ -66,5 +66,5 @@ class Provider extends PureComponent<Props, State> {
   }
 }
 
-export { context };
 export default withRouter(Provider);
+export { context };
