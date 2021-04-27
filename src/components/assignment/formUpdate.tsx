@@ -4,7 +4,7 @@ import { setMessages } from '../../context/actions';
 import { MessageI } from '../../types';
 import { db } from '../../services';
 import * as mm from '../message/messageModel';
-import { secondsToHMS, swalconfirm, swale, swali, swals } from '../../utils';
+import { secondsToHMS, swalconfirm, swals } from '../../utils';
 import Loader from '../../commons/loader';
 import { determineSent, updateWorkers } from './helper';
 import { SizeInput, NameInput, FileInput } from './inputs';
@@ -49,9 +49,6 @@ const FormUpdate: React.FC<FormProps> = (props) => {
   if (!message) return null;
 
   const handleGetDetails = (name: string, size: number, duration: number) => {
-    if (duration === 0) swali('Could not get duration of audio.');
-    else swals('You may proceed.', 'Got details.');
-
     const time = secondsToHMS(duration);
     setData({ ...data, name, size, time });
   };

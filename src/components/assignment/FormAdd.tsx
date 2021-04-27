@@ -1,5 +1,5 @@
-import React, { useContext, useRef, useState } from 'react';
-import { capitalize, secondsToHMS, swale, swali, swals } from '../../utils';
+import React, { useContext, useState } from 'react';
+import { secondsToHMS, swale, swals } from '../../utils';
 import { context } from '../../context/context';
 import { setMessages } from '../../context/actions';
 import { MessageI, createTorTE } from '../../types';
@@ -38,9 +38,6 @@ const FormAdd: React.FC<FormProps> = (props) => {
   if (!showform) return null;
 
   const handleGetDetails = (name: string, size: number, duration: number) => {
-    if (duration === 0) swali('Could not get duration of audio.');
-    else swals('You may proceed.', 'Got details.');
-
     const time = secondsToHMS(duration);
     setData({ ...data, name, size, time });
   };

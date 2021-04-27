@@ -46,7 +46,7 @@ class Provider extends PureComponent<Props, State> {
 
   componentDidMount() {
     firebase.auth().onAuthStateChanged((user) => {
-      if (!user) return this.props.history.replace('/');
+      // if (!user) return this.props.history.replace('/');
 
       getData().then((data) => {
         this.setState({ ...this.state, ...data, spin: false });
@@ -66,5 +66,5 @@ class Provider extends PureComponent<Props, State> {
   }
 }
 
-export { context };
 export default withRouter(Provider);
+export { context };
