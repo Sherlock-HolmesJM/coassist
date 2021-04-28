@@ -34,7 +34,7 @@ const TimeStamps: React.FC<TimeStampsProps> = (props) => {
           const { h, m, s } = timestamps[i];
           return (
             <div key={i}>
-              {p} - Time {h}:{m}:{s}
+              <span className='filename'>{p}</span> - Time {h}:{m}:{s}
             </div>
           );
         })}
@@ -45,6 +45,10 @@ const TimeStamps: React.FC<TimeStampsProps> = (props) => {
 
 const Div = styled.div`
   margin: 20px;
+
+  .filename {
+    text-transform: uppercase;
+  }
 `;
 
 export default TimeStamps;
