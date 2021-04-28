@@ -28,13 +28,13 @@ const TimeStamps: React.FC<TimeStampsProps> = (props) => {
 
   return (
     <Div>
-      <h5>Timestamps [starting points]</h5>
+      <h5>Timestamps [Starting Points]</h5>
       <div>
         {uniqueParts.map((p, i) => {
           const { h, m, s } = timestamps[i];
           return (
             <div key={i}>
-              {p} - Time: {h}:{m}:{s}
+              {p} - Time {h}:{m}:{s}
             </div>
           );
         })}
@@ -45,7 +45,6 @@ const TimeStamps: React.FC<TimeStampsProps> = (props) => {
 
 const Div = styled.div`
   margin: 20px;
-  text-transform: uppercase;
 `;
 
 export default TimeStamps;

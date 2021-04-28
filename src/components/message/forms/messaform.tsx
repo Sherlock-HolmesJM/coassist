@@ -6,6 +6,7 @@ import { context } from '../../../context/context';
 import { setMM } from '../../../context/actions';
 import { db } from '../../../services';
 import { clipText } from '../../../utils';
+import { Select } from '../../assignment/inputs';
 
 export interface AddProps extends FormProps {
   showform: boolean;
@@ -23,6 +24,7 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
 
   const [splitLength, setSplitLength] = useState(0);
   const [split, setSplit] = useState('');
+  const [workerName, setworkerName] = useState('');
 
   if (!showform) return null;
 
@@ -64,17 +66,17 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
     db.setWorker(worker);
   };
 
-  const handleAddAll30 = () => {
-    message.workers.forEach((w) => (w.splitLength = 30));
+  // const handleAddAll30 = () => {
+  //   message.workers.forEach((w) => (w.splitLength = 30));
 
-    mm.updateStatus(message);
-    const newMessages = mm.getNewMessages(message, messages);
-    dispatch(setMM(newMessages, members));
+  //   mm.updateStatus(message);
+  //   const newMessages = mm.getNewMessages(message, messages);
+  //   dispatch(setMM(newMessages, members));
 
-    db.updateWorkers(message.workers);
-    db.updateMessage(message);
-    alert('Done');
-  };
+  //   db.updateWorkers(message.workers);
+  //   db.updateMessage(message);
+  //   alert('Done');
+  // };
 
   const handleChange = (value: string) => {
     const v = value.trim().toLowerCase();
@@ -132,35 +134,21 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
             />
           </div>
         </div>
-        <div className='m-2'>
-          <div className='form-control'>
-            <label htmlFor='select-worker' className='header-label form-label'>
-              Worker:
-            </label>
-            <select
-              required
-              id='select-worker'
-              className='form-select'
-              ref={workerRef}
-            >
-              {activemembers
-                .sort((a, b) => a.type.length - b.type.length)
-                .map((m, i) => (
-                  <option key={i} value={m.uid}>
-                    {`${m.name.toUpperCase()} - ${m.type}`}
-                  </option>
-                ))}
-            </select>
-          </div>
-        </div>
+        {/* <Select label="Worker"  /> */}
+        <Select
+          label='Worker'
+          value={workerName}
+          values={activemembers
+            .sort((a, b) => a.type.length - b.type.length)
+            .sort((a, b) => `${a.free}`.length - `${b.free}`.length)
+            .map((m) => [
+              m.name,
+              `${m.name} - ${m.type} ${m.free ? '- Free: ' : ''}`,
+            ])}
+          onChange={(e) => setworkerName(e.target.value)}
+        />
         <div className='m-2 form-btn-div'>
           <input className='btn btn-primary' type='submit' value='Add' />
-          <input
-            className='btn btn-light'
-            type='button'
-            value='Add All 30'
-            onClick={handleAddAll30}
-          />
         </div>
       </form>
     </Form>

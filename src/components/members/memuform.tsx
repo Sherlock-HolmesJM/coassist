@@ -30,7 +30,7 @@ const Update: React.FC<UpdateProps> = (props) => {
 
   useEffect(() => {
     if (member) {
-      const { name, type } = member;
+      const { name, type, givenOut } = member;
       const capacity = secondsToHMS(member.capacity ?? 0);
       setData({ ...data, name, capacity, type, givenOut });
     }
