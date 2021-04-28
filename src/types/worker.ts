@@ -14,6 +14,8 @@ export interface Worker {
   part: string;
   done: boolean;
   splitLength: number;
+  dateReceived: string;
+  dateReturned: string;
 }
 
 export interface T_And_TE {

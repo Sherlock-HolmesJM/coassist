@@ -54,21 +54,6 @@ const Div = styled.div`
     display: flex;
     flex-direction: column;
   }
-  .holder-splitlength-div {
-    display: flex;
-  }
-  .holder-splitlength-label {
-    display: block;
-    margin-right: 10px;
-  }
-
-  .btn-close-div {
-    display: flex;
-    justify-content: flex-end;
-  }
-  .holder-label {
-    margin-right: 10px;
-  }
   .form-control {
     flex-basis: clamp(310px, 50%, 400px);
     text-transform: uppercase;
@@ -85,6 +70,45 @@ const Div = styled.div`
     outline: none;
     border: none;
     width: 100%;
+  }
+  .holder-label {
+    margin-right: 10px;
+  }
+  .holder-splitlength-div {
+    display: flex;
+    justify-content: flex-start;
+    align-items: center;
+    background-color: white;
+    padding: 5px 12px;
+    border-radius: 5px;
+  }
+  .holder-splitlength-label {
+    display: block;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    margin: 0;
+    text-transform: uppercase;
+  }
+  .holder-splitlength {
+    width: 40px;
+    outline: none;
+    border: none;
+    border-bottom: 1px solid gray;
+    text-align: center;
+    margin: 0;
+    padding: auto 0;
+    text-transform: uppercase;
+  }
+  .header-actionButton-holder {
+    display: flex;
+  }
+  .header-actionButton-holder * {
+    text-transform: uppercase;
+  }
+  .btn-close-div {
+    display: flex;
+    justify-content: flex-end;
   }
   .duration-holder {
     display: flex;

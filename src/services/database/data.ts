@@ -1,15 +1,35 @@
 import firebase from 'firebase/app';
 import 'firebase/database';
+import { State } from '../../context/context';
 import { swale, swals } from '../../utils';
 import { transform } from '../transformer';
 import { path } from './index';
+import { updateWorker } from './worker';
+
+const giveDateReceived = (state: State) => {
+  let some = false;
+
+  state.messages.forEach((m) => {
+    m.workers.forEach((w) => {
+      if (!w.dateReceived) {
+        w.dateReceived = new Date().toJSON();
+        updateWorker(w);
+        some = true;
+      }
+    });
+  });
+
+  if (some) swals('Added missing propertyto workers');
+
+  return state;
+};
 
 export const getData = () =>
   firebase
     .database()
     .ref(path())
     .get()
-    .then((r) => transform(r.val()))
+    .then((r) => giveDateReceived(transform(r.val()) as State))
     .catch((e) => {
       swale(e.message);
       return null;

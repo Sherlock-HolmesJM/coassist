@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { MemberI } from '../../types';
-import { NameInput, Select } from '../assignment/inputs';
+import { ActionButtonHolder, NameInput, Select } from '../assignment/inputs';
 import FormContainer from '../../commons/formHolder';
 import TimeInput from '../assignment/timeInput';
 import { hmsToSeconds, secondsToHMS, swalconfirm } from '../../utils';
@@ -86,9 +86,7 @@ const Update: React.FC<UpdateProps> = (props) => {
           required={false}
           setName={(givenOut) => setData({ ...data, givenOut })}
         />
-        <div className='m-2 btn-group'>
-          <input className='btn btn-primary' type='submit' value='Update' />
-        </div>
+        <ActionButtonHolder value='update' />
       </form>
     </FormContainer>
   );

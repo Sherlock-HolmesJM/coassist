@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import FormContainer from '../../commons/formHolder';
-import { NameInput, Select } from '../assignment/inputs';
+import { ActionButtonHolder, NameInput, Select } from '../assignment/inputs';
 import TimeInput from '../assignment/timeInput';
 import { hmsToSeconds } from '../../utils';
 
@@ -63,9 +63,7 @@ const Add: React.FC<AddProps> = (props) => {
           label='Type'
           onChange={(e) => setData({ ...data, type: e.target.value })}
         />
-        <div className='m-2 btn-group'>
-          <input className='btn btn-primary' type='submit' value='Add' />
-        </div>
+        <ActionButtonHolder value='add' />
       </form>
     </FormContainer>
   );

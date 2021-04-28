@@ -12,7 +12,16 @@ export const updateWorkers = (workers: Worker[]) => {
     .database()
     .ref(path() + '/messages/' + workers[0].msguid + '/workers')
     .update(arrayToObject(workers))
-    .then(() => swals('', 'Saved.'))
+    .then(() => swals('', 'Updated.'))
+    .catch((e) => swale(e.message));
+};
+
+export const updateWorker = (worker: Worker) => {
+  const { dateReceived } = worker;
+  return firebase
+    .database()
+    .ref(path() + '/messages/' + worker.msguid + '/workers/' + worker.uid)
+    .update({ dateReceived })
     .catch((e) => swale(e.message));
 };
 
@@ -21,7 +30,7 @@ export const setWorker = (worker: Worker) =>
     .database()
     .ref(path() + '/messages/' + worker.msguid + '/workers/' + worker.uid)
     .set(worker)
-    .then(() => swals('', 'Saved.'))
+    .then(() => swals('', 'Saved'))
     .catch((e) => swale(e.message));
 
 export const removeWorker = (muid: number, wuid: number) =>
@@ -29,5 +38,5 @@ export const removeWorker = (muid: number, wuid: number) =>
     .database()
     .ref(path() + '/messages/' + muid + '/workers/' + wuid)
     .remove()
-    .then(() => swals('', 'Saved.'))
+    .then(() => swals('', 'Deleted'))
     .catch((e) => swale(e.message));
