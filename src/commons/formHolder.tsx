@@ -57,27 +57,38 @@ const Div = styled.div`
 
   .fixed {
     position: fixed;
-    top: 0;
+    top: 140px;
     display: flex;
     flex-direction: column;
-    width: min(94vw, 500px);
+    /* width: min(94vw, 500px); */
     background-color: gray;
     padding: 5px;
     visibility: hidden;
     opacity: 0;
-    transition: all 0.8s;
+    transition: all 0.9s;
   }
   .fixed:target {
-    animation: fixed 0.5s ease both;
+    animation: fixed 0.6s ease-in-out both;
   }
   @keyframes fixed {
     0% {
-      top: 0;
+      width: 0;
     }
     100% {
-      top: 150px;
       opacity: 1;
       visibility: visible;
+      width: min(94vw, 500px);
+    }
+  }
+  .fixed:target .form {
+    animation: form-control 0.6s 0.5s ease-in both;
+  }
+  @keyframes form-control {
+    0% {
+      opacity: 0;
+    }
+    100% {
+      opacity: 1;
     }
   }
   .form {

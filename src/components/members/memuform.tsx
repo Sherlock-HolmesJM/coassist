@@ -32,7 +32,7 @@ const Update: React.FC<UpdateProps> = (props) => {
     if (member) {
       const { name, type, givenOut } = member;
       const capacity = secondsToHMS(member.capacity ?? 0);
-      setData({ ...data, name, capacity, type, givenOut });
+      setData({ ...data, name, capacity, type, givenOut: givenOut ?? '' });
     }
 
     // eslint-disable-next-line
@@ -46,7 +46,7 @@ const Update: React.FC<UpdateProps> = (props) => {
 
     const { h, m, s } = data.capacity;
     const capacity = hmsToSeconds(h, m, s);
-    onUpdate({ ...data, capacity });
+    onUpdate({ ...data, capacity, givenOut });
     setMember(false);
   };
 

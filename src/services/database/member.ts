@@ -10,7 +10,7 @@ export const updateMembers = (members: MemberI[]) =>
     .database()
     .ref(path() + 'members')
     .update(arrayToObject(members))
-    .then(() => swals('', 'Saved.'))
+    .then(() => swals('', 'Updated'))
     .catch((e) => swale(e.message));
 
 export const setMember = (member: MemberI) =>
@@ -18,7 +18,7 @@ export const setMember = (member: MemberI) =>
     .database()
     .ref(path() + 'members/' + member.uid)
     .set(member)
-    .then(() => swals('', 'Saved.'))
+    .then(() => swals('', 'Added'))
     .catch((e) => swale(e.message));
 
 export const updateMember = (member: MemberI) =>
@@ -26,7 +26,7 @@ export const updateMember = (member: MemberI) =>
     .database()
     .ref(path() + 'members/' + member.uid)
     .update(member)
-    .then(() => swals('', 'Saved.'))
+    .then(() => swals('', 'Updated'))
     .catch((e) => swale(e.message));
 
 export const deleteMember = (muid: number) =>
@@ -34,5 +34,5 @@ export const deleteMember = (muid: number) =>
     .database()
     .ref(path() + 'members/' + muid)
     .remove()
-    .then(() => swals('', 'Saved.'))
+    .then(() => swals('', 'Deleted'))
     .catch((e) => swale(e.message));
