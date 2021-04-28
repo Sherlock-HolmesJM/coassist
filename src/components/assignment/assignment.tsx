@@ -7,8 +7,8 @@ import { MessageI, MessageStatus } from '../../types';
 import { db } from '../../services';
 import { getMemberStatus } from '../message/messageModel';
 import { ClickBadge } from '../../commons/badge';
-import FormAdd from './FormAdd';
-import FormUpdate from './formUpdate';
+import FormAdd from './assaform';
+import FormUpdate from './assuform';
 import Loader from '../../commons/loader';
 import { swalconfirm } from '../../utils';
 
