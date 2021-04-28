@@ -6,7 +6,7 @@ import { db } from '../../services';
 import * as mm from '../message/messageModel';
 import { secondsToHMS, swalconfirm, swals } from '../../utils';
 import { determineSent, updateWorkers } from './helper';
-import { SizeInput, NameInput, FileInput } from './inputs';
+import { SizeInput, NameInput, FileInput, ActionButtonHolder } from './inputs';
 import TimeInput from './timeInput';
 import FormContainer from '../../commons/formHolder';
 
@@ -128,10 +128,9 @@ const FormUpdate: React.FC<FormProps> = (props) => {
             </select>
           </div>
         </div>
-        <div className='m-2 btn-group'>
+        <ActionButtonHolder value='udpate'>
           <FileInput callback={handleGetDetails} />
-          <input className='btn btn-success' type='submit' value='Update' />
-        </div>
+        </ActionButtonHolder>
       </form>
     </FormContainer>
   );

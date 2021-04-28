@@ -4,7 +4,7 @@ import { context } from '../../context/context';
 import { setMessages } from '../../context/actions';
 import { MessageI, createTorTE } from '../../types';
 import { db } from '../../services';
-import { SizeInput, NameInput, FileInput } from './inputs';
+import { SizeInput, NameInput, FileInput, ActionButtonHolder } from './inputs';
 import TimeInput from './timeInput';
 import FormContainer from '../../commons/formHolder';
 
@@ -103,10 +103,9 @@ const FormAdd: React.FC<FormProps> = (props) => {
           value={size}
           onChange={(e) => setData({ ...data, size: +e.target.value })}
         />
-        <div className='m-2 btn-group'>
+        <ActionButtonHolder value='add'>
           <FileInput callback={handleGetDetails} />
-          <input className='btn btn-primary' type='submit' value='Add' />
-        </div>
+        </ActionButtonHolder>
       </form>
     </FormContainer>
   );

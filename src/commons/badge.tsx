@@ -1,4 +1,5 @@
 import styled from 'styled-components';
+import { formModalID } from '../config';
 
 export interface BadgeProps {
   color:
@@ -20,6 +21,7 @@ export interface DisplayBadge extends BadgeProps {
 
 export interface ClickBadgeI extends BadgeProps {
   onClick: () => void;
+  modal?: boolean;
 }
 
 const Badge: React.FC<DisplayBadge> = (props: DisplayBadge) => {
@@ -33,7 +35,18 @@ const Badge: React.FC<DisplayBadge> = (props: DisplayBadge) => {
 };
 
 const ClickBadge: React.FC<ClickBadgeI> = (props: ClickBadgeI) => {
-  const { color, text, onClick, classes } = props;
+  const { color, text, onClick, classes, modal } = props;
+  if (modal)
+    return (
+      <A
+        href={`#${formModalID}`}
+        className={`badge bg-${color} ${classes}`}
+        onClick={onClick}
+      >
+        {text}
+      </A>
+    );
+
   return (
     <Span className={`badge bg-${color} ${classes}`} onClick={onClick}>
       {text}
@@ -44,7 +57,14 @@ const ClickBadge: React.FC<ClickBadgeI> = (props: ClickBadgeI) => {
 const Span = styled.span`
   color: white;
   cursor: pointer;
-  margin: 4px;
+  margin: 3px;
+  font-size: 14px;
+`;
+
+const A = styled.a`
+  color: white;
+  cursor: pointer;
+  margin: 3px;
   font-size: 14px;
 `;
 

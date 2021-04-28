@@ -2,9 +2,56 @@ import React, { ChangeEvent, FC } from 'react';
 import { Howl } from 'howler';
 import { swale, swali, swals } from '../../utils';
 
-export interface SelectProps {
+interface ActionButtonHolderProps {
+  value: string;
+}
+
+const ActionButtonHolder: React.FC<ActionButtonHolderProps> = (props) => {
+  const { value, children } = props;
+  return (
+    <div className='m-2 btn-group header-actionButton-holder'>
+      {children}
+      <input className='btn btn-primary' type='submit' value={value} />
+    </div>
+  );
+};
+
+export { ActionButtonHolder };
+
+interface LabelTextFieldProps {
+  label: string;
+  value: string;
+  type?: 'text' | 'number';
+  placeholder?: string;
+  onChange: (value: string) => void;
+}
+
+export const LabelTextField: React.FC<LabelTextFieldProps> = (props) => {
+  const { label, value, onChange, type, placeholder } = props;
+
+  return (
+    <div className='m-2'>
+      <div className='holder-splitlength-div'>
+        <label className='holder-splitlength-label' htmlFor='splitlength'>
+          {label}
+        </label>
+        <input
+          id='splitlength'
+          type={type ?? 'text'}
+          className='holder-splitlength'
+          placeholder={placeholder ?? ''}
+          value={value}
+          onChange={(e) => onChange(e.target.value.trim().toLowerCase())}
+          required
+        />
+      </div>
+    </div>
+  );
+};
+
+interface SelectProps {
   onChange: (e: any) => void;
-  values: [string | number, string][];
+  values: string[][];
   label: string;
   value?: string;
 }
@@ -37,7 +84,7 @@ export const Select: React.FC<SelectProps> = (props) => {
   );
 };
 
-export interface SizeProps {
+interface SizeProps {
   value: number;
   placeholder?: string;
   onChange: (e: ChangeEvent<HTMLInputElement>) => void;
@@ -56,6 +103,7 @@ export const SizeInput: FC<SizeProps> = (props) => {
         onChange={onChange}
         required
         onFocus={(e) => e.currentTarget.select()}
+        min={0}
       />
     </div>
   );

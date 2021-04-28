@@ -7,9 +7,11 @@ import List from './list';
 import { MessageI, Worker } from '../../types';
 import { db } from '../../services';
 import * as mm from './messageModel';
-import { UpdateForm, AddForm } from './forms';
+import { UpdateForm } from './messuform';
+import { AddForm } from './messaform';
 import TimeStamps from '../../commons/timestamps';
-import { swalconfirm } from '../../utils';
+import { capitalize, swalconfirm } from '../../utils';
+import { formModalID } from '../../config';
 
 function Message() {
   const { members, dispatch, messages } = useContext(context);
@@ -32,6 +34,7 @@ function Message() {
     if (!obj) return;
 
     const wkr: Worker = { ...worker, done: !worker.done };
+    if (!wkr.dateReturned) wkr.dateReturned = new Date().toJSON();
 
     const newMessage: MessageI = { ...message };
     const index = newMessage.workers.indexOf(worker);
@@ -54,7 +57,7 @@ function Message() {
   const handleDelete = async (worker: Worker) => {
     const result = await swalconfirm(
       `Yes, delete`,
-      `Delete ${worker.name.toUpperCase()}!`
+      `Delete ${capitalize(worker.name)}'s split?`
     );
     if (!result.isConfirmed) return;
 
@@ -70,8 +73,8 @@ function Message() {
     const membs = mm.getNewMembers(member, members);
 
     db.updateMember(member);
-    db.removeWorker(worker.msguid, worker.uid);
     db.updateMessage(newMessage);
+    db.removeWorker(worker.msguid, worker.uid);
     dispatch(setMM(megs, membs));
   };
 
@@ -86,9 +89,13 @@ function Message() {
             Members
           </Link>
         </nav>
-        <button className='btn btn-primary' onClick={() => setForm(true)}>
+        <a
+          href={`#${formModalID}`}
+          className='btn btn-primary'
+          onClick={() => setForm(true)}
+        >
           Assign Split
-        </button>
+        </a>
       </header>
       <div className='forms'>
         <UpdateForm

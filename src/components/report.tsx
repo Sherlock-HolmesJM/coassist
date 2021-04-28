@@ -2,6 +2,7 @@ import { useContext } from 'react';
 import { context } from '../context/context';
 import { Worker } from '../types';
 import styled from 'styled-components';
+import { capitalize } from '../utils';
 
 export interface ReportProps {
   report: boolean;
@@ -60,55 +61,31 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
           {groupName} report - {collatorName}
         </h5>
       </div>
+      <Item
+        title='Free Team Members'
+        list={members
+          .filter((m) => m.active && m.free)
+          .sort((a, b) => a.type.length - b.type.length)
+          .map((m) => `${m.name} - ${m.type}`)}
+      />
+      <Item
+        title='Audios Not Transcribed, Not Allocated'
+        list={messagesNotAllocated.map((m) => m.name)}
+      />
+      <Item
+        title='Transcribed Splits Not Given To Editors'
+        list={transcriptsNotAllocated.map(
+          (m) => `${m.part} - ${m.splitLength}min`
+        )}
+      />
+      <Item
+        title='Messages In Progress'
+        list={messagesInProgress.map((m) => m.name)}
+      />
       <div>
-        <h6 className='list-title'>Free Team Members</h6>
-        <ol>
-          {members
-            .filter((m) => m.active && m.free)
-            .sort((a, b) => a.type.length - b.type.length)
-            .map((m) => (
-              <li key={m.uid}>
-                <span className='uppercase'>
-                  {m.name} - {m.type}
-                </span>
-              </li>
-            ))}
-        </ol>
-      </div>
-      <div>
-        <h6 className='list-title'>Audios Not Transcribed, Not Allocated</h6>
-        <ol>
-          {messagesNotAllocated.map((m) => (
-            <li key={m.uid}>
-              <span className='uppercase'>{m.name}</span>
-            </li>
-          ))}
-        </ol>
-      </div>
-      <div>
-        <h6 className='list-title'>Transcribed Splits Not Given To Editors</h6>
-        <ol>
-          {transcriptsNotAllocated.map((m) => (
-            <li key={m.part}>
-              <span className='uppercase'>
-                {m.part} - {m.splitLength} Mins
-              </span>
-            </li>
-          ))}
-        </ol>
-      </div>
-      <div>
-        <h6 className='list-title'>Messages In Progress</h6>
-        <ol>
-          {messagesInProgress.map((m) => (
-            <li key={m.uid}>
-              <span className='uppercase'>{m.name}</span>
-            </li>
-          ))}
-        </ol>
-      </div>
-      <div>
-        <h5>DETAILS FOR THOSE IN-PROGRESS</h5>
+        <h5>
+          {messagesInProgress.length > 1 && 'DETAILS FOR THOSE IN-PROGRESS'}
+        </h5>
         <ol>
           {messagesInProgress.map((m) => {
             const totaltrans = m.workers
@@ -146,6 +123,31 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
         </ol>
       </div>
     </Div>
+  );
+};
+
+interface ItemProps {
+  title: string;
+  list: string[];
+}
+
+const Item = (props: ItemProps) => {
+  const { title, list } = props;
+
+  if (list.length === 0)
+    return <h6 className='list-title'>No {capitalize(title)}</h6>;
+
+  return (
+    <div>
+      <h6 className='list-title'>{capitalize(title)}</h6>
+      <ol>
+        {list.map((l, i) => (
+          <li key={i}>
+            <span className='uppercase'>{l}</span>
+          </li>
+        ))}
+      </ol>
+    </div>
   );
 };
 

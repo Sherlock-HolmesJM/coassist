@@ -11,6 +11,7 @@ import FormAdd from './assaform';
 import FormUpdate from './assuform';
 import Loader from '../../commons/loader';
 import { swalconfirm } from '../../utils';
+import { formModalID } from '../../config';
 
 function Assignment() {
   const { dispatch, messages, members } = useContext(context);
@@ -74,9 +75,13 @@ function Assignment() {
           <Link to='/members' className='btn btn-link'>
             Members
           </Link>
-          <button className='btn btn-primary' onClick={() => setShowform(true)}>
+          <a
+            href={`#${formModalID}`}
+            className='btn btn-primary'
+            onClick={() => setShowform(true)}
+          >
             New Message
-          </button>
+          </a>
         </nav>
       </header>
       <div>
@@ -115,21 +120,28 @@ function Assignment() {
         <div className='list-group-k'>
           {sorted.map((m) => (
             <div key={m.name} className='list-group-item'>
-              <Link to={`/assignments:${m.uid}`} className='link'>
-                {m.name} - <em>{m.status}</em>
+              <Link
+                to={`/assignments:${m.uid}`}
+                className='list-group-item-content link'
+              >
+                <div>{m.name}</div>
+                <div>
+                  <em className='list-group-item-status'>{m.status}</em>
+                </div>
               </Link>
-              <div>
-                <ClickBadge
-                  classes='bg-color'
-                  color={getColor(m.status)}
-                  onClick={() => handleDelete(m)}
-                  text='x'
-                />
+              <div className='list-group-item-badges'>
                 <ClickBadge
                   classes='bg-color'
                   color={getColor(m.status)}
                   onClick={() => setMessage(m)}
                   text='u'
+                  modal
+                />
+                <ClickBadge
+                  classes='bg-color'
+                  color={getColor(m.status)}
+                  onClick={() => handleDelete(m)}
+                  text='x'
                 />
               </div>
             </div>
@@ -181,8 +193,20 @@ const Section = styled.section`
   }
   .list-group-item {
     display: flex;
-    justify-content: space-between;
     text-transform: uppercase;
+    padding: 6px;
+  }
+  .list-group-item-content {
+    flex: 1;
+  }
+  .list-group-item-status {
+    font-size: 11px;
+    font-weight: 700;
+    color: black;
+  }
+  .list-group-item-badges {
+    display: flex;
+    height: 30px;
   }
   .link {
     color: gray;
