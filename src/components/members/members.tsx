@@ -10,10 +10,11 @@ import { db } from '../../services';
 import { getMemberStatus } from '../message/messageModel';
 import Addform from './memaform';
 import UpdateForm from './memuform';
+import { formModalID } from '../../config';
 
 export interface MembersProps {}
 
-const MembersComp: React.FC<MembersProps> = (props) => {
+const MembersComp: React.FC<MembersProps> = () => {
   const { dispatch, members, messages, collatorName, groupName } = useContext(
     context
   );
@@ -23,7 +24,9 @@ const MembersComp: React.FC<MembersProps> = (props) => {
 
   const activeMembers = members.filter((m) => m.active && !m.givenOut);
   const inactiveMembers = members.filter((m) => !m.active);
-  const givenOut = members.filter((m) => m.active && m.givenOut);
+  const givenOut = members
+    .filter((m) => m.active && m.givenOut)
+    .sort((a, b) => a.givenOut.localeCompare(b.givenOut));
 
   type Sig = {
     name: string;
@@ -109,9 +112,13 @@ const MembersComp: React.FC<MembersProps> = (props) => {
           <Link to='/assignments' className='btn btn-link'>
             Assignment
           </Link>
-          <button className='btn btn-primary' onClick={() => setShow(true)}>
+          <a
+            href={`#${formModalID}`}
+            className='btn btn-primary'
+            onClick={() => setShow(true)}
+          >
             New Member
-          </button>
+          </a>
           <button className='btn btn-primary' onClick={() => window.print()}>
             Get PDF
           </button>

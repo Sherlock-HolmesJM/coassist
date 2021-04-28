@@ -130,6 +130,8 @@ const Home: React.FC<Props> = () => {
 };
 
 const Section = styled.section`
+  background-color: inherit;
+
   .header {
     display: flex;
     justify-content: space-evenly;

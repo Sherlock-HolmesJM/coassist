@@ -16,6 +16,8 @@ export interface ListProps {
 const List: React.FC<ListProps> = (props) => {
   const { title, workers, onMark, onDelete, onUpdate } = props;
 
+  if (workers.length === 0) return null;
+
   const tes = workers.filter((w) => w.type === 'TE').length;
   const ts = workers.filter((w) => w.type === 'T').length;
 
@@ -33,7 +35,7 @@ const List: React.FC<ListProps> = (props) => {
           .sort((a, b) => a.type.length - b.type.length)
           .map((worker) => {
             return (
-              <li className='list-group-item' key={worker.uid}>
+              <div className='list-group-item' key={worker.uid}>
                 <div>
                   <div>
                     {capitalize(worker.name)} - {worker.type}:
@@ -45,7 +47,7 @@ const List: React.FC<ListProps> = (props) => {
                     <em>{worker.splitLength} Mins</em>
                   </div>
                 </div>
-                <div>
+                <div className='list-group-item-badges'>
                   <ClickBadge
                     color={worker.done ? 'success' : 'secondary'}
                     onClick={() => onMark(worker)}
@@ -55,6 +57,7 @@ const List: React.FC<ListProps> = (props) => {
                     color='warning'
                     onClick={() => onUpdate(worker)}
                     text='U'
+                    modal
                   />
                   <ClickBadge
                     color='danger'
@@ -62,7 +65,7 @@ const List: React.FC<ListProps> = (props) => {
                     text='X'
                   />
                 </div>
-              </li>
+              </div>
             );
           })}
       </ul>
@@ -92,12 +95,15 @@ const Div = styled.div`
     align-self: flex-end;
   }
 
-  li {
+  .list-group-item {
     display: flex;
     justify-content: space-between;
     padding: 5px;
   }
-
+  .list-group-item-badges {
+    display: flex;
+    height: 30px;
+  }
   @media print {
     .title {
       font-size: 1.2rem;

@@ -13,11 +13,12 @@ export interface ListProps {
 
 const List: React.FC<ListProps> = (props) => {
   const { title, items, onMark, onDelete, onUpdate } = props;
+
+  if (items.length === 0) return null;
+
   const ts = items.filter((m) => m.type === 'T');
   const tes = items.filter((m) => m.type === 'TE');
   const sorted = [...ts, ...tes];
-
-  if (sorted.length === 0) return null;
 
   const formatCap = (capacity: number) => {
     const mins = secondsToMinutes(capacity);
@@ -39,7 +40,7 @@ const List: React.FC<ListProps> = (props) => {
       <ul className='list-group'>
         {sorted.map((item) => (
           <li className='list-group-item' key={item.uid}>
-            <div>
+            <div className='list-group-item-content'>
               <div>
                 {capitalize(item.name)} - {item.type}
               </div>
@@ -52,7 +53,7 @@ const List: React.FC<ListProps> = (props) => {
                 </em>
               </div>
             </div>
-            <div>
+            <div className='list-group-item-badges'>
               {onMark && (
                 <ClickBadge
                   color='success'
@@ -65,6 +66,7 @@ const List: React.FC<ListProps> = (props) => {
                   color='warning'
                   onClick={() => onUpdate(item)}
                   text='U'
+                  modal
                 />
               )}
               {onDelete && (
@@ -98,10 +100,16 @@ const Div = styled.div`
     padding: 5px;
     margin-bottom: 20px;
   }
-  li {
+  .list-group-item {
     display: flex;
-    justify-content: space-between;
     padding: 5px;
+  }
+  .list-group-item-content {
+    flex: 1;
+  }
+  .list-group-item-badges {
+    display: flex;
+    height: 30px;
   }
 
   @media print {
