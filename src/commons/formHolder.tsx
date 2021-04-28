@@ -68,7 +68,7 @@ const Div = styled.div`
     transition: all 0.9s;
   }
   .fixed:target {
-    animation: fixed 0.6s ease-in-out both;
+    animation: fixed 0.5s ease-in-out both;
   }
   @keyframes fixed {
     0% {
@@ -81,7 +81,7 @@ const Div = styled.div`
     }
   }
   .fixed:target .form {
-    animation: form-control 0.6s 0.5s ease-in both;
+    animation: form-control 0.5s 0.4s ease-in both;
   }
   @keyframes form-control {
     0% {

@@ -6,7 +6,13 @@ import { db } from '../../services';
 import * as mm from '../message/messageModel';
 import { secondsToHMS, swalconfirm, swals } from '../../utils';
 import { determineSent, updateWorkers } from './helper';
-import { SizeInput, NameInput, FileInput, ActionButtonHolder } from './inputs';
+import {
+  SizeInput,
+  NameInput,
+  FileInput,
+  ActionButtonHolder,
+  Select,
+} from './inputs';
 import TimeInput from './timeInput';
 import FormContainer from '../../commons/formHolder';
 
@@ -111,23 +117,15 @@ const FormUpdate: React.FC<FormProps> = (props) => {
           value={size}
           onChange={(e) => setData({ ...data, size: +e.target.value })}
         />
-        <div className='m-2'>
-          <div className='form-control'>
-            <label htmlFor='select-worker' className='holder-label form-label'>
-              Sent to CGT:
-            </label>
-            <select
-              required
-              value={sent2CGT}
-              onChange={(e) => setSent2CGT(e.target.value)}
-              id='select-worker'
-              className='form-select'
-            >
-              <option value='no'>no</option>
-              <option value='yes'>yes</option>
-            </select>
-          </div>
-        </div>
+        <Select
+          label='Sent to CGT'
+          value={sent2CGT}
+          values={[
+            ['no', 'no'],
+            ['yes', 'yes'],
+          ]}
+          onChange={(e) => setSent2CGT(e.target.value)}
+        />
         <ActionButtonHolder value='udpate'>
           <FileInput callback={handleGetDetails} />
         </ActionButtonHolder>
