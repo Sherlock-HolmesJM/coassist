@@ -6,6 +6,7 @@ import { BrowserRouter } from 'react-router-dom';
 import Provider from './context/context';
 import { config } from './services';
 import './index.css';
+import 'animate.css';
 import App from './App';
 
 firebase.initializeApp(config);

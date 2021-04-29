@@ -28,7 +28,7 @@ export const FormModalButton: React.FC<FormModalButtonProps> = (props) => {
   );
 };
 
-const Holder: React.FC<HolderProps> = (props) => {
+const Wrapper: React.FC<HolderProps> = (props) => {
   const { setShow, show, spin } = props.props;
 
   if (!show) return null;
@@ -36,7 +36,7 @@ const Holder: React.FC<HolderProps> = (props) => {
   return (
     <Div>
       <Loader spin={spin} />
-      <div className='fixed' id='form-modal'>
+      <div className='fixed animate__animated' id='form-modal'>
         <div className='btn-close-div'>
           <FormModalButton value='X' onClick={() => setShow(false)} />
         </div>
@@ -47,7 +47,7 @@ const Holder: React.FC<HolderProps> = (props) => {
 };
 
 const Div = styled.div`
-  position: relative;
+  position: fixed;
   top: 1px;
   display: flex;
   justify-content: center;
@@ -60,15 +60,14 @@ const Div = styled.div`
     top: 140px;
     display: flex;
     flex-direction: column;
-    /* width: min(94vw, 500px); */
+    width: min(94vw, 500px);
     background-color: gray;
     padding: 5px;
-    visibility: hidden;
-    opacity: 0;
-    transition: all 0.9s;
   }
   .fixed:target {
-    animation: fixed 0.5s ease-in-out both;
+    animation: flipInX;
+    animation-duration: 0.8s;
+    /* animation: fixed 0.5s ease-in-out both; */
   }
   @keyframes fixed {
     0% {
@@ -81,7 +80,7 @@ const Div = styled.div`
     }
   }
   .fixed:target .form {
-    animation: form-control 0.5s 0.4s ease-in both;
+    /* animation: form-control 0.5s 0.4s ease-in both; */
   }
   @keyframes form-control {
     0% {
@@ -173,4 +172,4 @@ const Div = styled.div`
   }
 `;
 
-export default Holder;
+export default Wrapper;
