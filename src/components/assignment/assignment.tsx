@@ -11,7 +11,6 @@ import FormAdd from './assaform';
 import FormUpdate from './assuform';
 import Loader from '../../commons/loader';
 import { swalconfirm } from '../../utils';
-import { formModalID } from '../../config';
 
 function Assignment() {
   const { dispatch, messages, members } = useContext(context);
@@ -75,20 +74,16 @@ function Assignment() {
           <Link to='/members' className='btn btn-link'>
             Members
           </Link>
-          <a
-            href={`#${formModalID}`}
-            className='btn btn-primary'
-            onClick={() => setShowform(true)}
-          >
+          <button className='btn btn-primary' onClick={() => setShowform(true)}>
             New Message
-          </a>
+          </button>
         </nav>
       </header>
       <div>
         <FormAdd setShowform={setShowform} showform={showform} />
         <FormUpdate message={message} setMessage={setMessage} />
       </div>
-      <div className='bg-container'>
+      <div className='bg-container animate__animated animate__fadeIn'>
         <div className='badge badge-secondary bg-summary'>
           <div className='badge-content'>
             <span>Undone:</span>
@@ -116,7 +111,7 @@ function Assignment() {
           </div>
         </div>
       </div>
-      <main className='list-container'>
+      <main className='list-container animate__animated animate__backInUp'>
         <div className='list-group-k'>
           {sorted.map((m) => (
             <div key={m.name} className='list-group-item'>
@@ -135,7 +130,6 @@ function Assignment() {
                   color={getColor(m.status)}
                   onClick={() => setMessage(m)}
                   text='u'
-                  modal
                 />
                 <ClickBadge
                   classes='bg-color'

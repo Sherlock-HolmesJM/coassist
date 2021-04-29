@@ -1,13 +1,6 @@
+import { useRef } from 'react';
 import styled from 'styled-components';
 import Loader from './loader';
-
-export interface HolderProps {
-  props: {
-    setShow: (value: any) => void;
-    show: any;
-    spin: boolean;
-  };
-}
 
 interface FormModalButtonProps {
   value: string;
@@ -28,17 +21,35 @@ export const FormModalButton: React.FC<FormModalButtonProps> = (props) => {
   );
 };
 
+export interface HolderProps {
+  props: {
+    setShow: (value: any) => void;
+    show: any;
+    spin: boolean;
+  };
+}
+
 const Wrapper: React.FC<HolderProps> = (props) => {
   const { setShow, show, spin } = props.props;
 
+  const ref = useRef<HTMLDivElement>(null);
+  const animIn = 'animate__jackInTheBox';
+  const animOut = 'animate__hinge';
+
   if (!show) return null;
+
+  const closeModal = () => {
+    ref.current.classList.remove(animIn);
+    ref.current.classList.add(animOut);
+    setTimeout(() => setShow(false), 2000);
+  };
 
   return (
     <Div>
       <Loader spin={spin} />
-      <div className='fixed animate__animated' id='form-modal'>
+      <div className={`fixed animate__animated ${animIn}`} ref={ref}>
         <div className='btn-close-div'>
-          <FormModalButton value='X' onClick={() => setShow(false)} />
+          <FormModalButton value='X' onClick={closeModal} />
         </div>
         {props.children}
       </div>
@@ -63,32 +74,6 @@ const Div = styled.div`
     width: min(94vw, 500px);
     background-color: gray;
     padding: 5px;
-  }
-  .fixed:target {
-    animation: flipInX;
-    animation-duration: 0.8s;
-    /* animation: fixed 0.5s ease-in-out both; */
-  }
-  @keyframes fixed {
-    0% {
-      width: 0;
-    }
-    100% {
-      opacity: 1;
-      visibility: visible;
-      width: min(94vw, 500px);
-    }
-  }
-  .fixed:target .form {
-    /* animation: form-control 0.5s 0.4s ease-in both; */
-  }
-  @keyframes form-control {
-    0% {
-      opacity: 0;
-    }
-    100% {
-      opacity: 1;
-    }
   }
   .form {
     display: flex;

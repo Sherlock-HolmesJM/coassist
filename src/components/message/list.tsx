@@ -57,7 +57,6 @@ const List: React.FC<ListProps> = (props) => {
                     color='warning'
                     onClick={() => onUpdate(worker)}
                     text='U'
-                    modal
                   />
                   <ClickBadge
                     color='danger'

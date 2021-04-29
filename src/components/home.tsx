@@ -15,6 +15,7 @@ import axios from 'axios';
 import { saveAs } from 'file-saver';
 import { capitalize } from '../utils';
 import { puff } from '../media';
+import { pageAnim } from '../config';
 
 export interface Props {}
 
@@ -58,7 +59,7 @@ const Home: React.FC<Props> = () => {
   };
 
   return (
-    <Section>
+    <Section className={pageAnim}>
       <Loader spin={selfspin} />
       <header className='header no-print'>
         <div className='header-content'>
@@ -105,7 +106,7 @@ const Home: React.FC<Props> = () => {
             Assignments
           </Link>
           <button
-            onClick={() => setReport(!report)}
+            onClick={() => setReport(true)}
             className='list-group-item list-group-item-action'
           >
             report
@@ -123,7 +124,7 @@ const Home: React.FC<Props> = () => {
             Logout
           </button>
         </div>
-        <Report report={report} />
+        <Report report={report} setReport={setReport} />
       </main>
     </Section>
   );

@@ -11,7 +11,6 @@ import { UpdateForm } from './messuform';
 import { AddForm } from './messaform';
 import TimeStamps from '../../commons/timestamps';
 import { capitalize, swalconfirm } from '../../utils';
-import { formModalID } from '../../config';
 
 function Message() {
   const { members, dispatch, messages } = useContext(context);
@@ -89,13 +88,9 @@ function Message() {
             Members
           </Link>
         </nav>
-        <a
-          href={`#${formModalID}`}
-          className='btn btn-primary'
-          onClick={() => setForm(true)}
-        >
+        <button className='btn btn-primary' onClick={() => setForm(true)}>
           Assign Split
-        </a>
+        </button>
       </header>
       <div className='forms'>
         <UpdateForm

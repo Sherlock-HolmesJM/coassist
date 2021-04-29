@@ -1,4 +1,4 @@
-import { useContext } from 'react';
+import { useContext, useRef, useState } from 'react';
 import { context } from '../context/context';
 import { Worker } from '../types';
 import styled from 'styled-components';
@@ -6,12 +6,16 @@ import { capitalize } from '../utils';
 
 export interface ReportProps {
   report: boolean;
+  setReport: (value: boolean) => void;
 }
 
-const Report: React.FC<ReportProps> = (props: ReportProps) => {
+const Report: React.FC<ReportProps> = (props) => {
   const { messages, groupName, collatorName, members } = useContext(context);
+  const { report, setReport } = props;
 
-  if (!props.report) return null;
+  const ref = useRef<HTMLDivElement>(null);
+
+  if (!report) return null;
 
   const messagesNotAllocated = messages.filter((m) => m.status === 'undone');
   const messagesInProgress = messages.filter((m) => m.status === 'in-progress');
@@ -46,14 +50,26 @@ const Report: React.FC<ReportProps> = (props: ReportProps) => {
     return `${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m}:00`;
   };
 
+  const animIn = 'animate__zoomIn';
+  const animOut = 'animate__zoomOut';
+
+  const closeReport = () => {
+    ref.current.classList.remove(animIn);
+    ref.current.classList.add(animOut);
+    setTimeout(() => setReport(false), 700);
+  };
+
   return (
-    <Div id='report'>
+    <Div id='report' className={`animate__animated ${animIn}`} ref={ref}>
       <div className='no-print btn-print-div'>
         <button
           className='btn btn-primary btn-print'
           onClick={() => window.print()}
         >
           Get PDF
+        </button>
+        <button className='btn btn-primary btn-print' onClick={closeReport}>
+          Close
         </button>
       </div>
       <div>
