@@ -29,7 +29,7 @@ const List: React.FC<ListProps> = (props) => {
   };
 
   return (
-    <Div className='list'>
+    <Div className='list animate__animated animate__fadeInUp'>
       <div className='title-container'>
         <h3 className='title'>{capitalize(title)} </h3>
         <div className='badge-container'>
@@ -66,7 +66,6 @@ const List: React.FC<ListProps> = (props) => {
                   color='warning'
                   onClick={() => onUpdate(item)}
                   text='U'
-                  modal
                 />
               )}
               {onDelete && (

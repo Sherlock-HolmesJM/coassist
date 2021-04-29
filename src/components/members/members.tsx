@@ -10,7 +10,6 @@ import { db } from '../../services';
 import { getMemberStatus } from '../message/messageModel';
 import Addform from './memaform';
 import UpdateForm from './memuform';
-import { formModalID } from '../../config';
 
 export interface MembersProps {}
 
@@ -112,13 +111,9 @@ const MembersComp: React.FC<MembersProps> = () => {
           <Link to='/assignments' className='btn btn-link'>
             Assignment
           </Link>
-          <a
-            href={`#${formModalID}`}
-            className='btn btn-primary'
-            onClick={() => setShow(true)}
-          >
+          <button className='btn btn-primary' onClick={() => setShow(true)}>
             New Member
-          </a>
+          </button>
           <button className='btn btn-primary' onClick={() => window.print()}>
             Get PDF
           </button>
