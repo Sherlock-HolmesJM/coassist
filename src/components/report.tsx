@@ -1,4 +1,4 @@
-import { useContext, useRef, useState } from 'react';
+import { useContext, useRef } from 'react';
 import { context } from '../context/context';
 import { Worker } from '../types';
 import styled from 'styled-components';
