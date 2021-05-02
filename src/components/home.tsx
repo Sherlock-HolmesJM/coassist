@@ -9,8 +9,8 @@ import { setCG, setState, toggleSpin } from '../context/actions';
 import Summary from './summary';
 import Loader from '../commons/loader';
 import { db } from '../services/database';
-import { getExcel } from '../utils/report';
-import Report from './report';
+import { getExcel } from '../utils/excel';
+import Report from './report/report';
 import axios from 'axios';
 import { saveAs } from 'file-saver';
 import { capitalize } from '../utils';
@@ -174,9 +174,9 @@ const Section = styled.section`
     justify-content: space-around;
     margin-top: 10px;
     padding: 10px;
+    gap: 20px;
   }
   .list-group {
-    margin-bottom: 20px;
     width: min(90vw, 310px);
   }
   .list-group * {

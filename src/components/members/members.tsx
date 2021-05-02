@@ -148,11 +148,10 @@ const MembersComp: React.FC<MembersProps> = () => {
       </div>
       <div className='hide'>
         <div className='hide-title-container'>
-          <h4>{groupName} Members List</h4>
-          <h4>Collator: {collatorName}</h4>
+          <h2>{groupName} Members List</h2>
+          <h2>Collator: {collatorName}</h2>
         </div>
         <div className='hide-container'>
-          <List items={members} title='all members' />
           <List items={activeMembers} title='active members' />
           <List items={inactiveMembers} title='inactive members' />
           <List items={givenOut} title='Given Out' />

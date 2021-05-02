@@ -1,13 +1,36 @@
 import { useContext, useRef } from 'react';
-import { context } from '../context/context';
-import { Worker } from '../types';
+import { context } from '../../context/context';
+import { Worker } from '../../types';
 import styled from 'styled-components';
-import { capitalize } from '../utils';
+import {
+  capitalize,
+  getWeekBegin,
+  getWeekEnd,
+  getWorkCapacity,
+} from '../../utils';
+import Summary from './summary';
+import NotAllocated from './notAllocated';
+import IssuedAndReturned from './issuedAndReturned';
+import { Flex, FlexDate, FlexItem, Title } from './flex';
 
 export interface ReportProps {
   report: boolean;
   setReport: (value: boolean) => void;
 }
+
+const weekbegin_date = getWeekBegin('Sat');
+const weekbegin = weekbegin_date.getTime();
+const weekend = getWeekEnd(weekbegin_date).getTime();
+
+const fallsInWeekBeginAndEnd = (date: Date) => {
+  try {
+    const tim = date.getTime();
+    if (tim >= weekbegin && tim <= weekend) return true;
+    return false;
+  } catch (e) {
+    return false;
+  }
+};
 
 const Report: React.FC<ReportProps> = (props) => {
   const { messages, groupName, collatorName, members } = useContext(context);
@@ -20,29 +43,55 @@ const Report: React.FC<ReportProps> = (props) => {
   const messagesNotAllocated = messages.filter((m) => m.status === 'undone');
   const messagesInProgress = messages.filter((m) => m.status === 'in-progress');
 
-  let audiosTranscribed: Worker[] = [];
-  let audiosInProgress: Worker[] = [];
-  let transcriptsInProgress: Worker[] = [];
-  let transcriptsEdited: Worker[] = [];
+  let audtrans: Worker[] = []; // audios transcribed
+  let audinprog: Worker[] = []; // audios in progress
+  let transinprog: Worker[] = []; // transcripts in progress
+  let transedited: Worker[] = []; // transcripts edited
+  let issuedDisWeek: Worker[] = []; // audios/transcripts issued this week
+  let issuedLastWeek: Worker[] = []; // audios/transcripts issued last week
 
   messagesInProgress.forEach((m) => {
     const alist = m.workers.filter((m) => m.type === 'T' && !m.done);
     const alistT = m.workers.filter((m) => m.type === 'T' && m.done);
     const tlist = m.workers.filter((m) => m.type === 'TE' && !m.done);
     const tlistE = m.workers.filter((m) => m.type === 'TE' && m.done);
+    const isdw = m.workers.filter((w) =>
+      fallsInWeekBeginAndEnd(new Date(w.dateReceived))
+    );
+    const islw = m.workers.filter(
+      (w) => !fallsInWeekBeginAndEnd(new Date(w.dateReceived))
+    );
 
-    audiosInProgress = [...audiosInProgress, ...alist];
-    audiosTranscribed = [...audiosTranscribed, ...alistT];
-    transcriptsInProgress = [...transcriptsInProgress, ...tlist];
-    transcriptsEdited = [...transcriptsEdited, ...tlistE];
+    audinprog = [...audinprog, ...alist];
+    audtrans = [...audtrans, ...alistT];
+    transinprog = [...transinprog, ...tlist];
+    transedited = [...transedited, ...tlistE];
+    issuedDisWeek = [...issuedDisWeek, ...isdw];
+    issuedLastWeek.concat(islw);
   });
 
-  let transcriptsNotAllocated = audiosTranscribed.filter(
-    (m) => !transcriptsInProgress.find((t) => t.part === m.part)
+  let returnedDisWeek = audtrans.filter((w) =>
+    fallsInWeekBeginAndEnd(new Date(w.dateReturned))
+  );
+  returnedDisWeek = [
+    ...returnedDisWeek,
+    ...transedited.filter((w) =>
+      fallsInWeekBeginAndEnd(new Date(w.dateReturned))
+    ),
+  ];
+
+  let transcriptsNotAllocated = audtrans.filter(
+    (m) => !transinprog.find((t) => t.part === m.part)
   );
   transcriptsNotAllocated = transcriptsNotAllocated.filter(
-    (m) => !transcriptsEdited.find((t) => t.part === m.part)
+    (m) => !transedited.find((t) => t.part === m.part)
   );
+
+  const len = {
+    issuedDisWeek: getWorkCapacity(issuedDisWeek),
+    returnedDisWeek: getWorkCapacity(returnedDisWeek),
+    issuedLastWeek: getWorkCapacity(issuedLastWeek),
+  };
 
   const getHMS = (duration: number) => {
     const h = Math.floor(duration / 60);
@@ -50,8 +99,8 @@ const Report: React.FC<ReportProps> = (props) => {
     return `${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m}:00`;
   };
 
-  const animIn = 'animate__zoomIn';
-  const animOut = 'animate__zoomOut';
+  const animIn = 'animate__zoomInDown';
+  const animOut = 'animate__zoomOutLeft';
 
   const closeReport = () => {
     ref.current.classList.remove(animIn);
@@ -73,10 +122,20 @@ const Report: React.FC<ReportProps> = (props) => {
         </button>
       </div>
       <div>
-        <h5 className='uppercase title'>
-          {groupName} report - {collatorName}
-        </h5>
+        <h4 className='uppercase title'>
+          {groupName} weekly report - {collatorName}
+        </h4>
       </div>
+      <Summary members={members} len={len} />
+      <IssuedAndReturned
+        issued={issuedDisWeek}
+        returned={returnedDisWeek}
+        outstanding={issuedLastWeek}
+      />
+      <NotAllocated
+        audios={messagesNotAllocated}
+        transcripts={transcriptsNotAllocated}
+      />
       <Item
         title='Free Team Members'
         list={members
@@ -84,25 +143,12 @@ const Report: React.FC<ReportProps> = (props) => {
           .sort((a, b) => a.type.length - b.type.length)
           .map((m) => `${m.name} - ${m.type}`)}
       />
-      <Item
-        title='Audios Not Transcribed, Not Allocated'
-        list={messagesNotAllocated.map((m) => m.name)}
-      />
-      <Item
-        title='Transcribed Splits Not Given To Editors'
-        list={transcriptsNotAllocated.map(
-          (m) => `${m.part} - ${m.splitLength}min`
-        )}
-      />
-      <Item
-        title='Messages In Progress'
-        list={messagesInProgress.map((m) => m.name)}
-      />
       <div>
-        <h5>
-          {messagesInProgress.length > 1 && 'DETAILS FOR THOSE IN-PROGRESS'}
-        </h5>
-        <ol>
+        <Title>
+          {messagesInProgress.length > 1 &&
+            'Messages In Progress: Completion Rate'}
+        </Title>
+        <Flex>
           {messagesInProgress.map((m) => {
             const totaltrans = m.workers
               .filter((m) => m.type === 'T' && m.done)
@@ -112,31 +158,21 @@ const Report: React.FC<ReportProps> = (props) => {
               .reduce((acc, m) => acc + m.splitLength || 0, 0);
 
             return (
-              <li key={m.uid} className='li'>
+              <FlexItem key={m.uid} className='li'>
                 <h6 className='list-title'>{m.name.toUpperCase()}</h6>
-                <h6>Total hours: {m.originalLength}</h6>
-                <h6>Total Hours Transcribed: {getHMS(totaltrans)}</h6>
-                <h6>Total Hours Edited: {getHMS(totaledited)}</h6>
-                <ol>
-                  {m.workers
-                    .filter((m) => !m.done)
-                    .map((m) => (
-                      <li key={m.uid}>
-                        <span className='uppercase'>
-                          {m.name} - {m.type}
-                        </span>
-                        <br />
-                        <span>
-                          {m.part.toUpperCase()}; {m.splitLength} Minutes;
-                          Working
-                        </span>
-                      </li>
-                    ))}
-                </ol>
-              </li>
+                <FlexDate>
+                  <em>Total hours: {m.originalLength}</em>
+                </FlexDate>
+                <FlexDate>
+                  <em>Total Hours Transcribed: {getHMS(totaltrans)}</em>
+                </FlexDate>
+                <FlexDate>
+                  <em>Total Hours Edited: {getHMS(totaledited)}</em>
+                </FlexDate>
+              </FlexItem>
             );
           })}
-        </ol>
+        </Flex>
       </div>
     </Div>
   );
@@ -168,6 +204,11 @@ const Item = (props: ItemProps) => {
 };
 
 const Div = styled.div`
+  overflow: auto;
+  height: 80vh;
+  padding: 10px;
+  flex: 1;
+
   .btn-print-div {
     display: flex;
     justify-content: flex-end;
@@ -184,10 +225,7 @@ const Div = styled.div`
   .li {
     margin: 15px 0;
   }
-  /* .list-title {
-    margin-top: 20px;
-    margin-bottom: 20px;
-  } */
+
   @media print {
     .no-print {
       display: none;

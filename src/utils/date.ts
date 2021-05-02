@@ -7,17 +7,13 @@ const isLeapYear = (year: number) => {
  except if it can be exactly divided by 400, then it is (such as 2000, 2400)
  */
 
-  const _4 = year % 4;
-  const _100 = year % 100;
-  const _400 = year % 400;
-
-  if (_400 === 0) return true;
-  if (_100 === 0) return false;
-  if (_4 === 0) return true;
+  if (year % 400 === 0) return true;
+  if (year % 100 === 0) return false;
+  if (year % 4 === 0) return true;
   return false;
 };
 
-export const getLastDayofMonth = (year: number, month: number) => {
+const getLastDayofMonth = (year: number, month: number) => {
   // Note: Month, Jan = 1, Feb = 2, ...
   if (month === 2) return isLeapYear(year) ? 29 : 28;
 
@@ -37,7 +33,10 @@ type WeekBegins = 'Mon' | 'Tue' | 'Wed' | 'Thur' | 'Fri' | 'Sat' | 'Sun';
  * @param date optional. Uses today's date if not provided.
  * @returns date of when week began based on input
  */
-export const getWeekBegin = (weekBegins: WeekBegins, date = new Date()) => {
+export const getWeekBegin = (
+  weekBegins: WeekBegins,
+  date = new Date()
+): Date => {
   let [day, , d] = date.toDateString().split(' ');
 
   if (day === weekBegins) return date;
@@ -46,9 +45,7 @@ export const getWeekBegin = (weekBegins: WeekBegins, date = new Date()) => {
 
   m = (+d - 1 === 0 ? +m - 1 : m) + '';
   y = (+m === 0 ? +y - 1 : y) + '';
-
   m = (+m === 0 ? 12 : m) + '';
-
   d = (+d - 1 === 0 ? getLastDayofMonth(+y, +m) : +d - 1) + '';
 
   const newDate = `${y}-${to2digits(+m)}-${to2digits(+d)}`;

@@ -11,7 +11,7 @@ export interface MemberI {
   type: MemberType;
   active: boolean;
   free: boolean;
-  capacity: number;
+  capacity: number; // time in seconds.
   reason: string;
   givenOut: string;
 }

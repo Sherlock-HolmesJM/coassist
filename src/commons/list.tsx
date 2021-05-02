@@ -1,4 +1,4 @@
-import { capitalize, secondsToHMS, secondsToMinutes } from '../utils';
+import { capitalize, formatCap } from '../utils';
 import styled from 'styled-components';
 import { MemberI } from '../types';
 import { ClickBadge } from '../commons/badge';
@@ -19,14 +19,6 @@ const List: React.FC<ListProps> = (props) => {
   const ts = items.filter((m) => m.type === 'T');
   const tes = items.filter((m) => m.type === 'TE');
   const sorted = [...ts, ...tes];
-
-  const formatCap = (capacity: number) => {
-    const mins = secondsToMinutes(capacity);
-    if (mins < 60) return `${mins}min`;
-
-    const { h, m } = secondsToHMS(capacity);
-    return `${+h}hr ${+m}min`;
-  };
 
   return (
     <Div className='list animate__animated animate__fadeInUp'>
