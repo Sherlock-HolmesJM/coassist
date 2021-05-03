@@ -1,4 +1,4 @@
-import React, { ChangeEvent, FC } from 'react';
+import React, { FC } from 'react';
 import { Howl } from 'howler';
 import { swale, swali, swals } from '../../utils';
 

@@ -108,6 +108,8 @@ const Report: React.FC<ReportProps> = (props) => {
         <h4 className='uppercase title'>
           {groupName} weekly report - {collatorName}
         </h4>
+        <h5>Week Began: {weekbegin_date.toDateString()}</h5>
+        <h5>Week Ends: {new Date(weekend).toDateString()}</h5>
       </div>
       <Summary
         members={members}
