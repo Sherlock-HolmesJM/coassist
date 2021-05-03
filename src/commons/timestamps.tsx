@@ -25,7 +25,7 @@ const TimeStamps: React.FC<TimeStampsProps> = (props) => {
   );
 
   const timestamps = durations.reduce(
-    (acc, d) => [...acc, secondsToHMS(d * 60)],
+    (acc, d) => [...acc, secondsToHMS(d)],
     []
   );
 
