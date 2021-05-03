@@ -1,5 +1,5 @@
 import styled from 'styled-components';
-import { capitalize } from '../../utils';
+import { capitalize, formatCap } from '../../utils';
 import { Worker } from '../../types';
 import { ClickBadge } from '../../commons/badge';
 
@@ -44,7 +44,7 @@ const List: React.FC<ListProps> = (props) => {
                     <em>{worker.part.toUpperCase()}</em>
                   </div>
                   <div>
-                    <em>{worker.splitLength} Mins</em>
+                    <em>{formatCap(worker.splitLength)}</em>
                   </div>
                 </div>
                 <div className='list-group-item-badges'>

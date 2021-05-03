@@ -10,7 +10,7 @@ import { capitalize, secondsToHMS, swale } from '../../utils';
 
 export const getAssignedLength = (workers: Worker[]) => {
   const duration = workers.reduce((acc, w) => acc + w.splitLength, 0);
-  const { h, m, s } = secondsToHMS(duration * 60);
+  const { h, m, s } = secondsToHMS(duration);
   return `${h}:${m}:${s}`;
 };
 
