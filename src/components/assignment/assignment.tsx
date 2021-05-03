@@ -115,15 +115,14 @@ function Assignment() {
         <div className='list-group-k'>
           {sorted.map((m) => (
             <div key={m.name} className='list-group-item'>
-              <Link
-                to={`/assignments:${m.uid}`}
-                className='list-group-item-content link'
-              >
-                <div>{m.name}</div>
+              <div className='list-group-item-content'>
+                <Link to={`/assignments:${m.uid}`} className='link fading-1'>
+                  {m.name}
+                </Link>
                 <div>
                   <em className='list-group-item-status'>{m.status}</em>
                 </div>
-              </Link>
+              </div>
               <div className='list-group-item-badges'>
                 <ClickBadge
                   classes='bg-color'

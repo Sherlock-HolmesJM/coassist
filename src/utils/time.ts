@@ -1,3 +1,18 @@
+/**
+ *
+ * @param capacity in seconds
+ * @returns formatted time.
+ */
+export const formatCap = (capacity: number) => {
+  const mins = secondsToMinutes(capacity);
+  if (mins < 60) return `${+mins}min`;
+
+  const { h, m } = secondsToHMS(capacity);
+
+  if (+m < 1) return `${+h}hr`;
+  return `${+h}hr ${+m}min`;
+};
+
 export const secondsToMinutes = (seconds: number) => {
   if (isNaN(seconds)) return 0;
   if (!seconds) return 0;

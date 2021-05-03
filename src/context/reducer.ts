@@ -15,7 +15,6 @@ export const reducer = (state: State, action: AllActions) => {
       return {
         ...state,
         ...action.payload,
-        spin: false,
       };
 
     case SPIN:

@@ -122,15 +122,15 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
         />
         <LabelTextField
           type='number'
-          value={splitLength + ''}
+          value={splitLength / 60 + ''}
           label='Split Length (Min)'
-          onChange={(value) => setSplitLength(+value)}
+          onChange={(value) => setSplitLength(+value * 60)}
         />
         <Select
           label='Worker'
           value={workerUID + ''}
           values={sorted}
-          onChange={(e) => setWorkerUID(+e.target.value)}
+          onChange={(value) => setWorkerUID(+value)}
         />
         <ActionButtonHolder value='assign' />
       </form>

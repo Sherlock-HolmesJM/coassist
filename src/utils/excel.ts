@@ -2,8 +2,8 @@ import Excel from 'exceljs';
 import { MessageI, T_And_TE } from '../types';
 import range from './range';
 import summary from './summary';
-import capitalize from './capitalize';
-import { secondsToMinutes } from './convertTime';
+import { capitalize } from './text';
+import { secondsToMinutes } from './time';
 
 const columns = [
   { name: 'Collator', filterButton: true },

@@ -2,6 +2,10 @@ import React, { ChangeEvent, FC } from 'react';
 import { Howl } from 'howler';
 import { swale, swali, swals } from '../../utils';
 
+export const DateInput: React.FC = (props) => {
+  return <div></div>;
+};
+
 interface ActionButtonHolderProps {
   value: string;
 }
@@ -21,7 +25,7 @@ export { ActionButtonHolder };
 interface LabelTextFieldProps {
   label: string;
   value: string;
-  type?: 'text' | 'number';
+  type?: 'text' | 'number' | 'date';
   placeholder?: string;
   onChange: (value: string) => void;
 }
@@ -50,7 +54,7 @@ export const LabelTextField: React.FC<LabelTextFieldProps> = (props) => {
 };
 
 interface SelectProps {
-  onChange: (e: any) => void;
+  onChange: (e: string) => void;
   values: string[][];
   label: string;
   value?: string;
@@ -70,7 +74,7 @@ export const Select: React.FC<SelectProps> = (props) => {
             id='type'
             required
             className='form-select'
-            onChange={onChange}
+            onChange={(e) => onChange(e.target.value)}
           >
             {values.map((val, ind) => (
               <option key={ind} value={val[0]}>
@@ -87,7 +91,7 @@ export const Select: React.FC<SelectProps> = (props) => {
 interface SizeProps {
   value: number;
   placeholder?: string;
-  onChange: (e: ChangeEvent<HTMLInputElement>) => void;
+  onChange: (value: string) => void;
 }
 
 export const SizeInput: FC<SizeProps> = (props) => {
@@ -100,7 +104,7 @@ export const SizeInput: FC<SizeProps> = (props) => {
         type='number'
         placeholder={placeholder ?? 'size (MB)'}
         value={value || ''}
-        onChange={onChange}
+        onChange={(e) => onChange(e.target.value.trim().toLowerCase())}
         required
         onFocus={(e) => e.currentTarget.select()}
         min={0}

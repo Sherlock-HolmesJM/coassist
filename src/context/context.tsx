@@ -15,6 +15,7 @@ export interface State {
   messages: MessageI[];
   members: MemberI[];
   spin: boolean;
+  teamCapacity: number; // in seconds.
   dispatch: (a: any) => void;
 }
 
@@ -24,6 +25,7 @@ const state: State = {
   messages: [],
   members: [],
   spin: true,
+  teamCapacity: 0,
   dispatch: () => '',
 };
 
@@ -41,7 +43,7 @@ class Provider extends PureComponent<Props, State> {
 
   dispatch = (action: AllActions) => {
     const newState = reducer(this.state, action);
-    this.setState(newState);
+    this.setState({ ...newState, spin: false });
   };
 
   componentDidMount() {

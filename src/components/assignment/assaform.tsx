@@ -101,7 +101,7 @@ const FormAdd: React.FC<FormProps> = (props) => {
         />
         <SizeInput
           value={size}
-          onChange={(e) => setData({ ...data, size: +e.target.value })}
+          onChange={(value) => setData({ ...data, size: +value })}
         />
         <ActionButtonHolder value='add'>
           <FileInput callback={handleGetDetails} />

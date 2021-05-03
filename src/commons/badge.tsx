@@ -36,7 +36,7 @@ const ClickBadge: React.FC<ClickBadgeI> = (props: ClickBadgeI) => {
   const { color, text, onClick, classes } = props;
 
   return (
-    <Span className={`badge bg-${color} ${classes}`} onClick={onClick}>
+    <Span className={`fading-3 badge bg-${color} ${classes}`} onClick={onClick}>
       {text}
     </Span>
   );

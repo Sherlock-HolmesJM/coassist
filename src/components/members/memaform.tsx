@@ -61,7 +61,7 @@ const Add: React.FC<AddProps> = (props) => {
             ['TE', 'Transcript Editor'],
           ]}
           label='Type'
-          onChange={(e) => setData({ ...data, type: e.target.value })}
+          onChange={(value) => setData({ ...data, type: value as any })}
         />
         <ActionButtonHolder value='add' />
       </form>

@@ -7,19 +7,16 @@ import { path } from './index';
 import { updateWorker } from './worker';
 
 const giveDateReceived = (state: State) => {
-  let some = false;
-
   state.messages.forEach((m) => {
     m.workers.forEach((w) => {
-      if (!w.dateReceived) {
-        w.dateReceived = new Date().toJSON();
+      if (w.splitLength / 60 <= 10) {
+        console.log(w.splitLength, 'below');
+        w.dateReceived = w.dateReceived || new Date().toJSON();
+        w.splitLength = w.splitLength * 60;
         updateWorker(w);
-        some = true;
       }
     });
   });
-
-  if (some) swals('Added missing propertyto workers');
 
   return state;
 };

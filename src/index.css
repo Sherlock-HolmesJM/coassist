@@ -22,3 +22,43 @@ code {
   flex-wrap: wrap;
   justify-content: center;
 }
+
+.fancy-4 {
+  padding: 8px;
+  box-shadow: 0 var(--d, 100vmax) #000, 0 var(--d, -100vmax) #000;
+  clip-path: inset(calc(101% - 100vmax) 0);
+  background: linear-gradient(0deg, #000 51%, #0000 0) 0 var(--d, 100vmax) /
+      100% 100% no-repeat,
+    linear-gradient(180deg, #000 51%, #0000 0) 0 var(--d, -100vmax) / 100% 100%
+      no-repeat;
+  transition: 0.2s linear, background-position 0.5s 0.2s ease-in,
+    box-shadow 0.5s 0.2s ease-in;
+}
+.fancy-4:hover {
+  --d: 0px;
+  color: #fff;
+  transition: 0.5s ease-out, color 0.2s 0.4s linear;
+}
+
+.fading-1 {
+  background: linear-gradient(90deg, transparent, black, transparent) bottom /
+    var(--d, 0) 3px no-repeat;
+  transition: 0.5s;
+}
+.fading-1:hover {
+  --d: 100%;
+}
+
+.fading-3 {
+  background: linear-gradient(
+      -45deg,
+      transparent calc(100% / 3),
+      rgba(0, 0, 0, 0.5),
+      transparent calc(200% / 3)
+    )
+    bottom right/350% 100% no-repeat;
+  transition: 0.5s linear;
+}
+.fading-3:hover {
+  background-position: bottom left;
+}
