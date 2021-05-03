@@ -70,6 +70,7 @@ const FormAdd: React.FC<FormProps> = (props) => {
       sent2CGT: '',
       splitLength: 0,
       originalLength: `${h}:${m}:${s}`,
+      rank: 1,
     };
 
     const list = [...messages, message];
