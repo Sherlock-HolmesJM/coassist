@@ -130,7 +130,7 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
           label='Worker'
           value={workerUID + ''}
           values={sorted}
-          onChange={(e) => setWorkerUID(+e.target.value)}
+          onChange={(value) => setWorkerUID(+value)}
         />
         <ActionButtonHolder value='assign' />
       </form>

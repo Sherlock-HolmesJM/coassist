@@ -48,7 +48,14 @@ const FormUpdate: React.FC<FormProps> = (props) => {
 
     const { name, size, duration, sent2CGT } = message;
     const time = secondsToHMS(duration);
-    setData({ ...data, name, size, duration, time, sent: sent2CGT });
+    setData({
+      ...data,
+      name,
+      size,
+      duration,
+      time,
+      sent: sent2CGT,
+    });
     // eslint-disable-next-line
   }, [message]);
 
@@ -115,16 +122,16 @@ const FormUpdate: React.FC<FormProps> = (props) => {
         />
         <SizeInput
           value={size}
-          onChange={(e) => setData({ ...data, size: +e.target.value })}
+          onChange={(value) => setData({ ...data, size: +value })}
         />
         <Select
           label='Sent to CGT'
-          value={sent2CGT}
+          value={sent2CGT || sent}
           values={[
             ['no', 'no'],
             ['yes', 'yes'],
           ]}
-          onChange={(e) => setSent2CGT(e.target.value)}
+          onChange={(value) => setSent2CGT(value)}
         />
         <ActionButtonHolder value='udpate'>
           <FileInput callback={handleGetDetails} />

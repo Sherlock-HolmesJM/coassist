@@ -78,7 +78,7 @@ const Update: React.FC<UpdateProps> = (props) => {
             ['TE', 'Transcript Editor'],
           ]}
           label='Type'
-          onChange={(e) => setData({ ...data, type: e.target.value })}
+          onChange={(value) => setData({ ...data, type: value as any })}
         />
         <NameInput
           value={givenOut}
