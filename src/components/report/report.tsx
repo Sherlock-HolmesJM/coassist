@@ -165,9 +165,7 @@ const Report: React.FC<ReportProps> = (props) => {
 };
 
 const Div = styled.div`
-  overflow: auto;
   padding: 10px;
-  flex: 1;
 
   .btn-print-div {
     display: flex;
@@ -187,6 +185,7 @@ const Div = styled.div`
   }
 
   @media screen and (min-width: 1024px) {
+    overflow: auto;
     height: 80vh;
   }
 
