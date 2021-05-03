@@ -13,7 +13,7 @@ export interface Worker {
   msgname: string;
   part: string;
   done: boolean;
-  splitLength: number;
+  splitLength: number; // in seconds
   dateReceived: string;
   dateReturned: string;
 }

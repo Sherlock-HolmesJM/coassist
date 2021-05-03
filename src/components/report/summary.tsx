@@ -1,19 +1,30 @@
-import styled from 'styled-components';
-import { MemberI } from '../../types';
+import { MemberI, Worker } from '../../types';
 import { getTeamCapacity } from '../../utils';
+import { getWorkersCapacity } from '../../utils/worker';
 import { Flex, FlexItem, Title } from './flex';
 
 export interface SummaryProps {
   members: MemberI[];
-  len: any;
+  issuedThisWeek: Worker[];
+  issuedPreviousWeeks: Worker[];
+  returnedThisWeek: Worker[];
 }
 
 const Summary: React.FC<SummaryProps> = (props) => {
-  const { members, len } = props;
+  const {
+    members,
+    issuedPreviousWeeks,
+    issuedThisWeek,
+    returnedThisWeek,
+  } = props;
+
   const teamCapacity = getTeamCapacity(members);
+  const idw = getWorkersCapacity(issuedThisWeek);
+  const rdw = getWorkersCapacity(returnedThisWeek);
+  const ipw = getWorkersCapacity(issuedPreviousWeeks);
 
   return (
-    <Div>
+    <div>
       <Title>Summary</Title>
       <Flex>
         <FlexItem>
@@ -23,16 +34,26 @@ const Summary: React.FC<SummaryProps> = (props) => {
         </FlexItem>
         <FlexItem>
           <h5>Issued and Returned</h5>
-          <div>
-            Issued: {len.issuedDisWeek} + {len.issuedLastWeek}
-          </div>
-          <div>Returned: {len.returnedDisWeek}</div>
+          <Flex>
+            <FlexItem>
+              <h5>Transcribers</h5>
+              <div>
+                Issued: {idw.tc} + {ipw.tc}
+              </div>
+              <div>Returned: {rdw.tc}</div>
+            </FlexItem>
+            <FlexItem>
+              <h5>Transcript Editors</h5>
+              <div>
+                Issued: {idw.tec} + {ipw.tec}
+              </div>
+              <div>Returned: {rdw.tec}</div>
+            </FlexItem>
+          </Flex>
         </FlexItem>
       </Flex>
-    </Div>
+    </div>
   );
 };
-
-const Div = styled.div``;
 
 export default Summary;

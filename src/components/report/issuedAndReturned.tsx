@@ -1,3 +1,4 @@
+import React from 'react';
 import { Worker } from '../../types';
 import { formatCap } from '../../utils';
 import { Flex, FlexDate, FlexItem, Title } from './flex';
@@ -11,13 +12,17 @@ export interface IssuedReturnedProps {
 const IssuedReturned: React.FC<IssuedReturnedProps> = (props) => {
   const { issued, returned, outstanding } = props;
 
+  const outstandingTs = outstanding.filter((w) => w.type === 'T');
+  const outstandingTEs = outstanding.filter((w) => w.type === 'TE');
+
   return (
     <div>
       <Title>Issued and Returned</Title>
       <Flex>
         <Item title='Issued' workers={issued} />
         <Item title='Returned' workers={returned} />
-        <Item title='Outstanding' workers={outstanding} />
+        <Item title='Outstanding [Ts]' workers={outstandingTs} />
+        <Item title='Outstanding [TEs]' workers={outstandingTEs} />
       </Flex>
     </div>
   );
@@ -47,12 +52,17 @@ const Item = (props: ItemProps) => {
               {w.name} - {w.type}
             </div>
             <div>
-              <em>
-                {w.part} - {formatCap(w.splitLength * 60)}
-              </em>
+              <div>
+                <em>{w.part}</em>
+              </div>
+              <div>
+                <em>{formatCap(w.splitLength)}</em>
+              </div>
             </div>
             <FlexDate>
-              <em>{new Date(w.dateReceived).toDateString()}</em>
+              <em>
+                {new Date(w.dateReturned || w.dateReceived).toDateString()}
+              </em>
             </FlexDate>
           </div>
         ))}

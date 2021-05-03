@@ -1,14 +1,15 @@
 import styled from 'styled-components';
-import { MessageI, Worker } from '../../types';
+import { MemberI, MessageI, Worker } from '../../types';
 import { Flex, FlexItem, Title } from './flex';
 
 export interface NotAllocProps {
   audios: MessageI[];
   transcripts: Worker[];
+  freemembers: MemberI[];
 }
 
 const NotAlloc: React.FC<NotAllocProps> = (props) => {
-  const { audios, transcripts } = props;
+  const { audios, transcripts, freemembers } = props;
 
   const sortedAudios = audios.sort((a, b) => a.name.localeCompare(b.name));
 
@@ -18,6 +19,7 @@ const NotAlloc: React.FC<NotAllocProps> = (props) => {
 
   const audiolen = audios.length;
   const translen = transcripts.length;
+  const memlen = freemembers.length;
 
   return (
     <Div>
@@ -39,6 +41,18 @@ const NotAlloc: React.FC<NotAllocProps> = (props) => {
             <div>
               {sortedTranscripts.map((m, i) => (
                 <div key={i}>{m.part || m.name}</div>
+              ))}
+            </div>
+          )}
+        </FlexItem>
+        <FlexItem>
+          {memlen > 0 && <h5>Free Team Members - {memlen}</h5>}
+          {memlen > 0 && (
+            <div>
+              {freemembers.map((m, i) => (
+                <div key={i}>
+                  {m.name} - {m.type}
+                </div>
               ))}
             </div>
           )}

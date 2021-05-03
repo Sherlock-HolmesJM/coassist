@@ -83,9 +83,9 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
         />
         <LabelTextField
           type='number'
-          value={splitLength + ''}
+          value={splitLength / 60 + ''}
           label='Split Length (Min)'
-          onChange={(value) => setSplitLength(+value)}
+          onChange={(value) => setSplitLength(+value * 60)}
         />
         <ActionButtonHolder value='update' />
       </form>

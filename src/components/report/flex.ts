@@ -3,12 +3,12 @@ import styled from 'styled-components';
 export const Flex = styled.div`
   display: flex;
   flex-wrap: wrap;
-  gap: 20px;
-  margin: 10px;
+  justify-content: center;
+  gap: 10px;
+  margin: 10px 5px;
 `;
 
 export const FlexItem = styled.div`
-  margin: 5px;
   padding: 5px;
   border: 1px inset gray;
   & * {

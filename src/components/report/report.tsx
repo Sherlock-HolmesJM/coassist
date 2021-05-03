@@ -2,12 +2,7 @@ import { useContext, useRef } from 'react';
 import { context } from '../../context/context';
 import { Worker } from '../../types';
 import styled from 'styled-components';
-import {
-  capitalize,
-  getWeekBegin,
-  getWeekEnd,
-  getWorkCapacity,
-} from '../../utils';
+import { formatCap, getWeekBegin, getWeekEnd } from '../../utils';
 import Summary from './summary';
 import NotAllocated from './notAllocated';
 import IssuedAndReturned from './issuedAndReturned';
@@ -48,18 +43,18 @@ const Report: React.FC<ReportProps> = (props) => {
   let transinprog: Worker[] = []; // transcripts in progress
   let transedited: Worker[] = []; // transcripts edited
   let issuedDisWeek: Worker[] = []; // audios/transcripts issued this week
-  let issuedLastWeek: Worker[] = []; // audios/transcripts issued last week
+  let issuedPreviousWeeks: Worker[] = []; // audios/transcripts issued last week
 
   messagesInProgress.forEach((m) => {
     const alist = m.workers.filter((m) => m.type === 'T' && !m.done);
     const alistT = m.workers.filter((m) => m.type === 'T' && m.done);
     const tlist = m.workers.filter((m) => m.type === 'TE' && !m.done);
     const tlistE = m.workers.filter((m) => m.type === 'TE' && m.done);
-    const isdw = m.workers.filter((w) =>
-      fallsInWeekBeginAndEnd(new Date(w.dateReceived))
+    const isdw = m.workers.filter(
+      (w) => !w.done && fallsInWeekBeginAndEnd(new Date(w.dateReceived))
     );
     const islw = m.workers.filter(
-      (w) => !fallsInWeekBeginAndEnd(new Date(w.dateReceived))
+      (w) => !w.done && !fallsInWeekBeginAndEnd(new Date(w.dateReceived))
     );
 
     audinprog = [...audinprog, ...alist];
@@ -67,11 +62,11 @@ const Report: React.FC<ReportProps> = (props) => {
     transinprog = [...transinprog, ...tlist];
     transedited = [...transedited, ...tlistE];
     issuedDisWeek = [...issuedDisWeek, ...isdw];
-    issuedLastWeek.concat(islw);
+    issuedPreviousWeeks = [...issuedPreviousWeeks, ...islw];
   });
 
   let returnedDisWeek = audtrans.filter((w) =>
-    fallsInWeekBeginAndEnd(new Date(w.dateReturned))
+    fallsInWeekBeginAndEnd(w.done && new Date(w.dateReturned))
   );
   returnedDisWeek = [
     ...returnedDisWeek,
@@ -86,18 +81,6 @@ const Report: React.FC<ReportProps> = (props) => {
   transcriptsNotAllocated = transcriptsNotAllocated.filter(
     (m) => !transedited.find((t) => t.part === m.part)
   );
-
-  const len = {
-    issuedDisWeek: getWorkCapacity(issuedDisWeek),
-    returnedDisWeek: getWorkCapacity(returnedDisWeek),
-    issuedLastWeek: getWorkCapacity(issuedLastWeek),
-  };
-
-  const getHMS = (duration: number) => {
-    const h = Math.floor(duration / 60);
-    const m = duration % 60;
-    return `${h < 10 ? '0' + h : h}:${m < 10 ? '0' + m : m}:00`;
-  };
 
   const animIn = 'animate__zoomInDown';
   const animOut = 'animate__zoomOutLeft';
@@ -126,22 +109,23 @@ const Report: React.FC<ReportProps> = (props) => {
           {groupName} weekly report - {collatorName}
         </h4>
       </div>
-      <Summary members={members} len={len} />
+      <Summary
+        members={members}
+        issuedPreviousWeeks={issuedPreviousWeeks}
+        issuedThisWeek={issuedDisWeek}
+        returnedThisWeek={returnedDisWeek}
+      />
       <IssuedAndReturned
         issued={issuedDisWeek}
         returned={returnedDisWeek}
-        outstanding={issuedLastWeek}
+        outstanding={issuedPreviousWeeks}
       />
       <NotAllocated
         audios={messagesNotAllocated}
         transcripts={transcriptsNotAllocated}
-      />
-      <Item
-        title='Free Team Members'
-        list={members
+        freemembers={members
           .filter((m) => m.active && m.free)
-          .sort((a, b) => a.type.length - b.type.length)
-          .map((m) => `${m.name} - ${m.type}`)}
+          .sort((a, b) => a.type.length - b.type.length)}
       />
       <div>
         <Title>
@@ -161,13 +145,13 @@ const Report: React.FC<ReportProps> = (props) => {
               <FlexItem key={m.uid} className='li'>
                 <h6 className='list-title'>{m.name.toUpperCase()}</h6>
                 <FlexDate>
-                  <em>Total hours: {m.originalLength}</em>
+                  <em>Total hours: {formatCap(m.duration)}</em>
                 </FlexDate>
                 <FlexDate>
-                  <em>Total Hours Transcribed: {getHMS(totaltrans)}</em>
+                  <em>Total Hours Transcribed: {formatCap(totaltrans)}</em>
                 </FlexDate>
                 <FlexDate>
-                  <em>Total Hours Edited: {getHMS(totaledited)}</em>
+                  <em>Total Hours Edited: {formatCap(totaledited)}</em>
                 </FlexDate>
               </FlexItem>
             );
@@ -178,34 +162,8 @@ const Report: React.FC<ReportProps> = (props) => {
   );
 };
 
-interface ItemProps {
-  title: string;
-  list: string[];
-}
-
-const Item = (props: ItemProps) => {
-  const { title, list } = props;
-
-  if (list.length === 0)
-    return <h6 className='list-title'>No {capitalize(title)}</h6>;
-
-  return (
-    <div>
-      <h6 className='list-title'>{capitalize(title)}</h6>
-      <ol>
-        {list.map((l, i) => (
-          <li key={i}>
-            <span className='uppercase'>{l}</span>
-          </li>
-        ))}
-      </ol>
-    </div>
-  );
-};
-
 const Div = styled.div`
   overflow: auto;
-  height: 80vh;
   padding: 10px;
   flex: 1;
 
@@ -226,7 +184,12 @@ const Div = styled.div`
     margin: 15px 0;
   }
 
+  @media screen and (min-width: 1024px) {
+    height: 80vh;
+  }
+
   @media print {
+    height: auto;
     .no-print {
       display: none;
     }
