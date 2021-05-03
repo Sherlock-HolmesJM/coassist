@@ -41,8 +41,6 @@ const FormUpdate: React.FC<FormProps> = (props) => {
 
   const { name, size, duration, spin, time, sent } = data;
 
-  const [sent2CGT, setSent2CGT] = useState('');
-
   useEffect(() => {
     if (!message) return;
 
@@ -54,7 +52,7 @@ const FormUpdate: React.FC<FormProps> = (props) => {
       size,
       duration,
       time,
-      sent: sent2CGT,
+      sent: sent2CGT ?? 'no',
     });
     // eslint-disable-next-line
   }, [message]);
@@ -126,12 +124,12 @@ const FormUpdate: React.FC<FormProps> = (props) => {
         />
         <Select
           label='Sent to CGT'
-          value={sent2CGT || sent}
+          value={sent}
           values={[
             ['no', 'no'],
             ['yes', 'yes'],
           ]}
-          onChange={(value) => setSent2CGT(value)}
+          onChange={(value) => setData({ ...data, sent: value })}
         />
         <ActionButtonHolder value='udpate'>
           <FileInput callback={handleGetDetails} />

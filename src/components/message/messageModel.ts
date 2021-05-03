@@ -3,9 +3,11 @@ import {
   MemberI,
   MemberType,
   MessageI,
+  MessageStatus,
   T_And_TE,
   Worker,
 } from '../../types';
+import { MessageRank } from '../../types/message';
 import { capitalize, secondsToHMS, swale } from '../../utils';
 
 export const getAssignedLength = (workers: Worker[]) => {
@@ -14,11 +16,11 @@ export const getAssignedLength = (workers: Worker[]) => {
   return `${h}:${m}:${s}`;
 };
 
-const getT_TE_Name = (workers: Worker[]) => {
+const getT_TE_Name = (workers: Worker[], type: 'T' | 'TE') => {
   const names = workers.reduce((acc, worker) => [...acc, worker.name], []);
   const uniqueNames = [...new Set(names)];
   const { length } = uniqueNames;
-  return length === 1 ? uniqueNames[0] : length === 0 ? '' : 'Ts';
+  return length === 1 ? uniqueNames[0] : length === 0 ? '' : type + 's';
 };
 
 const getDateIssued = (object: T_And_TE) => {
@@ -40,8 +42,8 @@ const updateTorTE = (message: MessageI, ts: Worker[], tes: Worker[]) => {
   if (!message.transcriber) message.transcriber = createTorTE('T');
   if (!message.transcriptEditor) message.transcriptEditor = createTorTE('TE');
 
-  message.transcriptEditor.name = getT_TE_Name(tes);
-  message.transcriber.name = getT_TE_Name(ts);
+  message.transcriptEditor.name = getT_TE_Name(tes, 'TE');
+  message.transcriber.name = getT_TE_Name(ts, 'T');
 
   if (message.status === 'done') getDateReturned(message.transcriptEditor);
   else getDateIssued(message.transcriptEditor);
@@ -67,7 +69,7 @@ const transEditStatus = (
 
   const workDuration = wks
     .filter((w) => w.done)
-    .reduce((acc, t) => acc + t.splitLength * 60, 0);
+    .reduce((acc, t) => acc + t.splitLength, 0);
 
   return wks.length === 0
     ? 'no' // no part has been assigned at all
@@ -106,9 +108,25 @@ export const updateStatus = (message: MessageI) => {
       ? 'transcribed'
       : 'undone';
 
+  message.rank = getMessageRank(message.status);
+
   updateTorTE(message, ts, tes);
 
   console.log(message);
+};
+
+export const getMessageRank = (status: MessageStatus): MessageRank => {
+  return status === 'undone'
+    ? 1
+    : status === 'incomplete'
+    ? 2
+    : status === 'transcribed'
+    ? 3
+    : status === 'in-progress'
+    ? 4
+    : status === 'done'
+    ? 5
+    : 6;
 };
 
 export const getNewMembers = (member: MemberI, members: MemberI[]) => {

@@ -17,7 +17,7 @@ function Assignment() {
   const [showform, setShowform] = useState(false);
   const [message, setMessage] = useState<MessageI | null>();
 
-  const sorted = messages.sort((a, b) => b.status.localeCompare(a.status));
+  const sorted = messages.sort((a, b) => a.rank - b.rank);
 
   const undone = messages.filter((m) => m.status === 'undone').length;
   const done = messages.filter((m) => m.status === 'done').length;

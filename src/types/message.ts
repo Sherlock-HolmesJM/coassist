@@ -16,16 +16,19 @@ export interface MessageI {
   splitLength: number;
   originalLength: string;
   sent2CGT: 'yes' | 'no' | '';
+  rank: MessageRank;
 }
 
 export interface Messages {
   [key: string]: MessageI;
 }
 
+export type MessageRank = 1 | 2 | 3 | 4 | 5 | 6;
+
 export type MessageStatus =
   | 'undone'
   | 'incomplete'
-  | 'in-progress'
   | 'transcribed'
+  | 'in-progress'
   | 'done'
   | 'sent2CGT';

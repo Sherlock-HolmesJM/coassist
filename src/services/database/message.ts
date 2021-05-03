@@ -5,13 +5,14 @@ import { MessageI } from '../../types';
 import { arrayToObject } from '../transformer';
 import { swale, swals } from '../../utils';
 
-export const setMessage = (message: MessageI) =>
+export const setMessage = (message: MessageI) => {
   firebase
     .database()
     .ref(path() + 'messages/' + message.uid)
     .set(message)
     .then(() => swals('', 'Saved.'))
     .catch((e) => swale(e.message));
+};
 
 export const updateMessages = (messages: MessageI[]) => {
   const obj = arrayToObject(messages) as any;
@@ -21,7 +22,16 @@ export const updateMessages = (messages: MessageI[]) => {
     .database()
     .ref(path() + 'messages')
     .update(obj)
-    .then(() => swals('', 'Saved.'))
+    .then(() => swals('', 'Saved'))
+    .catch((e) => swale(e.message));
+};
+
+export const updateMessageRank = (message: MessageI) => {
+  firebase
+    .database()
+    .ref(path() + 'messages/' + message.uid)
+    .update({ rank: message.rank })
+    .then(() => swals('', 'Updated'))
     .catch((e) => swale(e.message));
 };
 
@@ -33,14 +43,15 @@ export const updateMessage = (message: MessageI) => {
     .database()
     .ref(path() + 'messages/' + message.uid)
     .update(m)
-    .then(() => swals('', 'Saved.'))
+    .then(() => swals('', 'Updated'))
     .catch((e) => swale(e.message));
 };
 
-export const removeMessage = (muid: number) =>
+export const removeMessage = (muid: number) => {
   firebase
     .database()
     .ref(path() + 'messages/' + muid)
     .remove()
-    .then(() => swals('', 'Saved.'))
+    .then(() => swals('', 'Deleted'))
     .catch((e) => swale(e.message));
+};

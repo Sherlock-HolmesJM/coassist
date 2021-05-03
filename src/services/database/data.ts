@@ -1,13 +1,21 @@
 import firebase from 'firebase/app';
 import 'firebase/database';
+import { getMessageRank } from '../../components/message/messageModel';
 import { State } from '../../context/context';
 import { swale, swals } from '../../utils';
 import { transform } from '../transformer';
 import { path } from './index';
+import { updateMessageRank } from './message';
 import { updateWorker } from './worker';
 
-const giveDateReceived = (state: State) => {
+const giveMissingFields = (state: State) => {
   state.messages.forEach((m) => {
+    if (!m.rank) {
+      console.log({ rank: m.rank, name: m.name });
+      m.rank = getMessageRank(m.status);
+      updateMessageRank(m);
+    }
+
     m.workers.forEach((w) => {
       if (w.splitLength / 60 <= 10) {
         console.log(w.splitLength, 'below');
@@ -26,13 +34,13 @@ export const getData = () =>
     .database()
     .ref(path())
     .get()
-    .then((r) => giveDateReceived(transform(r.val()) as State))
+    .then((r) => giveMissingFields(transform(r.val()) as State))
     .catch((e) => {
       swale(e.message);
       return null;
     });
 
-export const updateCGNames = (collatorName: string, groupName: string) =>
+export const updateCGNames = (collatorName: string, groupName: string) => {
   firebase
     .database()
     .ref(path())
@@ -42,3 +50,4 @@ export const updateCGNames = (collatorName: string, groupName: string) =>
     })
     .then(() => swals('', 'Saved.'))
     .catch((e) => swale(e.message));
+};
