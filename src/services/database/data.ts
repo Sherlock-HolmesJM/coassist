@@ -5,15 +5,19 @@ import { State } from '../../context/context';
 import { swale, swals } from '../../utils';
 import { transform } from '../transformer';
 import { path } from './index';
-import { updateMessageRank } from './message';
+import { updateMessageProp } from './message';
 import { updateWorker } from './worker';
 
 const giveMissingFields = (state: State) => {
   state.messages.forEach((m) => {
     if (!m.rank) {
-      console.log({ rank: m.rank, name: m.name });
       m.rank = getMessageRank(m.status);
-      updateMessageRank(m);
+      updateMessageProp(m, 'rank');
+    }
+
+    if (!m.sent2CGT) {
+      m.sent2CGT = 'no';
+      updateMessageProp(m, 'sent2CGT');
     }
 
     m.workers.forEach((w) => {

@@ -6,7 +6,7 @@ import { formatCap, getWeekBegin, getWeekEnd } from '../../utils';
 import Summary from './summary';
 import NotAllocated from './notAllocated';
 import IssuedAndReturned from './issuedAndReturned';
-import { Flex, FlexDate, FlexItem, Title } from './flex';
+import { Flex, FlexItem, Title } from './flex';
 
 export interface ReportProps {
   report: boolean;
@@ -146,15 +146,18 @@ const Report: React.FC<ReportProps> = (props) => {
             return (
               <FlexItem key={m.uid} className='li'>
                 <h6 className='list-title'>{m.name.toUpperCase()}</h6>
-                <FlexDate>
-                  <em>Total hours: {formatCap(m.duration)}</em>
-                </FlexDate>
-                <FlexDate>
-                  <em>Total Hours Transcribed: {formatCap(totaltrans)}</em>
-                </FlexDate>
-                <FlexDate>
-                  <em>Total Hours Edited: {formatCap(totaledited)}</em>
-                </FlexDate>
+                <div className='li-totals'>
+                  <em className='li-total'>Length</em>
+                  <em className='li-total'>{formatCap(m.duration)}</em>
+                </div>
+                <div className='li-totals'>
+                  <em className='li-total'>Transcribed</em>
+                  <em className='li-total'>{formatCap(totaltrans)}</em>
+                </div>
+                <div className='li-totals'>
+                  <em className='li-total'>Edited</em>
+                  <em className='li-total'>{formatCap(totaledited)}</em>
+                </div>
               </FlexItem>
             );
           })}
@@ -165,8 +168,6 @@ const Report: React.FC<ReportProps> = (props) => {
 };
 
 const Div = styled.div`
-  padding: 10px;
-
   .btn-print-div {
     display: flex;
     justify-content: flex-end;
@@ -177,20 +178,27 @@ const Div = styled.div`
   .uppercase {
     text-transform: uppercase;
   }
-  .ul-worker {
-    text-transform: capitalize;
-  }
   .li {
-    margin: 15px 0;
+    background-color: #bdb6b6;
+    border-radius: 0.5em;
   }
-
-  @media screen and (min-width: 1024px) {
-    overflow: auto;
-    height: 80vh;
+  .li-totals {
+    display: flex;
+    justify-content: space-between;
+    border-top: 2px solid gray;
+    padding: 3px;
+    border-radius: 5px;
   }
-
+  .li-total {
+    display: block;
+  }
+  .li-total:last-child {
+    flex-basis: 50%;
+    padding-left: 5px;
+    text-align: left;
+    border-left: 1px solid gray;
+  }
   @media print {
-    height: auto;
     .no-print {
       display: none;
     }

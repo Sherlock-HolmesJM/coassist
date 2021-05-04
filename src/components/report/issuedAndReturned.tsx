@@ -1,7 +1,8 @@
 import React from 'react';
 import { Worker } from '../../types';
 import { formatCap } from '../../utils';
-import { Flex, FlexDate, FlexItem, Title } from './flex';
+import { Flex, FlexItem, Title } from './flex';
+import styled from 'styled-components';
 
 export interface IssuedReturnedProps {
   issued: Worker[];
@@ -16,7 +17,7 @@ const IssuedReturned: React.FC<IssuedReturnedProps> = (props) => {
   const outstandingTEs = outstanding.filter((w) => w.type === 'TE');
 
   return (
-    <div>
+    <Div>
       <Title>Issued and Returned</Title>
       <Flex>
         <Item title='Issued' workers={issued} />
@@ -24,7 +25,7 @@ const IssuedReturned: React.FC<IssuedReturnedProps> = (props) => {
         <Item title='Outstanding [Ts]' workers={outstandingTs} />
         <Item title='Outstanding [TEs]' workers={outstandingTEs} />
       </Flex>
-    </div>
+    </Div>
   );
 };
 
@@ -35,19 +36,22 @@ interface ItemProps {
 
 const Item = (props: ItemProps) => {
   const { title, workers } = props;
+  const { length } = workers;
 
-  if (workers.length === 0) return null;
+  if (length === 0) return null;
 
   const sorted = workers
     .sort((a, b) => a.part.localeCompare(b.part))
     .sort((a, b) => a.type.localeCompare(b.type));
 
   return (
-    <FlexItem>
-      <h5>{title}</h5>
-      <div>
+    <FlexItem className='cards-container'>
+      <WorkerTitle>
+        <div>{title}</div> <div>[{length}]</div>
+      </WorkerTitle>
+      <Wrapper>
         {sorted.map((w, i) => (
-          <div key={i}>
+          <div className='worker-card' key={i}>
             <div style={{ fontWeight: 700 }}>
               {w.name} - {w.type}
             </div>
@@ -55,20 +59,56 @@ const Item = (props: ItemProps) => {
               <div>
                 <em>{w.part}</em>
               </div>
-              <div>
-                <em>{formatCap(w.splitLength)}</em>
+              <div className='worker-card-length'>
+                <em>Length: {formatCap(w.splitLength)}</em>
               </div>
             </div>
-            <FlexDate>
+            <div className='worker-card-date'>
               <em>
-                {new Date(w.dateReturned || w.dateReceived).toDateString()}
+                {new Date(w.dateReceived).toDateString()}
+                {w.dateReturned &&
+                  ` - ${new Date(w.dateReturned).toDateString()}`}
               </em>
-            </FlexDate>
+            </div>
           </div>
         ))}
-      </div>
+      </Wrapper>
     </FlexItem>
   );
 };
+
+const Div = styled.div`
+  .cards-container {
+    border-radius: 5px;
+  }
+`;
+
+const WorkerTitle = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  padding: 0 5px 5px 5px;
+  font-weight: 700;
+  font-size: 20px;
+`;
+
+const Wrapper = styled.div`
+  margin-top: 0;
+
+  .worker-card {
+    padding: 5px;
+    border-radius: 5px;
+    margin-bottom: 8px;
+    border: 1px solid gray;
+  }
+  .worker-card-length {
+    font-size: 13px;
+    font-weight: 640;
+  }
+  .worker-card-date {
+    font-size: 13px;
+    font-weight: 650;
+  }
+`;
 
 export default IssuedReturned;

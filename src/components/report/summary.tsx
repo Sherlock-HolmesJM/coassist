@@ -33,23 +33,18 @@ const Summary: React.FC<SummaryProps> = (props) => {
           <div>Transcript Editors: {teamCapacity.tes}</div>
         </FlexItem>
         <FlexItem>
-          <h5>Issued and Returned</h5>
-          <Flex>
-            <FlexItem>
-              <h5>Transcribers</h5>
-              <div>
-                Issued: {idw.tc} + {ipw.tc}
-              </div>
-              <div>Returned: {rdw.tc}</div>
-            </FlexItem>
-            <FlexItem>
-              <h5>Transcript Editors</h5>
-              <div>
-                Issued: {idw.tec} + {ipw.tec}
-              </div>
-              <div>Returned: {rdw.tec}</div>
-            </FlexItem>
-          </Flex>
+          <h5>Transcribers</h5>
+          <div>
+            Issued: {idw.tc} + {ipw.tc}
+          </div>
+          <div>Returned: {rdw.tc}</div>
+        </FlexItem>
+        <FlexItem>
+          <h5>Transcript Editors</h5>
+          <div>
+            Issued: {idw.tec} + {ipw.tec}
+          </div>
+          <div>Returned: {rdw.tec}</div>
         </FlexItem>
       </Flex>
     </div>

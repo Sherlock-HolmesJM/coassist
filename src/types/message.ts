@@ -19,6 +19,8 @@ export interface MessageI {
   rank: MessageRank;
 }
 
+export type MessageKey = 'sent2CGT' | 'rank';
+
 export interface Messages {
   [key: string]: MessageI;
 }
