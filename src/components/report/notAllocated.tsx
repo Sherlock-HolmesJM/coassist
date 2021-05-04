@@ -17,51 +17,63 @@ const NotAlloc: React.FC<NotAllocProps> = (props) => {
     (a.part || a.name).localeCompare(b.part || b.name)
   );
 
-  const audiolen = audios.length;
-  const translen = transcripts.length;
-  const memlen = freemembers.length;
-
   return (
     <Div>
       <Title>Not Allocated</Title>
       <Flex>
-        <FlexItem>
-          {audiolen > 0 && <h5>Audios - {audiolen}</h5>}
-          {audiolen > 0 && (
-            <div>
-              {sortedAudios.map((m, i) => (
-                <div key={i}>{m.name}</div>
-              ))}
-            </div>
-          )}
-        </FlexItem>
-        <FlexItem>
-          {translen > 0 && <h5>Transcripts - {translen}</h5>}
-          {translen > 0 && (
-            <div>
-              {sortedTranscripts.map((m, i) => (
-                <div key={i}>{m.part || m.name}</div>
-              ))}
-            </div>
-          )}
-        </FlexItem>
-        <FlexItem>
-          {memlen > 0 && <h5>Free Team Members - {memlen}</h5>}
-          {memlen > 0 && (
-            <div>
-              {freemembers.map((m, i) => (
-                <div key={i}>
-                  {m.name} - {m.type}
-                </div>
-              ))}
-            </div>
-          )}
-        </FlexItem>
+        <Item title='Audios' items={sortedAudios.map((m) => m.name)} />
+        <Item
+          title='Transcripts'
+          items={sortedTranscripts.map((m) => m.part || m.name)}
+        />
+        <Item
+          title='Free Team Members'
+          items={freemembers.map((m) => `${m.name} - ${m.type}`)}
+        />
       </Flex>
     </Div>
   );
 };
 
-const Div = styled.div``;
+interface ItemI {
+  items: string[];
+  title: string;
+}
+
+const Item = (props: ItemI) => {
+  const { items, title } = props;
+  const { length } = items;
+
+  return (
+    <FlexItem>
+      {length > 0 && (
+        <h5>
+          {title} - {length}
+        </h5>
+      )}
+      {length > 0 && (
+        <div className='count-container'>
+          {items.map((text, i) => (
+            <div className='count-item' key={i}>
+              {text}
+            </div>
+          ))}
+        </div>
+      )}
+    </FlexItem>
+  );
+};
+
+const Div = styled.div`
+  .count-container {
+    counter-reset: alone;
+  }
+  .count-item {
+    counter-increment: alone;
+  }
+  .count-item::before {
+    content: counter(alone) ') ';
+  }
+`;
 
 export default NotAlloc;

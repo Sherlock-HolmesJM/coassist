@@ -4,6 +4,7 @@ import { path } from './index';
 import { MessageI } from '../../types';
 import { arrayToObject } from '../transformer';
 import { swale, swals } from '../../utils';
+import { MessageKey } from '../../types/message';
 
 export const setMessage = (message: MessageI) => {
   firebase
@@ -26,11 +27,11 @@ export const updateMessages = (messages: MessageI[]) => {
     .catch((e) => swale(e.message));
 };
 
-export const updateMessageRank = (message: MessageI) => {
+export const updateMessageProp = (message: MessageI, key: MessageKey) => {
   firebase
     .database()
     .ref(path() + 'messages/' + message.uid)
-    .update({ rank: message.rank })
+    .update({ [key]: message[key] })
     .then(() => swals('', 'Updated'))
     .catch((e) => swale(e.message));
 };
