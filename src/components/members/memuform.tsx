@@ -46,7 +46,7 @@ const Update: React.FC<UpdateProps> = (props) => {
 
     const { h, m, s } = data.capacity;
     const capacity = hmsToSeconds(h, m, s);
-    onUpdate({ ...data, capacity, givenOut });
+    onUpdate({ ...data, capacity, givenOut, name: data.name.trim() });
     setMember(false);
   };
 

@@ -4,7 +4,7 @@ import List from '../../commons/list';
 import { Link } from 'react-router-dom';
 import { capitalize, swalconfirm, swale } from '../../utils';
 import { context } from '../../context/context';
-import { setMembers } from '../../context/actions';
+import { setMembers, setMM } from '../../context/actions';
 import { MemberI } from '../../types';
 import { db } from '../../services';
 import { getMemberStatus } from '../message/messageModel';
@@ -86,18 +86,30 @@ const MembersComp: React.FC<MembersProps> = () => {
     if (!member) return;
     const { name, capacity, type, givenOut } = props;
 
-    const obj = { ...member, type, capacity, givenOut };
+    const obj = { ...member, type, givenOut, name, capacity };
     obj.free = obj.free ? givenOut === '' : false;
 
     const index = members.indexOf(member);
     const newMembers = [...members];
     newMembers[index] = obj;
 
-    if (member.name !== name) {
-      // update name in workers...
-    }
+    if (member.name !== name || member.capacity !== capacity) {
+      messages.forEach((message) => {
+        message.workers
+          .filter((worker) => worker.memuid === member.uid)
+          .forEach((worker) => {
+            console.log(worker.name, 'before');
+            worker.capacity = capacity;
+            worker.name = name;
+            console.log(worker.name, 'after');
+            db.updateWorker(worker);
+          });
+      });
 
-    dispatch(setMembers(newMembers));
+      dispatch(setMM([...messages], newMembers));
+    } else {
+      dispatch(setMembers(newMembers));
+    }
     db.updateMember(obj);
   };
 

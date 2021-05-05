@@ -3,15 +3,17 @@ import styled from 'styled-components';
 export const Flex = styled.div`
   display: flex;
   flex-wrap: wrap;
-  /* justify-content: center; */
+  justify-content: center;
   gap: 2em;
-  margin: 2em 0;
+  margin: 2em 1em;
 `;
 
 export const FlexItem = styled.div`
+  min-width: 290px;
   flex-basis: calc(calc(500px - 100%) * 999);
   flex-grow: 1;
-  padding: 0.6em;
+  padding: 10px;
+  border-radius: 5px;
   border: 1px inset gray;
   & * {
     text-transform: uppercase;

@@ -6,7 +6,8 @@ import { formatCap, getWeekBegin, getWeekEnd } from '../../utils';
 import Summary from './summary';
 import NotAllocated from './notAllocated';
 import IssuedAndReturned from './issuedAndReturned';
-import { Flex, FlexItem, Title } from './flex';
+import { Flex, Title } from './flex';
+import SumCard from '../../commons/summaryCard';
 
 export interface ReportProps {
   report: boolean;
@@ -104,7 +105,7 @@ const Report: React.FC<ReportProps> = (props) => {
           Close
         </button>
       </div>
-      <div>
+      <div className='title-container'>
         <h4 className='uppercase title'>
           {groupName} weekly report - {collatorName}
         </h4>
@@ -135,7 +136,7 @@ const Report: React.FC<ReportProps> = (props) => {
             'Messages In Progress: Completion Rate'}
         </Title>
         <Flex>
-          {messagesInProgress.map((m) => {
+          {messagesInProgress.map((m, i) => {
             const totaltrans = m.workers
               .filter((m) => m.type === 'T' && m.done)
               .reduce((acc, m) => acc + m.splitLength || 0, 0);
@@ -144,21 +145,15 @@ const Report: React.FC<ReportProps> = (props) => {
               .reduce((acc, m) => acc + m.splitLength || 0, 0);
 
             return (
-              <FlexItem key={m.uid} className='li'>
-                <h6 className='list-title'>{m.name.toUpperCase()}</h6>
-                <div className='li-totals'>
-                  <em className='li-total'>Length</em>
-                  <em className='li-total'>{formatCap(m.duration)}</em>
-                </div>
-                <div className='li-totals'>
-                  <em className='li-total'>Transcribed</em>
-                  <em className='li-total'>{formatCap(totaltrans)}</em>
-                </div>
-                <div className='li-totals'>
-                  <em className='li-total'>Edited</em>
-                  <em className='li-total'>{formatCap(totaledited)}</em>
-                </div>
-              </FlexItem>
+              <SumCard
+                key={i}
+                title={m.name}
+                items={[
+                  ['Length', formatCap(m.duration)],
+                  ['Transcribed', formatCap(totaltrans)],
+                  ['Edited', formatCap(totaledited)],
+                ]}
+              />
             );
           })}
         </Flex>
@@ -168,9 +163,14 @@ const Report: React.FC<ReportProps> = (props) => {
 };
 
 const Div = styled.div`
+  margin: 0;
+
   .btn-print-div {
     display: flex;
     justify-content: flex-end;
+  }
+  .title-container {
+    text-align: center;
   }
   .title {
     margin-bottom: 40px;
@@ -178,26 +178,7 @@ const Div = styled.div`
   .uppercase {
     text-transform: uppercase;
   }
-  .li {
-    background-color: #bdb6b6;
-    border-radius: 0.5em;
-  }
-  .li-totals {
-    display: flex;
-    justify-content: space-between;
-    border-top: 2px solid gray;
-    padding: 3px;
-    border-radius: 5px;
-  }
-  .li-total {
-    display: block;
-  }
-  .li-total:last-child {
-    flex-basis: 50%;
-    padding-left: 5px;
-    text-align: left;
-    border-left: 1px solid gray;
-  }
+
   @media print {
     .no-print {
       display: none;

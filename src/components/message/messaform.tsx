@@ -60,7 +60,7 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
 
     const newMessage: MessageI = { ...message, status: 'in-progress' };
     const newMember: MemberI = { ...member, free: false };
-    const { uid: muid, name, type } = newMember;
+    const { uid: muid, name, type, capacity } = newMember;
 
     const worker: Worker = {
       memuid: muid,
@@ -74,6 +74,7 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
       done: false,
       dateReceived: new Date().toJSON(),
       dateReturned: '',
+      capacity,
     };
 
     newMessage.workers.push(worker);

@@ -5,10 +5,17 @@ import { State } from '../../context/context';
 import { swale, swals } from '../../utils';
 import { transform } from '../transformer';
 import { path } from './index';
+import { updateMember } from './member';
 import { updateMessageProp } from './message';
 import { updateWorker } from './worker';
 
 const giveMissingFields = (state: State) => {
+  state.members.forEach((m) => {
+    if (!m.capacity || m.capacity / 60 <= 10) {
+      m.capacity = 1800; // that is, 1800 seconds  30 minutes.
+      updateMember(m);
+    }
+  });
   state.messages.forEach((m) => {
     if (!m.rank) {
       m.rank = getMessageRank(m.status);
@@ -21,6 +28,10 @@ const giveMissingFields = (state: State) => {
     }
 
     m.workers.forEach((w) => {
+      if (!w.capacity || w.capacity / 60 <= 10) {
+        w.capacity = 1800; // that is, 1800 seconds  30 minutes.
+        updateWorker(w);
+      }
       if (w.splitLength / 60 <= 10) {
         console.log(w.splitLength, 'below');
         w.dateReceived = w.dateReceived || new Date().toJSON();

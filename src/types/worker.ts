@@ -5,17 +5,18 @@ export interface Workers {
 }
 
 export interface Worker {
-  memuid: number;
-  name: string;
+  memuid: number; // unique identifier of member
+  name: string; // name of member
   type: MemberType;
   uid: number;
-  msguid: number;
-  msgname: string;
+  msguid: number; // unique identifier of message
+  msgname: string; // name of message
   part: string;
   done: boolean;
   splitLength: number; // in seconds
   dateReceived: string;
   dateReturned: string;
+  capacity: number; // in seconds -- must come from the member.
 }
 
 export interface T_And_TE {

@@ -30,7 +30,7 @@ const Add: React.FC<AddProps> = (props) => {
     e.preventDefault();
     const { h, m, s } = data.capacity;
     const capacity = hmsToSeconds(h, m, s);
-    onAdd({ ...data, capacity });
+    onAdd({ ...data, capacity, name: data.name.trim() });
   };
 
   const containerProps = {

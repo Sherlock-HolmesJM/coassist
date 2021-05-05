@@ -17,11 +17,10 @@ export const updateWorkers = (workers: Worker[]) => {
 };
 
 export const updateWorker = (worker: Worker) => {
-  const { dateReceived, splitLength } = worker;
   firebase
     .database()
     .ref(path() + '/messages/' + worker.msguid + '/workers/' + worker.uid)
-    .update({ dateReceived, splitLength })
+    .update(worker)
     .catch((e) => swale(e.message));
 };
 
