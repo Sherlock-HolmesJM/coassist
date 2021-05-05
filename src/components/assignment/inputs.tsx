@@ -134,7 +134,7 @@ export const NameInput: FC<NameProps> = (props) => {
         placeholder={placeholder || 'filename'}
         required={required ?? true}
         value={value || ''}
-        onChange={(e) => setName(e.target.value.trim().toLowerCase())}
+        onChange={(e) => setName(e.target.value.toLowerCase())}
       />
     </div>
   );

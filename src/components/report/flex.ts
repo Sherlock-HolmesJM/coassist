@@ -5,7 +5,7 @@ export const Flex = styled.div`
   flex-wrap: wrap;
   justify-content: center;
   gap: 2em;
-  margin: 2em 0;
+  margin: 2em 1em;
 `;
 
 export const FlexItem = styled.div`

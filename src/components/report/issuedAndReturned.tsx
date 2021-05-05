@@ -17,7 +17,7 @@ const IssuedReturned: React.FC<IssuedReturnedProps> = (props) => {
   const outstandingTEs = outstanding.filter((w) => w.type === 'TE');
 
   return (
-    <Div>
+    <div>
       <Title>Issued and Returned</Title>
 
       <Flex>
@@ -26,7 +26,7 @@ const IssuedReturned: React.FC<IssuedReturnedProps> = (props) => {
         <Item title='Outstanding [Ts]' workers={outstandingTs} />
         <Item title='Outstanding [TEs]' workers={outstandingTEs} />
       </Flex>
-    </Div>
+    </div>
   );
 };
 
@@ -46,42 +46,48 @@ const Item = (props: ItemProps) => {
     .sort((a, b) => a.type.localeCompare(b.type));
 
   return (
-    <FlexItem className='cards-container'>
+    <FlexItemWrapper>
       <WorkerTitle>
         <div>{title}</div> <div>[{length}]</div>
       </WorkerTitle>
-      <Wrapper>
-        {sorted.map((w, i) => (
-          <FlexItem className='worker-card' key={i}>
-            <div style={{ fontWeight: 700 }}>
-              {w.name} - {w.type}
-            </div>
-            <div>
+      <FlexWrapper>
+        {sorted.map((w, i) => {
+          return (
+            <FlexItem className='worker-card' key={i}>
+              <div className='worker-card-name'>
+                {w.name} - {w.type}
+              </div>
               <div>
-                <em>{w.part}</em>
+                <div>
+                  <em>{w.part}</em>
+                </div>
+                <div className='worker-card-length'>
+                  <em>Length: {formatCap(w.splitLength)}</em>
+                </div>
               </div>
-              <div className='worker-card-length'>
-                <em>Length: {formatCap(w.splitLength)}</em>
+              <div className='worker-card-date'>
+                <em>Received: {new Date(w.dateReceived).toDateString()}</em>
               </div>
-            </div>
-            <div className='worker-card-date'>
-              <em>
-                {new Date(w.dateReceived).toDateString()}
-                {w.dateReturned &&
-                  ` - ${new Date(w.dateReturned).toDateString()}`}
-              </em>
-            </div>
-          </FlexItem>
-        ))}
-      </Wrapper>
-    </FlexItem>
+              <div className='worker-card-date'>
+                <em>
+                  {w.done &&
+                    w.dateReturned &&
+                    `Returned: ${new Date(w.dateReturned).toDateString()}`}
+                </em>
+              </div>
+              <div className='worker-card-capacity'>
+                Capacity: {formatCap(w.capacity)}
+              </div>
+            </FlexItem>
+          );
+        })}
+      </FlexWrapper>
+    </FlexItemWrapper>
   );
 };
 
-const Div = styled.div`
-  .cards-container {
-    padding: 10px;
-  }
+const FlexItemWrapper = styled(FlexItem)`
+  padding: 10px;
 `;
 
 const WorkerTitle = styled.div`
@@ -93,16 +99,26 @@ const WorkerTitle = styled.div`
   font-size: 20px;
 `;
 
-const Wrapper = styled(Flex)`
+const FlexWrapper = styled(Flex)`
   margin-top: 0;
+  gap: 1em;
 
+  .worker-card-name {
+    font-weight: 700;
+    border-bottom: 1px solid gray;
+  }
   .worker-card-length {
     font-size: 13px;
     font-weight: 640;
   }
   .worker-card-date {
     font-size: 13px;
-    font-weight: 650;
+    font-weight: 645;
+  }
+  .worker-card-capacity {
+    border-top: 1px solid gray;
+    font-size: 13px;
+    font-weight: 640;
   }
 `;
 
