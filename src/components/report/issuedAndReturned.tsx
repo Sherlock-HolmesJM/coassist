@@ -19,6 +19,7 @@ const IssuedReturned: React.FC<IssuedReturnedProps> = (props) => {
   return (
     <Div>
       <Title>Issued and Returned</Title>
+
       <Flex>
         <Item title='Issued' workers={issued} />
         <Item title='Returned' workers={returned} />
@@ -51,7 +52,7 @@ const Item = (props: ItemProps) => {
       </WorkerTitle>
       <Wrapper>
         {sorted.map((w, i) => (
-          <div className='worker-card' key={i}>
+          <FlexItem className='worker-card' key={i}>
             <div style={{ fontWeight: 700 }}>
               {w.name} - {w.type}
             </div>
@@ -70,7 +71,7 @@ const Item = (props: ItemProps) => {
                   ` - ${new Date(w.dateReturned).toDateString()}`}
               </em>
             </div>
-          </div>
+          </FlexItem>
         ))}
       </Wrapper>
     </FlexItem>
@@ -79,7 +80,7 @@ const Item = (props: ItemProps) => {
 
 const Div = styled.div`
   .cards-container {
-    border-radius: 5px;
+    padding: 10px;
   }
 `;
 
@@ -92,15 +93,9 @@ const WorkerTitle = styled.div`
   font-size: 20px;
 `;
 
-const Wrapper = styled.div`
+const Wrapper = styled(Flex)`
   margin-top: 0;
 
-  .worker-card {
-    padding: 5px;
-    border-radius: 5px;
-    margin-bottom: 8px;
-    border: 1px solid gray;
-  }
   .worker-card-length {
     font-size: 13px;
     font-weight: 640;
