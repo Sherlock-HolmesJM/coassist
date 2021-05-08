@@ -70,7 +70,7 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
       msguid: message.uid,
       msgname: message.name,
       part,
-      splitLength: splitLength * 60, // must be in seconds.
+      splitLength, // must be in seconds.
       done: false,
       dateReceived: new Date().toJSON(),
       dateReturned: '',

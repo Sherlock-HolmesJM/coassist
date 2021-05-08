@@ -17,7 +17,7 @@ export const swals = (text?: any, title = 'Success') => {
     text: `${text}`,
     icon: 'success',
     showConfirmButton: false,
-    timer: 2000,
+    timer: 1000,
   });
 };
 
