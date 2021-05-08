@@ -1,8 +1,10 @@
 import React from 'react';
+import styled from 'styled-components';
+import Lottie from 'lottie-react';
 import { Worker } from '../../types';
 import { formatCap } from '../../utils';
+import { congrats } from '../../media';
 import { Flex, FlexItem, Title } from './flex';
-import styled from 'styled-components';
 
 export interface IssuedReturnedProps {
   issued: Worker[];
@@ -60,6 +62,11 @@ const Item = (props: ItemProps) => {
         {sorted.map((w, i) => {
           return (
             <FlexItem className='worker-card' key={i}>
+              {w.workdone >= w.capacity && (
+                <div className='worker-card-congrats'>
+                  <Lottie animationData={congrats} />
+                </div>
+              )}
               <div className='worker-card-name'>
                 {w.name} - {w.type}
               </div>
@@ -112,6 +119,15 @@ const FlexWrapper = styled(Flex)`
   margin-top: 0;
   gap: 1em;
 
+  .worker-card {
+    position: relative;
+  }
+  .worker-card-congrats {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: max(15%, 100px);
+  }
   .worker-card-name {
     font-weight: 700;
     border-bottom: 1px solid gray;
