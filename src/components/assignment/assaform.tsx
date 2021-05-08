@@ -33,11 +33,10 @@ const FormAdd: React.FC<FormProps> = (props) => {
   const [data, setData] = useState(initialData);
 
   const { name, size, duration, spin, time } = data;
-  const { h, m, s } = time;
 
   const handleGetDetails = (name: string, size: number, duration: number) => {
     const time = secondsToHMS(duration);
-    setData({ ...data, name, size, time });
+    setData({ ...data, name, size, time, duration });
   };
 
   const getFilename = () => name.toLowerCase().trim() ?? '';
@@ -53,6 +52,8 @@ const FormAdd: React.FC<FormProps> = (props) => {
         `${filename.toUpperCase()} has already been added.`,
         'Duplicate message'
       );
+
+    const { h, m, s } = time;
 
     const message: MessageI = {
       uid: Date.now(),

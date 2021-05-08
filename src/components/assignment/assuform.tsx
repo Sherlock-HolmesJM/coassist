@@ -61,7 +61,7 @@ const FormUpdate: React.FC<FormProps> = (props) => {
 
   const handleGetDetails = (name: string, size: number, duration: number) => {
     const time = secondsToHMS(duration);
-    setData({ ...data, name, size, time });
+    setData({ ...data, name, size, time, duration });
   };
 
   const handleUpdate = async (e: any, message: MessageI) => {
@@ -74,7 +74,7 @@ const FormUpdate: React.FC<FormProps> = (props) => {
     if (found && found.uid !== message.uid)
       return alert(`${name.toUpperCase()} has already been added`);
 
-    const { h, m, s } = secondsToHMS(duration);
+    const { h, m, s } = time;
 
     const newMessage: MessageI = {
       ...message,
