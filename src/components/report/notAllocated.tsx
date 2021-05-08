@@ -17,19 +17,32 @@ const NotAlloc: React.FC<NotAllocProps> = (props) => {
     (a.part || a.name).localeCompare(b.part || b.name)
   );
 
+  const list = [
+    { title: 'Audio', items: sortedAudios.map((m) => m.name) },
+    {
+      title: 'Transcripts',
+      items: sortedTranscripts.map((m) => m.part || m.name),
+    },
+    {
+      title: 'Free Team Members',
+      items: freemembers.map((m) => `${m.name} - ${m.type}`),
+    },
+  ];
+
+  const anims = ['fade-left', 'fade-up', 'fade-right'];
+
   return (
     <Div>
       <Title>Not Allocated</Title>
       <Flex>
-        <Item title='Audios' items={sortedAudios.map((m) => m.name)} />
-        <Item
-          title='Transcripts'
-          items={sortedTranscripts.map((m) => m.part || m.name)}
-        />
-        <Item
-          title='Free Team Members'
-          items={freemembers.map((m) => `${m.name} - ${m.type}`)}
-        />
+        {list.map((obj, ind) => (
+          <Item
+            title={obj.title}
+            items={obj.items}
+            animation={anims[ind]}
+            delay={300 * ind}
+          />
+        ))}
       </Flex>
     </Div>
   );
@@ -38,14 +51,16 @@ const NotAlloc: React.FC<NotAllocProps> = (props) => {
 interface ItemI {
   items: string[];
   title: string;
+  animation?: string;
+  delay?: number;
 }
 
 const Item = (props: ItemI) => {
-  const { items, title } = props;
+  const { items, title, delay, animation } = props;
   const { length } = items;
 
   return (
-    <FlexItem>
+    <FlexItem data-aos={animation} data-aos-delay={delay}>
       {length > 0 && (
         <h5>
           {title} - {length}

@@ -4,13 +4,18 @@ import { FlexItem } from '../components/report/flex';
 interface SumCardProps {
   title: string;
   items: [string, string][];
+  delay?: number;
+  animation?: string;
 }
 
 const SumCard: React.FC<SumCardProps> = (props) => {
-  const { title, items } = props;
+  const { title, items, delay, animation } = props;
 
   return (
-    <FlexItemWrap>
+    <FlexItemWrap
+      data-aos={animation ?? 'flip-down'}
+      data-aos-delay={delay ?? 0}
+    >
       <h6 className='card-title'>{title.toUpperCase()}</h6>
       {items.map((item, index) => (
         <div className='card-totals-container' key={index}>

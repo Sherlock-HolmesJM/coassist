@@ -54,14 +54,14 @@ const Item = (props: ItemProps) => {
     .sort((a, b) => a.type.localeCompare(b.type));
 
   return (
-    <FlexItemWrapper>
+    <FlexItemWrapper data-aos='fade'>
       <WorkerTitle>
         <div>{title}</div> <div>[{length}]</div>
       </WorkerTitle>
       <FlexWrapper>
         {sorted.map((w, i) => {
           return (
-            <FlexItem className='worker-card' key={i}>
+            <FlexItem className='worker-card' key={i} data-aos='slide-up'>
               {w.workdone >= w.capacity && (
                 <div className='worker-card-congrats'>
                   <Lottie animationData={congrats} />

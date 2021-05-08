@@ -53,6 +53,8 @@ const Summary: React.FC<SummaryProps> = (props) => {
             ['Issued', `${idw.tc} + ${ipw.tc}`],
             ['Returned', `${rdw.tc}`],
           ]}
+          delay={300}
+          animation='flip-left'
         />
         <SumCard
           title={`Transcript Editors`}
@@ -60,6 +62,8 @@ const Summary: React.FC<SummaryProps> = (props) => {
             ['Issued', `${idw.tec} + ${ipw.tec}`],
             ['Returned', `${rdw.tec}`],
           ]}
+          delay={600}
+          animation='flip-right'
         />
       </Flex>
     </div>

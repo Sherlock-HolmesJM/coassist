@@ -33,15 +33,15 @@ const Wrapper: React.FC<HolderProps> = (props) => {
   const { setShow, show, spin } = props.props;
 
   const ref = useRef<HTMLDivElement>(null);
-  const animIn = 'animate__jackInTheBox';
-  const animOut = 'animate__hinge';
+  const animIn = 'animate__fadeIn';
+  const animOut = 'animate__fadeOutDownBig';
 
   if (!show) return null;
 
   const closeModal = () => {
     ref.current.classList.remove(animIn);
     ref.current.classList.add(animOut);
-    setTimeout(() => setShow(false), 2000);
+    setTimeout(() => setShow(false), 500);
   };
 
   return (

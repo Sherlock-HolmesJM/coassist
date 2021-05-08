@@ -25,7 +25,7 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
   useEffect(() => {
     if (worker) {
       setSplit(worker.part.replace(filename, ''));
-      setSplitLength(worker.splitLength / 60 ?? 0);
+      setSplitLength(worker.splitLength ?? 0);
     }
     // eslint-disable-next-line
   }, [worker]);
@@ -45,7 +45,7 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
     const newWorker: Worker = {
       ...worker,
       part,
-      splitLength: splitLength * 60, // must be in seconds.
+      splitLength,
     };
 
     newWorker.workdone = getWorkdone(newWorker, messages);
@@ -85,9 +85,9 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
         />
         <LabelTextField
           type='number'
-          value={splitLength + ''}
+          value={splitLength / 60 + ''}
           label='Split Length (Min)'
-          onChange={(value) => setSplitLength(+value)}
+          onChange={(value) => setSplitLength(+value * 60)}
         />
         <ActionButtonHolder value='update' />
       </form>

@@ -3,10 +3,16 @@ import './App.css';
 import 'bootstrap/dist/css/bootstrap.css';
 import 'font-awesome/css/font-awesome.css';
 import 'animate.css';
+import 'aos/dist/aos.css';
 import { Login, Members, Home, Message, Error } from './components';
 import { Assignments } from './components';
+import AOS from 'aos';
 
 function App() {
+  AOS.init({
+    duration: 1000,
+  });
+
   return (
     <Switch>
       <Route path='/assignments:slug' component={Message} />

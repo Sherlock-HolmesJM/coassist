@@ -10,6 +10,7 @@ import SumCard from '../../commons/summaryCard';
 import { checkDate, getWeekBegin, getWeekEnd } from '../../utils/date';
 import { formatCap } from '../../utils/time';
 import { getMessageTotals } from '../../utils';
+// import AOS from 'aos';
 
 export interface ReportProps {
   report: boolean;
@@ -26,6 +27,8 @@ const Report: React.FC<ReportProps> = (props) => {
   const ref = useRef<HTMLDivElement>(null);
 
   if (!report) return null;
+
+  // AOS.init();
 
   const messagesNotAllocated = messages.filter((m) => m.status === 'undone');
   const messagesInProgress = messages.filter((m) => m.status === 'in-progress');
@@ -133,10 +136,15 @@ const Report: React.FC<ReportProps> = (props) => {
               m
             );
 
+            const anims = ['zoom-in', 'zoom-out', 'flip-right', 'flip-down'];
+            const rand = () => Math.floor(Math.random() * anims.length - 1);
+
             return (
               <SumCard
                 key={i}
                 title={m.name}
+                delay={200 * i}
+                animation={anims[rand()]}
                 items={[
                   ['Length', formatCap(m.duration)],
                   ['Transcribing', formatCap(working_t)],

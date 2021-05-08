@@ -124,9 +124,9 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
         />
         <LabelTextField
           type='number'
-          value={splitLength + ''}
+          value={splitLength / 60 + ''}
           label='Split Length (Min)'
-          onChange={(value) => setSplitLength(+value)}
+          onChange={(value) => setSplitLength(+value * 60)}
         />
         <Select
           label='Worker'
