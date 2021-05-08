@@ -13,10 +13,11 @@ export interface Worker {
   msgname: string; // name of message
   part: string;
   done: boolean;
-  splitLength: number; // in seconds
   dateReceived: string;
   dateReturned: string;
+  splitLength: number; // in seconds
   capacity: number; // in seconds -- must come from the member.
+  workdone: number; // total seconds of work done this week.
 }
 
 export interface T_And_TE {

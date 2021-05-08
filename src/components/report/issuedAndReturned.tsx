@@ -13,6 +13,10 @@ export interface IssuedReturnedProps {
 const IssuedReturned: React.FC<IssuedReturnedProps> = (props) => {
   const { issued, returned, outstanding } = props;
 
+  const issuedTs = issued.filter((w) => w.type === 'T');
+  const issuedTEs = issued.filter((w) => w.type === 'TE');
+  const returnedTs = returned.filter((w) => w.type === 'T');
+  const returnedTEs = returned.filter((w) => w.type === 'TE');
   const outstandingTs = outstanding.filter((w) => w.type === 'T');
   const outstandingTEs = outstanding.filter((w) => w.type === 'TE');
 
@@ -21,8 +25,10 @@ const IssuedReturned: React.FC<IssuedReturnedProps> = (props) => {
       <Title>Issued and Returned</Title>
 
       <Flex>
-        <Item title='Issued' workers={issued} />
-        <Item title='Returned' workers={returned} />
+        <Item title='Issued [Ts]' workers={issuedTs} />
+        <Item title='Issued [TEs]' workers={issuedTEs} />
+        <Item title='Returned [Ts]' workers={returnedTs} />
+        <Item title='Returned [TEs]' workers={returnedTEs} />
         <Item title='Outstanding [Ts]' workers={outstandingTs} />
         <Item title='Outstanding [TEs]' workers={outstandingTEs} />
       </Flex>
@@ -75,8 +81,11 @@ const Item = (props: ItemProps) => {
                     `Returned: ${new Date(w.dateReturned).toDateString()}`}
                 </em>
               </div>
-              <div className='worker-card-capacity'>
+              <div className='worker-card-capacity worker-card-font-style'>
                 Capacity: {formatCap(w.capacity)}
+              </div>
+              <div className='worker-card-font-style'>
+                Work Done: {formatCap(w.workdone)}
               </div>
             </FlexItem>
           );
@@ -117,6 +126,8 @@ const FlexWrapper = styled(Flex)`
   }
   .worker-card-capacity {
     border-top: 1px solid gray;
+  }
+  .worker-card-font-style {
     font-size: 13px;
     font-weight: 640;
   }

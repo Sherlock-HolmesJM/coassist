@@ -4,7 +4,7 @@ import * as mm from './messageModel';
 import { context } from '../../context/context';
 import { setMessages } from '../../context/actions';
 import { db } from '../../services';
-import { swalconfirm } from '../../utils';
+import { getWorkdone, swalconfirm } from '../../utils';
 import FormHolder from '../../commons/formHolder';
 import { LabelTextField, ActionButtonHolder } from '../assignment/inputs';
 
@@ -41,11 +41,13 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
     const part = getPart(split);
 
     if (!mm.checkWorker(message.workers, part, worker)) return;
+    const workdone = getWorkdone(worker.uid, messages);
 
     const newWorker: Worker = {
       ...worker,
       part,
-      splitLength,
+      splitLength: splitLength * 60, // must be in seconds.
+      workdone,
     };
 
     const newMessage = { ...message };
@@ -83,9 +85,9 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
         />
         <LabelTextField
           type='number'
-          value={splitLength / 60 + ''}
+          value={splitLength + ''}
           label='Split Length (Min)'
-          onChange={(value) => setSplitLength(+value * 60)}
+          onChange={(value) => setSplitLength(+value)}
         />
         <ActionButtonHolder value='update' />
       </form>
