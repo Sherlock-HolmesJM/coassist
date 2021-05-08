@@ -1,8 +1,10 @@
 import React from 'react';
+import styled from 'styled-components';
+import Lottie from 'lottie-react';
 import { Worker } from '../../types';
 import { formatCap } from '../../utils';
+import { congrats } from '../../media';
 import { Flex, FlexItem, Title } from './flex';
-import styled from 'styled-components';
 
 export interface IssuedReturnedProps {
   issued: Worker[];
@@ -13,6 +15,10 @@ export interface IssuedReturnedProps {
 const IssuedReturned: React.FC<IssuedReturnedProps> = (props) => {
   const { issued, returned, outstanding } = props;
 
+  const issuedTs = issued.filter((w) => w.type === 'T');
+  const issuedTEs = issued.filter((w) => w.type === 'TE');
+  const returnedTs = returned.filter((w) => w.type === 'T');
+  const returnedTEs = returned.filter((w) => w.type === 'TE');
   const outstandingTs = outstanding.filter((w) => w.type === 'T');
   const outstandingTEs = outstanding.filter((w) => w.type === 'TE');
 
@@ -21,8 +27,10 @@ const IssuedReturned: React.FC<IssuedReturnedProps> = (props) => {
       <Title>Issued and Returned</Title>
 
       <Flex>
-        <Item title='Issued' workers={issued} />
-        <Item title='Returned' workers={returned} />
+        <Item title='Issued [Ts]' workers={issuedTs} />
+        <Item title='Issued [TEs]' workers={issuedTEs} />
+        <Item title='Returned [Ts]' workers={returnedTs} />
+        <Item title='Returned [TEs]' workers={returnedTEs} />
         <Item title='Outstanding [Ts]' workers={outstandingTs} />
         <Item title='Outstanding [TEs]' workers={outstandingTEs} />
       </Flex>
@@ -54,6 +62,11 @@ const Item = (props: ItemProps) => {
         {sorted.map((w, i) => {
           return (
             <FlexItem className='worker-card' key={i}>
+              {w.workdone >= w.capacity && (
+                <div className='worker-card-congrats'>
+                  <Lottie animationData={congrats} />
+                </div>
+              )}
               <div className='worker-card-name'>
                 {w.name} - {w.type}
               </div>
@@ -75,8 +88,11 @@ const Item = (props: ItemProps) => {
                     `Returned: ${new Date(w.dateReturned).toDateString()}`}
                 </em>
               </div>
-              <div className='worker-card-capacity'>
+              <div className='worker-card-capacity worker-card-font-style'>
                 Capacity: {formatCap(w.capacity)}
+              </div>
+              <div className='worker-card-font-style'>
+                Work Done: {formatCap(w.workdone)}
               </div>
             </FlexItem>
           );
@@ -103,6 +119,15 @@ const FlexWrapper = styled(Flex)`
   margin-top: 0;
   gap: 1em;
 
+  .worker-card {
+    position: relative;
+  }
+  .worker-card-congrats {
+    position: absolute;
+    top: 1px;
+    right: 1px;
+    width: max(15%, 100px);
+  }
   .worker-card-name {
     font-weight: 700;
     border-bottom: 1px solid gray;
@@ -117,6 +142,8 @@ const FlexWrapper = styled(Flex)`
   }
   .worker-card-capacity {
     border-top: 1px solid gray;
+  }
+  .worker-card-font-style {
     font-size: 13px;
     font-weight: 640;
   }

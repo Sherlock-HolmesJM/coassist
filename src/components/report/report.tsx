@@ -2,31 +2,21 @@ import { useContext, useRef } from 'react';
 import { context } from '../../context/context';
 import { Worker } from '../../types';
 import styled from 'styled-components';
-import { formatCap, getWeekBegin, getWeekEnd } from '../../utils';
 import Summary from './summary';
 import NotAllocated from './notAllocated';
 import IssuedAndReturned from './issuedAndReturned';
 import { Flex, Title } from './flex';
 import SumCard from '../../commons/summaryCard';
+import { checkDate, getWeekBegin, getWeekEnd } from '../../utils/date';
+import { formatCap } from '../../utils/time';
 
 export interface ReportProps {
   report: boolean;
   setReport: (value: boolean) => void;
 }
 
-const weekbegin_date = getWeekBegin('Sat');
-const weekbegin = weekbegin_date.getTime();
-const weekend = getWeekEnd(weekbegin_date).getTime();
-
-const fallsInWeekBeginAndEnd = (date: Date) => {
-  try {
-    const tim = date.getTime();
-    if (tim >= weekbegin && tim <= weekend) return true;
-    return false;
-  } catch (e) {
-    return false;
-  }
-};
+const weekbegan = getWeekBegin('Sat');
+const weekends = getWeekEnd(weekbegan);
 
 const Report: React.FC<ReportProps> = (props) => {
   const { messages, groupName, collatorName, members } = useContext(context);
@@ -51,11 +41,12 @@ const Report: React.FC<ReportProps> = (props) => {
     const alistT = m.workers.filter((m) => m.type === 'T' && m.done);
     const tlist = m.workers.filter((m) => m.type === 'TE' && !m.done);
     const tlistE = m.workers.filter((m) => m.type === 'TE' && m.done);
-    const isdw = m.workers.filter(
-      (w) => !w.done && fallsInWeekBeginAndEnd(new Date(w.dateReceived))
+    const isdw = m.workers.filter((w) =>
+      checkDate(new Date(w.dateReceived), weekbegan, weekends)
     );
     const islw = m.workers.filter(
-      (w) => !w.done && !fallsInWeekBeginAndEnd(new Date(w.dateReceived))
+      (w) =>
+        !w.done && !checkDate(new Date(w.dateReceived), weekbegan, weekends)
     );
 
     audinprog = [...audinprog, ...alist];
@@ -66,15 +57,13 @@ const Report: React.FC<ReportProps> = (props) => {
     issuedPreviousWeeks = [...issuedPreviousWeeks, ...islw];
   });
 
-  let returnedDisWeek = audtrans.filter((w) =>
-    fallsInWeekBeginAndEnd(w.done && new Date(w.dateReturned))
-  );
-  returnedDisWeek = [
-    ...returnedDisWeek,
-    ...transedited.filter((w) =>
-      fallsInWeekBeginAndEnd(new Date(w.dateReturned))
-    ),
-  ];
+  let returnedDisWeek = [];
+  messages.forEach((m) => {
+    const l = m.workers.filter(
+      (w) => w.done && checkDate(new Date(w.dateReturned), weekbegan, weekends)
+    );
+    returnedDisWeek = [...returnedDisWeek, ...l];
+  });
 
   let transcriptsNotAllocated = audtrans.filter(
     (m) => !transinprog.find((t) => t.part === m.part)
@@ -82,6 +71,8 @@ const Report: React.FC<ReportProps> = (props) => {
   transcriptsNotAllocated = transcriptsNotAllocated.filter(
     (m) => !transedited.find((t) => t.part === m.part)
   );
+
+  // ================== Animation =======================
 
   const animIn = 'animate__zoomInDown';
   const animOut = 'animate__zoomOutLeft';
@@ -109,8 +100,8 @@ const Report: React.FC<ReportProps> = (props) => {
         <h4 className='uppercase title'>
           {groupName} weekly report - {collatorName}
         </h4>
-        <h5>Week Began: {weekbegin_date.toDateString()}</h5>
-        <h5>Week Ends: {new Date(weekend).toDateString()}</h5>
+        <h5>Week Began: {weekbegan.toDateString()}</h5>
+        <h5>Week Ends: {new Date(weekends).toDateString()}</h5>
       </div>
       <Summary
         members={members}

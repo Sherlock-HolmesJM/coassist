@@ -10,13 +10,19 @@ import { db } from '../../services';
 import { getMemberStatus } from '../message/messageModel';
 import Addform from './memaform';
 import UpdateForm from './memuform';
+import Loader from '../../commons/loader';
 
 export interface MembersProps {}
 
 const MembersComp: React.FC<MembersProps> = () => {
-  const { dispatch, members, messages, collatorName, groupName } = useContext(
-    context
-  );
+  const {
+    dispatch,
+    members,
+    messages,
+    collatorName,
+    groupName,
+    spin,
+  } = useContext(context);
 
   const [show, setShow] = useState<any>(false);
   const [member, setMember] = useState<MemberI | false>(false);
@@ -115,6 +121,7 @@ const MembersComp: React.FC<MembersProps> = () => {
 
   return (
     <Section>
+      <Loader spin={spin} />
       <header className='header'>
         <nav className='nav'>
           <Link to='/home' className='btn btn-link'>

@@ -70,11 +70,12 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
       msguid: message.uid,
       msgname: message.name,
       part,
-      splitLength,
+      splitLength: splitLength * 60, // must be in seconds.
       done: false,
       dateReceived: new Date().toJSON(),
       dateReturned: '',
       capacity,
+      workdone: 0,
     };
 
     newMessage.workers.push(worker);
@@ -123,9 +124,9 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
         />
         <LabelTextField
           type='number'
-          value={splitLength / 60 + ''}
+          value={splitLength + ''}
           label='Split Length (Min)'
-          onChange={(value) => setSplitLength(+value * 60)}
+          onChange={(value) => setSplitLength(+value)}
         />
         <Select
           label='Worker'

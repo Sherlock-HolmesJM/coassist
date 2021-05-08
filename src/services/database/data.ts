@@ -32,8 +32,12 @@ const giveMissingFields = (state: State) => {
         w.capacity = 1800; // that is, 1800 seconds  30 minutes.
         updateWorker(w);
       }
+      if (!w.workdone) {
+        w.workdone = 0;
+        updateWorker(w);
+      }
       if (w.splitLength / 60 <= 10) {
-        console.log(w.splitLength, 'below');
+        console.log(w.splitLength, 'below', w.splitLength * 60);
         w.dateReceived = w.dateReceived || new Date().toJSON();
         w.splitLength = w.splitLength * 60;
         updateWorker(w);

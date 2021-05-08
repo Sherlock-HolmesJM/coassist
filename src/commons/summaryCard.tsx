@@ -42,7 +42,7 @@ const FlexItemWrap = styled(FlexItem)`
     padding: 5px 0;
   }
   .card-total:last-child {
-    flex-basis: 55%;
+    flex-basis: 52%;
     padding-left: 5px;
     text-align: left;
     border-left: 1px solid gray;

@@ -1,3 +1,5 @@
+import range from './range';
+
 const isLeapYear = (year: number) => {
   /**
  * 
@@ -75,4 +77,15 @@ export const getWeekEnd = (date: Date) => {
 
   const newDate = `${year}-${to2digits(month)}-${to2digits(dm)}`;
   return new Date(newDate);
+};
+
+export const checkDate = (date: Date, weekbegan: Date, weekends: Date) => {
+  const today = date.toDateString().split(' ')[2];
+
+  if (!today) return false;
+
+  const began = weekbegan.toDateString().split(' ')[2];
+  const ends = weekends.toDateString().split(' ')[2];
+
+  return range(+began, +ends).some((day) => day === +today);
 };

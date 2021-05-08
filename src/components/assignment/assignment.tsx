@@ -13,7 +13,7 @@ import Loader from '../../commons/loader';
 import { swalconfirm } from '../../utils';
 
 function Assignment() {
-  const { dispatch, messages, members } = useContext(context);
+  const { dispatch, messages, members, spin } = useContext(context);
   const [showform, setShowform] = useState(false);
   const [message, setMessage] = useState<MessageI | null>();
 
@@ -65,7 +65,7 @@ function Assignment() {
 
   return (
     <Section>
-      <Loader spin={false} />
+      <Loader spin={spin} />
       <header className='header'>
         <nav className='nav'>
           <Link to='/home' className='btn btn-link'>
