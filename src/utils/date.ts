@@ -36,7 +36,7 @@ type WeekBegins = 'Mon' | 'Tue' | 'Wed' | 'Thur' | 'Fri' | 'Sat' | 'Sun';
  * @returns date of when week began based on input
  */
 export const getWeekBegin = (
-  weekBegins: WeekBegins,
+  weekBegins: WeekBegins = 'Sat',
   date = new Date()
 ): Date => {
   let [day, , d] = date.toDateString().split(' ');

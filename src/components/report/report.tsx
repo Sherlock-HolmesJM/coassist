@@ -9,6 +9,7 @@ import { Flex, Title } from './flex';
 import SumCard from '../../commons/summaryCard';
 import { checkDate, getWeekBegin, getWeekEnd } from '../../utils/date';
 import { formatCap } from '../../utils/time';
+import { getMessageTotals } from '../../utils';
 
 export interface ReportProps {
   report: boolean;
@@ -128,12 +129,9 @@ const Report: React.FC<ReportProps> = (props) => {
         </Title>
         <Flex>
           {messagesInProgress.map((m, i) => {
-            const totaltrans = m.workers
-              .filter((m) => m.type === 'T' && m.done)
-              .reduce((acc, m) => acc + m.splitLength || 0, 0);
-            const totaledited = m.workers
-              .filter((m) => m.type === 'TE' && m.done)
-              .reduce((acc, m) => acc + m.splitLength || 0, 0);
+            const { working_t, working_te, done_t, done_te } = getMessageTotals(
+              m
+            );
 
             return (
               <SumCard
@@ -141,8 +139,10 @@ const Report: React.FC<ReportProps> = (props) => {
                 title={m.name}
                 items={[
                   ['Length', formatCap(m.duration)],
-                  ['Transcribed', formatCap(totaltrans)],
-                  ['Edited', formatCap(totaledited)],
+                  ['Transcribing', formatCap(working_t)],
+                  ['Editing', formatCap(working_te)],
+                  ['Transcribed', formatCap(done_t)],
+                  ['Edited', formatCap(done_te)],
                 ]}
               />
             );

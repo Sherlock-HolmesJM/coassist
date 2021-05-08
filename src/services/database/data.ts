@@ -2,7 +2,7 @@ import firebase from 'firebase/app';
 import 'firebase/database';
 import { getMessageRank } from '../../components/message/messageModel';
 import { State } from '../../context/context';
-import { swale, swals } from '../../utils';
+import { getWorkdone, swale, swals } from '../../utils';
 import { transform } from '../transformer';
 import { path } from './index';
 import { updateMember } from './member';
@@ -32,10 +32,11 @@ const giveMissingFields = (state: State) => {
         w.capacity = 1800; // that is, 1800 seconds  30 minutes.
         updateWorker(w);
       }
-      if (!w.workdone) {
-        w.workdone = 0;
-        updateWorker(w);
-      }
+
+      //
+      w.workdone = getWorkdone(w, state.messages);
+      updateWorker(w);
+
       if (w.splitLength / 60 <= 10) {
         console.log(w.splitLength, 'below', w.splitLength * 60);
         w.dateReceived = w.dateReceived || new Date().toJSON();
