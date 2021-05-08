@@ -25,7 +25,7 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
   useEffect(() => {
     if (worker) {
       setSplit(worker.part.replace(filename, ''));
-      setSplitLength(worker.splitLength ?? 0);
+      setSplitLength(worker.splitLength / 60 ?? 0);
     }
     // eslint-disable-next-line
   }, [worker]);
@@ -41,14 +41,14 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
     const part = getPart(split);
 
     if (!mm.checkWorker(message.workers, part, worker)) return;
-    const workdone = getWorkdone(worker.uid, messages);
 
     const newWorker: Worker = {
       ...worker,
       part,
       splitLength: splitLength * 60, // must be in seconds.
-      workdone,
     };
+
+    newWorker.workdone = getWorkdone(newWorker, messages);
 
     const newMessage = { ...message };
     const index = message.workers.indexOf(worker);
@@ -57,7 +57,7 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
     const newMessages = mm.getNewMessages(newMessage, messages);
     dispatch(setMessages(newMessages));
 
-    db.setWorker(newWorker);
+    db.updateWorker(newWorker);
     setWorker(null);
   };
 

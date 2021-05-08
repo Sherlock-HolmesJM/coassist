@@ -21,6 +21,7 @@ export const updateWorker = (worker: Worker) => {
     .database()
     .ref(path() + '/messages/' + worker.msguid + '/workers/' + worker.uid)
     .update(worker)
+    .then(() => swals('', 'Updated'))
     .catch((e) => swale(e.message));
 };
 
