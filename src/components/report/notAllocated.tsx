@@ -90,10 +90,10 @@ const WrapperFlexItem = styled(FlexItem)`
     content: counter(alone) ') ';
   }
 
-  @media print {
+  /* @media print {
     background: white;
     color: black;
-  }
+  } */
 `;
 
 export default NotAlloc;

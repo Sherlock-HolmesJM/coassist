@@ -1,3 +1,4 @@
+import { updateWorker } from '../services/database';
 import { MemberType, MessageI, Worker } from '../types';
 import { checkDate, getWeekBegin, getWeekEnd } from './date';
 
@@ -51,7 +52,10 @@ export const setWorkdone = (worker: Worker, messages: MessageI[]) => {
   messages.forEach((message) => {
     message.workers
       .filter((w) => w.memuid === worker.memuid)
-      .forEach((w) => (w.workdone = seconds));
+      .forEach((w) => {
+        w.workdone = seconds;
+        updateWorker(w);
+      });
   });
 
   return seconds;

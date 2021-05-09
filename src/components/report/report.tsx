@@ -184,6 +184,9 @@ const Div = styled.div`
   }
 
   @media print {
+    background-color: #f4a261;
+    width: 1500px;
+
     .no-print {
       display: none;
     }
