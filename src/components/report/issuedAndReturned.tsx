@@ -154,12 +154,12 @@ const FlexWrapper = styled(Flex)`
     border-top: 1px solid gray;
   }
 
-  /* @media print {
+  @media print {
     .worker-card {
       background-color: white;
       color: black;
     }
-  } */
+  }
 `;
 
 export default IssuedReturned;

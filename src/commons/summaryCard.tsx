@@ -54,10 +54,10 @@ const FlexItemWrap = styled(FlexItem)`
     border-left: 1px solid gray;
   }
 
-  /* @media print {
+  @media print {
     background-color: white;
     color: black;
-  } */
+  }
 `;
 
 export default SumCard;
