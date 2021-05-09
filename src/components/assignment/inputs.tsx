@@ -2,9 +2,9 @@ import React, { FC } from 'react';
 import { Howl } from 'howler';
 import { swale, swali, swals } from '../../utils';
 
-export const DateInput: React.FC = (props) => {
-  return <div></div>;
-};
+// export const DateInput: React.FC = (props) => {
+//   return <div></div>;
+// };
 
 interface ActionButtonHolderProps {
   value: string;
@@ -40,7 +40,7 @@ export const LabelTextField: React.FC<LabelTextFieldProps> = (props) => {
           {label}
         </label>
         <input
-          id='splitlength'
+          // id='splitlength'
           type={type ?? 'text'}
           className='holder-splitlength'
           placeholder={placeholder ?? ''}

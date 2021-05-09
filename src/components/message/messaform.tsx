@@ -7,7 +7,7 @@ import { db } from '../../services';
 import { ActionButtonHolder } from '../assignment/inputs';
 import { Select, LabelTextField } from '../assignment/inputs';
 import FormHolder from '../../commons/formHolder';
-import { capitalize, swalconfirm } from '../../utils';
+import { capitalize, setWorkdone, swalconfirm } from '../../utils';
 
 export interface AddProps {
   filename: string;
@@ -82,6 +82,9 @@ export const AddForm: React.FC<AddProps> = (props: AddProps) => {
     mm.updateStatus(newMessage);
     const newMessages = mm.getNewMessages(newMessage, messages);
     const newMembers = mm.getNewMembers(newMember, members);
+
+    setWorkdone(worker, newMessages);
+
     dispatch(setMM(newMessages, newMembers));
 
     db.updateMember(newMember);

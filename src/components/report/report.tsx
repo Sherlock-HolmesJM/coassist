@@ -45,8 +45,8 @@ const Report: React.FC<ReportProps> = (props) => {
     const alistT = m.workers.filter((m) => m.type === 'T' && m.done);
     const tlist = m.workers.filter((m) => m.type === 'TE' && !m.done);
     const tlistE = m.workers.filter((m) => m.type === 'TE' && m.done);
-    const isdw = m.workers.filter((w) =>
-      checkDate(new Date(w.dateReceived), weekbegan, weekends)
+    const isdw = m.workers.filter(
+      (w) => !w.done && checkDate(new Date(w.dateReceived), weekbegan, weekends)
     );
     const islw = m.workers.filter(
       (w) =>

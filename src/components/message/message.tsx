@@ -10,7 +10,7 @@ import * as mm from './messageModel';
 import { UpdateForm } from './messuform';
 import { AddForm } from './messaform';
 import TimeStamps from '../../commons/timestamps';
-import { capitalize, swalconfirm } from '../../utils';
+import { capitalize, setWorkdone, swalconfirm } from '../../utils';
 
 function Message() {
   const { members, dispatch, messages } = useContext(context);
@@ -33,6 +33,7 @@ function Message() {
     if (!obj) return;
 
     const wkr: Worker = { ...worker, done: !worker.done };
+
     if (!wkr.dateReturned) wkr.dateReturned = new Date().toJSON();
 
     const newMessage: MessageI = { ...message };
@@ -41,6 +42,8 @@ function Message() {
     mm.updateStatus(newMessage);
 
     const newMessages = mm.getNewMessages(newMessage, messages);
+    setWorkdone(wkr, newMessages);
+
     const mem = {
       ...obj,
       free: mm.getMemberStatus(worker.memuid, newMessages),
@@ -67,6 +70,8 @@ function Message() {
     newMessage.workers = message.workers.filter((w) => w.uid !== worker.uid);
     mm.updateStatus(newMessage);
     const megs = mm.getNewMessages(newMessage, messages);
+
+    setWorkdone(worker, megs);
 
     const member = { ...mem, free: mm.getMemberStatus(worker.memuid, megs) };
     const membs = mm.getNewMembers(member, members);

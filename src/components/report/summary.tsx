@@ -32,7 +32,7 @@ const Summary: React.FC<SummaryProps> = (props) => {
   );
 
   const teamCapacity = getTeamCapacity(members);
-  const idw = getWorkersCapacity(issuedThisWeek); // idw: issued this week
+  const idw = getWorkersCapacity([...issuedThisWeek, ...returnedThisWeek]); // idw: issued this week
   const rdw = getWorkersCapacity(returnedThisWeek); // rdw: returned this week
   const ipw = getWorkersCapacity([...issuedPreviousWeeks, ...ipw_rdw]); // ipw: issued previous week(s)
 
@@ -53,7 +53,6 @@ const Summary: React.FC<SummaryProps> = (props) => {
             ['Issued', `${idw.tc} + ${ipw.tc}`],
             ['Returned', `${rdw.tc}`],
           ]}
-          delay={300}
           animation='flip-left'
         />
         <SumCard
@@ -62,7 +61,6 @@ const Summary: React.FC<SummaryProps> = (props) => {
             ['Issued', `${idw.tec} + ${ipw.tec}`],
             ['Returned', `${rdw.tec}`],
           ]}
-          delay={600}
           animation='flip-right'
         />
       </Flex>

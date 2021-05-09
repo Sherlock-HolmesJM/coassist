@@ -33,21 +33,25 @@ const weekends = getWeekEnd(weekbegan);
  * @param messages
  * @returns amount of work done this week in seconds.
  */
-export const getWorkdone = (worker: Worker, messages: MessageI[]) => {
+export const setWorkdone = (worker: Worker, messages: MessageI[]) => {
   let seconds = 0;
 
-  messages.forEach((m) => {
-    seconds =
-      seconds +
-      m.workers
-        .filter(
-          (w) =>
-            w.done &&
-            w.uid === worker.uid &&
-            checkDate(new Date(w.dateReceived), weekbegan, weekends) &&
-            checkDate(new Date(w.dateReturned), weekbegan, weekends)
-        )
-        .reduce((acc, w) => acc + w.splitLength, 0);
+  messages.forEach((message) => {
+    const list = message.workers.filter(
+      (w) =>
+        w.done &&
+        w.memuid === worker.memuid &&
+        checkDate(new Date(w.dateReceived), weekbegan, weekends) &&
+        checkDate(new Date(w.dateReturned), weekbegan, weekends)
+    );
+
+    seconds = seconds + list.reduce((acc, w) => acc + w.splitLength, 0);
+  });
+
+  messages.forEach((message) => {
+    message.workers
+      .filter((w) => w.memuid === worker.memuid)
+      .forEach((w) => (w.workdone = seconds));
   });
 
   return seconds;

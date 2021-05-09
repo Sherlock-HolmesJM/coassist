@@ -4,7 +4,7 @@ import * as mm from './messageModel';
 import { context } from '../../context/context';
 import { setMessages } from '../../context/actions';
 import { db } from '../../services';
-import { getWorkdone, swalconfirm } from '../../utils';
+import { swalconfirm } from '../../utils';
 import FormHolder from '../../commons/formHolder';
 import { LabelTextField, ActionButtonHolder } from '../assignment/inputs';
 
@@ -47,8 +47,6 @@ export const UpdateForm: React.FC<UpdateProps> = (props) => {
       part,
       splitLength,
     };
-
-    newWorker.workdone = getWorkdone(newWorker, messages);
 
     const newMessage = { ...message };
     const index = message.workers.indexOf(worker);
