@@ -29,7 +29,8 @@ const SumCard: React.FC<SumCardProps> = (props) => {
 
 const FlexItemWrap = styled(FlexItem)`
   flex-grow: 0;
-  background-color: #bdb6b6;
+  background-color: #264653;
+  color: #fff;
   border-bottom: 3px solid black;
 
   .card-title {
@@ -51,6 +52,11 @@ const FlexItemWrap = styled(FlexItem)`
     padding-left: 5px;
     text-align: left;
     border-left: 1px solid gray;
+  }
+
+  @media print {
+    background-color: white;
+    color: black;
   }
 `;
 

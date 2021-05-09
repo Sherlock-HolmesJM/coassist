@@ -1,4 +1,4 @@
-import { createTorTE, MessageI, Worker } from '../../types';
+import { createT_TE, MessageI, Worker } from '../../types';
 import { swale, swali } from '../../utils';
 import { db } from '../../services';
 import { Howl } from 'howler';
@@ -69,8 +69,8 @@ export const addMissingProps = (messages: MessageI[]) => {
   messages.forEach((m) => {
     m.duration = m.duration || 0;
     m.originalLength = m.originalLength || '00:00:00';
-    m.transcriber = m.transcriber || createTorTE('T');
-    m.transcriptEditor = m.transcriptEditor || createTorTE('TE');
+    m.transcriber = m.transcriber || createT_TE('T');
+    m.transcriptEditor = m.transcriptEditor || createT_TE('TE');
     m.transcribed = m.transcribed || 'no';
     m.edited = m.edited || 'no';
     m.category = 'sermon';

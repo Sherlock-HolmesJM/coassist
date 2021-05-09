@@ -15,24 +15,31 @@ export interface IssuedReturnedProps {
 const IssuedReturned: React.FC<IssuedReturnedProps> = (props) => {
   const { issued, returned, outstanding } = props;
 
-  const issuedTs = issued.filter((w) => w.type === 'T');
-  const issuedTEs = issued.filter((w) => w.type === 'TE');
-  const returnedTs = returned.filter((w) => w.type === 'T');
-  const returnedTEs = returned.filter((w) => w.type === 'TE');
-  const outstandingTs = outstanding.filter((w) => w.type === 'T');
-  const outstandingTEs = outstanding.filter((w) => w.type === 'TE');
+  const list = [
+    { title: 'Issued [Ts]', workers: issued.filter((w) => w.type === 'T') },
+    { title: 'Issued [TEs]', workers: issued.filter((w) => w.type === 'TE') },
+    { title: 'Returned [Ts]', workers: returned.filter((w) => w.type === 'T') },
+    {
+      title: 'Returned [TEs]',
+      workers: returned.filter((w) => w.type === 'TE'),
+    },
+    {
+      title: 'Outstanding [Ts]',
+      workers: outstanding.filter((w) => w.type === 'T'),
+    },
+    {
+      title: 'Outstanding [TEs]',
+      workers: outstanding.filter((w) => w.type === 'TE'),
+    },
+  ];
 
   return (
     <div>
       <Title>Issued and Returned</Title>
-
       <Flex>
-        <Item title='Issued [Ts]' workers={issuedTs} />
-        <Item title='Issued [TEs]' workers={issuedTEs} />
-        <Item title='Returned [Ts]' workers={returnedTs} />
-        <Item title='Returned [TEs]' workers={returnedTEs} />
-        <Item title='Outstanding [Ts]' workers={outstandingTs} />
-        <Item title='Outstanding [TEs]' workers={outstandingTEs} />
+        {list.map(({ title, workers }, i) => (
+          <Item key={i} title={title} workers={workers} />
+        ))}
       </Flex>
     </div>
   );
@@ -54,6 +61,7 @@ const Item = (props: ItemProps) => {
     .sort((a, b) => a.type.localeCompare(b.type));
 
   return (
+    // <FlexItemWrapper>
     <FlexItemWrapper data-aos='fade'>
       <WorkerTitle>
         <div>{title}</div> <div>[{length}]</div>
@@ -61,6 +69,7 @@ const Item = (props: ItemProps) => {
       <FlexWrapper>
         {sorted.map((w, i) => {
           return (
+            // <FlexItem className='worker-card' key={i}>
             <FlexItem className='worker-card' key={i} data-aos='slide-up'>
               {w.workdone >= w.capacity && (
                 <div className='worker-card-congrats'>
@@ -121,6 +130,8 @@ const FlexWrapper = styled(Flex)`
 
   .worker-card {
     position: relative;
+    background-color: #264653;
+    color: white;
   }
   .worker-card-congrats {
     position: absolute;
@@ -132,20 +143,22 @@ const FlexWrapper = styled(Flex)`
     font-weight: 700;
     border-bottom: 1px solid gray;
   }
-  .worker-card-length {
-    font-size: 13px;
-    font-weight: 640;
-  }
-  .worker-card-date {
-    font-size: 13px;
-    font-weight: 645;
+
+  .worker-card-length,
+  .worker-card-date,
+  .worker-card-capacity,
+  .worker-card-font-style {
+    font-size: 14px;
   }
   .worker-card-capacity {
     border-top: 1px solid gray;
   }
-  .worker-card-font-style {
-    font-size: 13px;
-    font-weight: 640;
+
+  @media print {
+    .worker-card {
+      background-color: white;
+      color: black;
+    }
   }
 `;
 

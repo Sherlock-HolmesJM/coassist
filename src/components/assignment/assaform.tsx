@@ -2,7 +2,7 @@ import React, { useContext, useState } from 'react';
 import { secondsToHMS, swale, swals } from '../../utils';
 import { context } from '../../context/context';
 import { setMessages } from '../../context/actions';
-import { MessageI, createTorTE } from '../../types';
+import { MessageI, createT_TE } from '../../types';
 import { db } from '../../services';
 import { SizeInput, NameInput, FileInput, ActionButtonHolder } from './inputs';
 import TimeInput from './timeInput';
@@ -62,8 +62,8 @@ const FormAdd: React.FC<FormProps> = (props) => {
       workers: [],
       category: 'sermon',
       duration,
-      transcriber: createTorTE('T'),
-      transcriptEditor: createTorTE('TE'),
+      transcriber: createT_TE('T'),
+      transcriptEditor: createT_TE('TE'),
       size,
       splits: 1,
       transcribed: 'no',

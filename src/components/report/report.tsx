@@ -89,7 +89,7 @@ const Report: React.FC<ReportProps> = (props) => {
 
   return (
     <Div id='report' className={`animate__animated ${animIn}`} ref={ref}>
-      <div className='no-print btn-print-div'>
+      <div className='btn-group no-print btn-print-div'>
         <button
           className='btn btn-primary btn-print'
           onClick={() => window.print()}
@@ -132,26 +132,27 @@ const Report: React.FC<ReportProps> = (props) => {
         </Title>
         <Flex>
           {messagesInProgress.map((m, i) => {
-            const { working_t, working_te, done_t, done_te } = getMessageTotals(
-              m
-            );
+            const totals = getMessageTotals(m);
 
             const anims = ['zoom-in', 'zoom-out', 'flip-right', 'flip-down'];
             const rand = () => Math.floor(Math.random() * anims.length - 1);
+
+            const list: [string, string][] = ([
+              ['Length', m.duration],
+              ['Transcribed', totals.done_t],
+              ['Edited', totals.done_te],
+              ['Transcribing', totals.working_t],
+              ['Editing', totals.working_te],
+            ] as [string, number][])
+              .filter((item) => item[1] > 0)
+              .map((item) => [item[0], formatCap(item[1])]);
 
             return (
               <SumCard
                 key={i}
                 title={m.name}
-                delay={200 * i}
                 animation={anims[rand()]}
-                items={[
-                  ['Length', formatCap(m.duration)],
-                  ['Transcribing', formatCap(working_t)],
-                  ['Editing', formatCap(working_te)],
-                  ['Transcribed', formatCap(done_t)],
-                  ['Edited', formatCap(done_te)],
-                ]}
+                items={list}
               />
             );
           })}
@@ -162,11 +163,15 @@ const Report: React.FC<ReportProps> = (props) => {
 };
 
 const Div = styled.div`
+  overflow-x: hidden;
   margin: 0;
+  border: 1px solid #e76f51;
+  background-color: #f4a261;
 
   .btn-print-div {
     display: flex;
     justify-content: flex-end;
+    padding: 10px;
   }
   .title-container {
     text-align: center;

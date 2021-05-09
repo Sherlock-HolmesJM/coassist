@@ -28,7 +28,7 @@ export interface T_And_TE {
   type: 'T' | 'TE';
 }
 
-export const createTorTE = (type: 'T' | 'TE'): T_And_TE => ({
+export const createT_TE = (type: 'T' | 'TE'): T_And_TE => ({
   name: '',
   uid: 1,
   dateIssued: '',

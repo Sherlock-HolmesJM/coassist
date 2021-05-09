@@ -1,5 +1,5 @@
 import {
-  createTorTE,
+  createT_TE,
   MemberI,
   MemberType,
   MessageI,
@@ -39,8 +39,8 @@ const getDateReturned = (object: T_And_TE) => {
 };
 
 const updateTorTE = (message: MessageI, ts: Worker[], tes: Worker[]) => {
-  if (!message.transcriber) message.transcriber = createTorTE('T');
-  if (!message.transcriptEditor) message.transcriptEditor = createTorTE('TE');
+  if (!message.transcriber) message.transcriber = createT_TE('T');
+  if (!message.transcriptEditor) message.transcriptEditor = createT_TE('TE');
 
   message.transcriptEditor.name = getT_TE_Name(tes, 'TE');
   message.transcriber.name = getT_TE_Name(ts, 'T');

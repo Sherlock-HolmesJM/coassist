@@ -10,6 +10,7 @@ import { MemberI, MessageI, Worker } from '../../types';
 
 export const uid = () => firebase.auth().currentUser?.uid;
 export const path = () => '/coassist/' + uid() + '/data/';
+export const storypath = () => '/coassist/' + uid() + '/stories/';
 
 export const chainupdateMMW = (
   worker: Worker,

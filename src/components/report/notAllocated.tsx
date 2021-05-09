@@ -29,22 +29,22 @@ const NotAlloc: React.FC<NotAllocProps> = (props) => {
     },
   ];
 
-  const anims = ['fade-left', 'fade-up', 'fade-right'];
+  const anims = ['fade-left', 'fade-up', 'zoom-in'];
 
   return (
-    <Div>
+    <div>
       <Title>Not Allocated</Title>
       <Flex>
         {list.map((obj, ind) => (
           <Item
+            key={ind}
             title={obj.title}
             items={obj.items}
             animation={anims[ind]}
-            delay={300 * ind}
           />
         ))}
       </Flex>
-    </Div>
+    </div>
   );
 };
 
@@ -52,34 +52,34 @@ interface ItemI {
   items: string[];
   title: string;
   animation?: string;
-  delay?: number;
 }
 
 const Item = (props: ItemI) => {
-  const { items, title, delay, animation } = props;
+  const { items, title, animation } = props;
   const { length } = items;
 
+  if (length === 0) return null;
+
   return (
-    <FlexItem data-aos={animation} data-aos-delay={delay}>
-      {length > 0 && (
-        <h5>
-          {title} - {length}
-        </h5>
-      )}
-      {length > 0 && (
-        <div className='count-container'>
-          {items.map((text, i) => (
-            <div className='count-item' key={i}>
-              {text}
-            </div>
-          ))}
-        </div>
-      )}
-    </FlexItem>
+    <WrapperFlexItem data-aos={animation ?? ''}>
+      <h5>
+        {title} - {length}
+      </h5>
+      <div className='count-container'>
+        {items.map((text, i) => (
+          <div className='count-item' key={i}>
+            {text}
+          </div>
+        ))}
+      </div>
+    </WrapperFlexItem>
   );
 };
 
-const Div = styled.div`
+const WrapperFlexItem = styled(FlexItem)`
+  background-color: #264653;
+  color: white;
+
   .count-container {
     counter-reset: alone;
   }
@@ -88,6 +88,11 @@ const Div = styled.div`
   }
   .count-item::before {
     content: counter(alone) ') ';
+  }
+
+  @media print {
+    background: white;
+    color: black;
   }
 `;
 
