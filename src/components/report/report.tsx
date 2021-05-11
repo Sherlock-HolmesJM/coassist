@@ -10,7 +10,7 @@ import SumCard from '../../commons/summaryCard';
 import { checkDate, getWeekBegin, getWeekEnd } from '../../utils/date';
 import { formatCap } from '../../utils/time';
 import { getMessageTotals } from '../../utils';
-// import AOS from 'aos';
+import html2pdf from 'html2pdf.js';
 
 export interface ReportProps {
   report: boolean;
@@ -31,7 +31,9 @@ const Report: React.FC<ReportProps> = (props) => {
   // AOS.init();
 
   const messagesNotAllocated = messages.filter((m) => m.status === 'undone');
-  const messagesInProgress = messages.filter((m) => m.status === 'in-progress');
+  const messagesInProgress = messages.filter(
+    (m) => m.status === 'in-progress' || m.status === 'transcribed'
+  );
 
   let audtrans: Worker[] = []; // audios transcribed
   let audinprog: Worker[] = []; // audios in progress
@@ -76,6 +78,23 @@ const Report: React.FC<ReportProps> = (props) => {
     (m) => !transedited.find((t) => t.part === m.part)
   );
 
+  const save2pdf = () => {
+    const opt = {
+      margin: 0.1,
+      filename: 'fullReport.pdf',
+    };
+    html2pdf().from(ref.current).set(opt).save();
+  };
+
+  const summaryReport = () => {
+    const el = document.querySelector('.message-summary');
+    const opt = {
+      margin: 0.1,
+      filename: 'summary.pdf',
+    };
+    html2pdf().from(el).set(opt).save();
+  };
+
   // ================== Animation =======================
 
   const animIn = 'animate__zoomInDown';
@@ -88,91 +107,110 @@ const Report: React.FC<ReportProps> = (props) => {
   };
 
   return (
-    <Div id='report' className={`animate__animated ${animIn}`} ref={ref}>
-      <div className='btn-group no-print btn-print-div'>
-        <button
-          className='btn btn-primary btn-print'
-          onClick={() => window.print()}
-        >
-          Get PDF
+    <Wrapper>
+      <ButtonGroup className='btn-group' id='no-print'>
+        <button className='btn btn-primary btn-print' onClick={save2pdf}>
+          Full Report
+        </button>
+        <button className='btn btn-primary btn-print' onClick={summaryReport}>
+          Summary Report
         </button>
         <button className='btn btn-primary btn-print' onClick={closeReport}>
           Close
         </button>
-      </div>
-      <div className='title-container'>
-        <h4 className='uppercase title'>
-          {groupName} weekly report - {collatorName}
-        </h4>
-        <h5>Week Began: {weekbegan.toDateString()}</h5>
-        <h5>Week Ends: {new Date(weekends).toDateString()}</h5>
-      </div>
-      <Summary
-        members={members}
-        issuedPreviousWeeks={issuedPreviousWeeks}
-        issuedThisWeek={issuedDisWeek}
-        returnedThisWeek={returnedDisWeek}
-      />
-      <IssuedAndReturned
-        issued={issuedDisWeek}
-        returned={returnedDisWeek}
-        outstanding={issuedPreviousWeeks}
-      />
-      <NotAllocated
-        audios={messagesNotAllocated}
-        transcripts={transcriptsNotAllocated}
-        freemembers={members
-          .filter((m) => m.active && m.free)
-          .sort((a, b) => a.type.length - b.type.length)}
-      />
-      <div>
-        <Title>
-          {messagesInProgress.length > 1 &&
-            'Messages In Progress: Completion Rate'}
-        </Title>
-        <Flex>
-          {messagesInProgress.map((m, i) => {
-            const totals = getMessageTotals(m);
+      </ButtonGroup>
+      <Div id='report' className={`animate__animated ${animIn}`} ref={ref}>
+        <div id='full-report'>
+          <div className='title-container'>
+            <h4 className='uppercase title'>
+              {groupName} weekly report - {collatorName}
+            </h4>
+            <h5>Week Began: {weekbegan.toDateString()}</h5>
+            <h5>Week Ends: {new Date(weekends).toDateString()}</h5>
+          </div>
+          <Summary
+            members={members}
+            issuedPreviousWeeks={issuedPreviousWeeks}
+            issuedThisWeek={issuedDisWeek}
+            returnedThisWeek={returnedDisWeek}
+          />
+          <IssuedAndReturned
+            issued={issuedDisWeek}
+            returned={returnedDisWeek}
+            outstanding={issuedPreviousWeeks}
+          />
+          <NotAllocated
+            audios={messagesNotAllocated}
+            transcripts={transcriptsNotAllocated}
+            freemembers={members
+              .filter((m) => m.active && m.free)
+              .sort((a, b) => a.type.length - b.type.length)}
+          />
+          <MessageSummary className='message-summary'>
+            <Title>
+              {messagesInProgress.length > 0 &&
+                'Messages In Progress: Completion Rate'}
+            </Title>
+            <Flex>
+              {messagesInProgress.map((m, i) => {
+                const totals = getMessageTotals(m);
 
-            const anims = ['zoom-in', 'zoom-out', 'flip-right', 'flip-down'];
-            const rand = () => Math.floor(Math.random() * anims.length - 1);
+                const anims = [
+                  'zoom-in',
+                  'zoom-out',
+                  'flip-right',
+                  'flip-down',
+                ];
+                const rand = () => Math.floor(Math.random() * anims.length - 1);
 
-            const list: [string, string][] = ([
-              ['Length', m.duration],
-              ['Transcribed', totals.done_t],
-              ['Edited', totals.done_te],
-              ['Transcribing', totals.working_t],
-              ['Editing', totals.working_te],
-            ] as [string, number][])
-              .filter((item) => item[1] > 0)
-              .map((item) => [item[0], formatCap(item[1])]);
+                const list: [string, string][] = ([
+                  ['Length', m.duration],
+                  ['Transcribed', totals.done_t],
+                  ['Edited', totals.done_te],
+                  ['Transcribing', totals.working_t],
+                  ['Editing', totals.working_te],
+                ] as [string, number][])
+                  .filter((item) => item[1] > 0)
+                  .map((item) => [item[0], formatCap(item[1])]);
 
-            return (
-              <SumCard
-                key={i}
-                title={m.name}
-                animation={anims[rand()]}
-                items={list}
-              />
-            );
-          })}
-        </Flex>
-      </div>
-    </Div>
+                return (
+                  <SumCard
+                    key={i}
+                    title={m.name}
+                    animation={anims[rand()]}
+                    items={list}
+                  />
+                );
+              })}
+            </Flex>
+          </MessageSummary>
+        </div>
+      </Div>
+    </Wrapper>
   );
 };
+
+const Wrapper = styled.div`
+  background-color: #f4a261;
+`;
+
+const ButtonGroup = styled.div`
+  display: flex;
+  justify-content: flex-end;
+  padding: 10px;
+`;
+
+const MessageSummary = styled.div`
+  background-color: #f4a261;
+  padding: 10px 0;
+`;
 
 const Div = styled.div`
   overflow-x: hidden;
   margin: 0;
-  border: 1px solid #e76f51;
+  padding-top: 10px;
   background-color: #f4a261;
 
-  .btn-print-div {
-    display: flex;
-    justify-content: flex-end;
-    padding: 10px;
-  }
   .title-container {
     text-align: center;
   }
@@ -181,12 +219,6 @@ const Div = styled.div`
   }
   .uppercase {
     text-transform: uppercase;
-  }
-
-  @media print {
-    .no-print {
-      display: none;
-    }
   }
 `;
 
