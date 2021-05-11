@@ -39,6 +39,12 @@ const FormAdd: React.FC<FormProps> = (props) => {
     setData({ ...data, name, size, time, duration });
   };
 
+  const handleTimeUpdate = (type: 'h' | 'm' | 's', value: number) => {
+    const time = { ...data.time, [type]: value };
+    const duration = hmsToSeconds(time.h, time.m, time.s);
+    setData({ ...data, time, duration });
+  };
+
   const getFilename = () => name.toLowerCase().trim() ?? '';
 
   const handleSubmit = (e: React.FormEvent) => {
@@ -62,7 +68,7 @@ const FormAdd: React.FC<FormProps> = (props) => {
       status: 'undone',
       workers: [],
       category: 'sermon',
-      duration: duration || hmsToSeconds(h, m, s),
+      duration: duration,
       transcriber: createT_TE('T'),
       transcriptEditor: createT_TE('TE'),
       size,
@@ -98,9 +104,7 @@ const FormAdd: React.FC<FormProps> = (props) => {
         />
         <TimeInput
           time={time}
-          setTime={(type, value) =>
-            setData({ ...data, time: { ...data.time, [type]: value } })
-          }
+          setTime={(type, value) => handleTimeUpdate(type, value)}
         />
         <SizeInput
           value={size}

@@ -64,6 +64,12 @@ const FormUpdate: React.FC<FormProps> = (props) => {
     setData({ ...data, name, size, time, duration });
   };
 
+  const handleTimeUpdate = (type: 'h' | 'm' | 's', value: number) => {
+    const time = { ...data.time, [type]: value };
+    const duration = hmsToSeconds(time.h, time.m, time.s);
+    setData({ ...data, time, duration });
+  };
+
   const handleUpdate = async (e: any, message: MessageI) => {
     e.preventDefault();
 
@@ -79,7 +85,7 @@ const FormUpdate: React.FC<FormProps> = (props) => {
     const newMessage: MessageI = {
       ...message,
       name,
-      duration: duration || hmsToSeconds(h, m, s),
+      duration,
       originalLength: `${h}:${m}:${s}`,
       size,
       sent2CGT: determineSent(message, sent as any),
@@ -114,9 +120,7 @@ const FormUpdate: React.FC<FormProps> = (props) => {
         />
         <TimeInput
           time={time}
-          setTime={(type, value) =>
-            setData({ ...data, time: { ...data.time, [type]: value } })
-          }
+          setTime={(type, value) => handleTimeUpdate(type, value)}
         />
         <SizeInput
           value={size}
