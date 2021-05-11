@@ -111,6 +111,8 @@ export const updateStatus = (message: MessageI) => {
   message.rank = getMessageRank(message.status);
 
   updateTorTE(message, ts, tes);
+
+  console.log(message);
 };
 
 export const getMessageRank = (status: MessageStatus): MessageRank => {

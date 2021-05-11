@@ -4,7 +4,7 @@ import { setMessages } from '../../context/actions';
 import { MessageI } from '../../types';
 import { db } from '../../services';
 import * as mm from '../message/messageModel';
-import { secondsToHMS, swalconfirm, swals } from '../../utils';
+import { hmsToSeconds, secondsToHMS, swalconfirm, swals } from '../../utils';
 import { determineSent, updateWorkers } from './helper';
 import {
   SizeInput,
@@ -79,7 +79,7 @@ const FormUpdate: React.FC<FormProps> = (props) => {
     const newMessage: MessageI = {
       ...message,
       name,
-      duration,
+      duration: duration || hmsToSeconds(h, m, s),
       originalLength: `${h}:${m}:${s}`,
       size,
       sent2CGT: determineSent(message, sent as any),

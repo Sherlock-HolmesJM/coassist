@@ -1,5 +1,5 @@
 import React, { useContext, useState } from 'react';
-import { secondsToHMS, swale, swals } from '../../utils';
+import { hmsToSeconds, secondsToHMS, swale, swals } from '../../utils';
 import { context } from '../../context/context';
 import { setMessages } from '../../context/actions';
 import { MessageI, createT_TE } from '../../types';
@@ -47,11 +47,12 @@ const FormAdd: React.FC<FormProps> = (props) => {
     const filename = getFilename();
     const index = messages.findIndex((m) => m.name === filename);
 
-    if (index !== -1)
+    if (index !== -1) {
       return swale(
         `${filename.toUpperCase()} has already been added.`,
         'Duplicate message'
       );
+    }
 
     const { h, m, s } = time;
 
@@ -61,7 +62,7 @@ const FormAdd: React.FC<FormProps> = (props) => {
       status: 'undone',
       workers: [],
       category: 'sermon',
-      duration,
+      duration: duration || hmsToSeconds(h, m, s),
       transcriber: createT_TE('T'),
       transcriptEditor: createT_TE('TE'),
       size,
