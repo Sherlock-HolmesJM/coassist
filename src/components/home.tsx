@@ -60,7 +60,7 @@ const Home: React.FC<Props> = () => {
 
   return (
     <Section className={pageAnim}>
-      <Loader spin={selfspin} />
+      <Loader spin={selfspin || spin} />
       <header className='header no-print'>
         <div className='header-content'>
           <h1 className='header-title'>Collator's Assistant</h1>
@@ -183,11 +183,11 @@ const Section = styled.section`
     text-transform: capitalize;
   }
 
-  @media print {
+  /* @media print {
     .no-print {
       display: none;
     }
-  }
+  } */
 `;
 
 export default Home;

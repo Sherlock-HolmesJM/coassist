@@ -28,11 +28,12 @@ const Report: React.FC<ReportProps> = (props) => {
 
   if (!report) return null;
 
-  // AOS.init();
-
   const messagesNotAllocated = messages.filter((m) => m.status === 'undone');
   const messagesInProgress = messages.filter(
-    (m) => m.status === 'in-progress' || m.status === 'transcribed'
+    (m) =>
+      m.status === 'in-progress' ||
+      m.status === 'transcribed' ||
+      m.status === 'incomplete'
   );
 
   let audtrans: Worker[] = []; // audios transcribed
@@ -72,10 +73,10 @@ const Report: React.FC<ReportProps> = (props) => {
   });
 
   let transcriptsNotAllocated = audtrans.filter(
-    (m) => !transinprog.find((t) => t.part === m.part)
+    (m) => !transinprog.find((worker) => worker.part === m.part)
   );
   transcriptsNotAllocated = transcriptsNotAllocated.filter(
-    (m) => !transedited.find((t) => t.part === m.part)
+    (m) => !transedited.find((worker) => worker.part === m.part)
   );
 
   const save2pdf = () => {
@@ -107,7 +108,7 @@ const Report: React.FC<ReportProps> = (props) => {
   };
 
   return (
-    <Wrapper>
+    <Wrapper className={`animate__animated ${animIn}`} ref={ref}>
       <ButtonGroup className='btn-group' id='no-print'>
         <button className='btn btn-primary btn-print' onClick={save2pdf}>
           Full Report

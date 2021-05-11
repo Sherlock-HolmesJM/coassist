@@ -70,10 +70,10 @@ const Item = (props: ItemProps) => {
         {sorted.map((w, i) => {
           return (
             // <FlexItem className='worker-card' key={i}>
-            <FlexItem className='worker-card' key={i} data-aos='slide-up'>
+            <FlexItem className='worker-card' key={i} data-aos='fade-up'>
               {w.workdone >= w.capacity && (
                 <div className='worker-card-congrats'>
-                  <Lottie animationData={congrats} />
+                  <Lottie animationData={congrats} loop={false} />
                 </div>
               )}
               <div className='worker-card-name'>
