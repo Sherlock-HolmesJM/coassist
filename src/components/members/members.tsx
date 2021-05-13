@@ -15,14 +15,8 @@ import Loader from '../../commons/loader';
 export interface MembersProps {}
 
 const MembersComp: React.FC<MembersProps> = () => {
-  const {
-    dispatch,
-    members,
-    messages,
-    collatorName,
-    groupName,
-    spin,
-  } = useContext(context);
+  const { dispatch, members, messages, collatorName, groupName, spin } =
+    useContext(context);
 
   const [show, setShow] = useState<any>(false);
   const [member, setMember] = useState<MemberI | false>(false);
@@ -171,9 +165,13 @@ const MembersComp: React.FC<MembersProps> = () => {
           <h2>Collator: {collatorName}</h2>
         </div>
         <div className='hide-container'>
-          <List items={activeMembers} title='active members' />
-          <List items={inactiveMembers} title='inactive members' />
-          <List items={givenOut} title='Given Out' />
+          <List items={activeMembers} animate={false} title='active members' />
+          <List
+            items={inactiveMembers}
+            animate={false}
+            title='inactive members'
+          />
+          <List items={givenOut} animate={false} title='Given Out' />
         </div>
       </div>
     </Section>

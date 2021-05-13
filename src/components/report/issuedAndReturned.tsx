@@ -153,13 +153,6 @@ const FlexWrapper = styled(Flex)`
   .worker-card-capacity {
     border-top: 1px solid gray;
   }
-
-  @media print {
-    .worker-card {
-      background-color: white;
-      color: black;
-    }
-  }
 `;
 
 export default IssuedReturned;

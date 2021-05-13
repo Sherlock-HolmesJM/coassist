@@ -10,7 +10,6 @@ import SumCard from '../../commons/summaryCard';
 import { checkDate, getWeekBegin, getWeekEnd } from '../../utils/date';
 import { formatCap } from '../../utils/time';
 import { getMessageTotals } from '../../utils';
-import html2pdf from 'html2pdf.js';
 
 export interface ReportProps {
   report: boolean;
@@ -79,23 +78,6 @@ const Report: React.FC<ReportProps> = (props) => {
     (m) => !transedited.find((worker) => worker.part === m.part)
   );
 
-  const save2pdf = () => {
-    const opt = {
-      margin: 0.1,
-      filename: 'fullReport.pdf',
-    };
-    html2pdf().from(ref.current).set(opt).save();
-  };
-
-  const summaryReport = () => {
-    const el = document.querySelector('.message-summary');
-    const opt = {
-      margin: 0.1,
-      filename: 'summary.pdf',
-    };
-    html2pdf().from(el).set(opt).save();
-  };
-
   // ================== Animation =======================
 
   const animIn = 'animate__zoomInDown';
@@ -109,12 +91,12 @@ const Report: React.FC<ReportProps> = (props) => {
 
   return (
     <Wrapper className={`animate__animated ${animIn}`} ref={ref}>
-      <ButtonGroup className='btn-group' id='no-print'>
-        <button className='btn btn-primary btn-print' onClick={save2pdf}>
-          Full Report
-        </button>
-        <button className='btn btn-primary btn-print' onClick={summaryReport}>
-          Summary Report
+      <ButtonGroup className='btn-group no-print'>
+        <button
+          className='btn btn-primary btn-print'
+          onClick={() => window.print()}
+        >
+          PDF Report
         </button>
         <button className='btn btn-primary btn-print' onClick={closeReport}>
           Close
@@ -164,13 +146,15 @@ const Report: React.FC<ReportProps> = (props) => {
                 ];
                 const rand = () => Math.floor(Math.random() * anims.length - 1);
 
-                const list: [string, string][] = ([
-                  ['Length', m.duration],
-                  ['Transcribed', totals.done_t],
-                  ['Edited', totals.done_te],
-                  ['Transcribing', totals.working_t],
-                  ['Editing', totals.working_te],
-                ] as [string, number][])
+                const list: [string, string][] = (
+                  [
+                    ['Length', m.duration],
+                    ['Transcribed', totals.done_t],
+                    ['Edited', totals.done_te],
+                    ['Transcribing', totals.working_t],
+                    ['Editing', totals.working_te],
+                  ] as [string, number][]
+                )
                   .filter((item) => item[1] > 0)
                   .map((item) => [item[0], formatCap(item[1])]);
 
@@ -220,6 +204,12 @@ const Div = styled.div`
   }
   .uppercase {
     text-transform: uppercase;
+  }
+
+  @media print {
+    .no-print {
+      display: none;
+    }
   }
 `;
 

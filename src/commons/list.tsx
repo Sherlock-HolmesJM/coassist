@@ -9,10 +9,11 @@ export interface ListProps {
   onDelete?: (member: MemberI) => void;
   onMark?: (member: MemberI) => void;
   onUpdate?: (member: MemberI) => void;
+  animate?: boolean;
 }
 
 const List: React.FC<ListProps> = (props) => {
-  const { title, items, onMark, onDelete, onUpdate } = props;
+  const { title, items, onMark, onDelete, onUpdate, animate } = props;
 
   if (items.length === 0) return null;
 
@@ -20,8 +21,11 @@ const List: React.FC<ListProps> = (props) => {
   const tes = items.filter((m) => m.type === 'TE');
   const sorted = [...ts, ...tes];
 
+  const anim = animate ?? true;
+  const classes = `list ${anim && 'animate__animated animate__fadeInUp'}`;
+
   return (
-    <Div className='list animate__animated animate__fadeInUp'>
+    <Div className={classes}>
       <div className='title-container'>
         <h3 className='title'>{capitalize(title)} </h3>
         <div className='badge-container'>

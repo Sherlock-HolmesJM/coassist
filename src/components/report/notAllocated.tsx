@@ -89,11 +89,6 @@ const WrapperFlexItem = styled(FlexItem)`
   .count-item::before {
     content: counter(alone) ') ';
   }
-
-  @media print {
-    background: white;
-    color: black;
-  }
 `;
 
 export default NotAlloc;

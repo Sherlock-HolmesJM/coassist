@@ -20,9 +20,8 @@ import { pageAnim } from '../config';
 export interface Props {}
 
 const Home: React.FC<Props> = () => {
-  const { collatorName, groupName, dispatch, spin, messages } = useContext(
-    context
-  );
+  const { collatorName, groupName, dispatch, spin, messages } =
+    useContext(context);
   const [report, setReport] = useState(false);
   const [selfspin, setSpin] = useState(false);
 
@@ -183,11 +182,11 @@ const Section = styled.section`
     text-transform: capitalize;
   }
 
-  /* @media print {
+  @media print {
     .no-print {
       display: none;
     }
-  } */
+  }
 `;
 
 export default Home;
