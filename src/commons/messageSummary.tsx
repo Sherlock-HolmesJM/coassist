@@ -21,7 +21,7 @@ const MessageSummary: React.FC<MessageSummaryProps> = (props) => {
         {messages.map((m, i) => {
           const totals = getMessageTotals(m);
 
-          const anims = ['zoom-in', 'zoom-out', 'flip-right', 'flip-down'];
+          const anims = ['zoom-in', 'zoom-out', 'slideInUp', 'flip-down'];
           const rand = () => Math.floor(Math.random() * anims.length - 1);
 
           const list: [string, string][] = (

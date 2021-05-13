@@ -74,8 +74,8 @@ const Report: React.FC<ReportProps> = (props) => {
 
   // ================== Animation =======================
 
-  const animIn = 'animate__zoomInDown';
-  const animOut = 'animate__zoomOutLeft';
+  const animIn = 'animate__fadeIn';
+  const animOut = 'animate__fadeOut';
 
   const closeReport = () => {
     ref.current.classList.remove(animIn);
@@ -96,7 +96,7 @@ const Report: React.FC<ReportProps> = (props) => {
           Close
         </button>
       </ButtonGroup>
-      <Div id='report' className={`animate__animated ${animIn}`} ref={ref}>
+      <Div className={`animate__animated ${animIn}`} ref={ref}>
         <div id='full-report'>
           <div className='title-container'>
             <h4 className='uppercase title'>
@@ -148,7 +148,6 @@ const ButtonGroup = styled.div`
 `;
 
 const Div = styled.div`
-  overflow-x: hidden;
   margin: 0;
   padding-top: 10px;
   background-color: #f4a261;
