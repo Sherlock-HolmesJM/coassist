@@ -1,15 +1,12 @@
 import { useContext, useRef } from 'react';
 import { context } from '../../context/context';
-import { Worker } from '../../types';
 import styled from 'styled-components';
 import Summary from './summary';
 import NotAllocated from './notAllocated';
 import IssuedAndReturned from './issuedAndReturned';
-import { Flex, Title } from './flex';
-import SumCard from '../../commons/summaryCard';
 import { checkDate, getWeekBegin, getWeekEnd } from '../../utils/date';
-import { formatCap } from '../../utils/time';
-import { getMessageTotals } from '../../utils';
+import MessageSummary from '../../commons/messageSummary';
+import * as reportUtils from '../../utils/report';
 
 export interface ReportProps {
   report: boolean;
@@ -35,41 +32,28 @@ const Report: React.FC<ReportProps> = (props) => {
       m.status === 'incomplete'
   );
 
-  let audtrans: Worker[] = []; // audios transcribed
-  let audinprog: Worker[] = []; // audios in progress
-  let transinprog: Worker[] = []; // transcripts in progress
-  let transedited: Worker[] = []; // transcripts edited
-  let issuedDisWeek: Worker[] = []; // audios/transcripts issued this week
-  let issuedPreviousWeeks: Worker[] = []; // audios/transcripts issued last week
+  const audtrans = reportUtils.getList(messagesInProgress, 'T', true);
+  const transinprog = reportUtils.getList(messagesInProgress, 'TE', false);
+  const transedited = reportUtils.getList(messagesInProgress, 'TE', true);
+  const issuedDisWeek = reportUtils.getList2(
+    messagesInProgress,
+    false,
+    true,
+    'dateReceived'
+  );
+  const issuedPreviousWeeks = reportUtils.getList2(
+    messagesInProgress,
+    false,
+    false,
+    'dateReceived'
+  );
 
-  messagesInProgress.forEach((m) => {
-    const alist = m.workers.filter((m) => m.type === 'T' && !m.done);
-    const alistT = m.workers.filter((m) => m.type === 'T' && m.done);
-    const tlist = m.workers.filter((m) => m.type === 'TE' && !m.done);
-    const tlistE = m.workers.filter((m) => m.type === 'TE' && m.done);
-    const isdw = m.workers.filter(
-      (w) => !w.done && checkDate(new Date(w.dateReceived), weekbegan, weekends)
-    );
-    const islw = m.workers.filter(
-      (w) =>
-        !w.done && !checkDate(new Date(w.dateReceived), weekbegan, weekends)
-    );
-
-    audinprog = [...audinprog, ...alist];
-    audtrans = [...audtrans, ...alistT];
-    transinprog = [...transinprog, ...tlist];
-    transedited = [...transedited, ...tlistE];
-    issuedDisWeek = [...issuedDisWeek, ...isdw];
-    issuedPreviousWeeks = [...issuedPreviousWeeks, ...islw];
-  });
-
-  let returnedDisWeek = [];
-  messages.forEach((m) => {
-    const l = m.workers.filter(
-      (w) => w.done && checkDate(new Date(w.dateReturned), weekbegan, weekends)
-    );
-    returnedDisWeek = [...returnedDisWeek, ...l];
-  });
+  const returnedDisWeek = reportUtils.getList2(
+    messages,
+    true,
+    true,
+    'dateReturned'
+  );
 
   let transcriptsNotAllocated = audtrans.filter(
     (m) => !transinprog.find((worker) => worker.part === m.part)
@@ -117,10 +101,21 @@ const Report: React.FC<ReportProps> = (props) => {
             issuedThisWeek={issuedDisWeek}
             returnedThisWeek={returnedDisWeek}
           />
-          <IssuedAndReturned
-            issued={issuedDisWeek}
-            returned={returnedDisWeek}
-            outstanding={issuedPreviousWeeks}
+          <MessageSummary
+            title={'Messages Completed this Week'}
+            messages={messages.filter(
+              (message) =>
+                message.status === 'done' &&
+                checkDate(
+                  new Date(message.transcriptEditor.dateReturned),
+                  weekbegan,
+                  weekends
+                )
+            )}
+          />
+          <MessageSummary
+            messages={messagesInProgress}
+            title={'Messages in Progress: Completion Rate'}
           />
           <NotAllocated
             audios={messagesNotAllocated}
@@ -129,46 +124,11 @@ const Report: React.FC<ReportProps> = (props) => {
               .filter((m) => m.active && m.free)
               .sort((a, b) => a.type.length - b.type.length)}
           />
-          <MessageSummary className='message-summary'>
-            <Title>
-              {messagesInProgress.length > 0 &&
-                'Messages In Progress: Completion Rate'}
-            </Title>
-            <Flex>
-              {messagesInProgress.map((m, i) => {
-                const totals = getMessageTotals(m);
-
-                const anims = [
-                  'zoom-in',
-                  'zoom-out',
-                  'flip-right',
-                  'flip-down',
-                ];
-                const rand = () => Math.floor(Math.random() * anims.length - 1);
-
-                const list: [string, string][] = (
-                  [
-                    ['Length', m.duration],
-                    ['Transcribed', totals.done_t],
-                    ['Edited', totals.done_te],
-                    ['Transcribing', totals.working_t],
-                    ['Editing', totals.working_te],
-                  ] as [string, number][]
-                )
-                  .filter((item) => item[1] > 0)
-                  .map((item) => [item[0], formatCap(item[1])]);
-
-                return (
-                  <SumCard
-                    key={i}
-                    title={m.name}
-                    animation={anims[rand()]}
-                    items={list}
-                  />
-                );
-              })}
-            </Flex>
-          </MessageSummary>
+          <IssuedAndReturned
+            issued={issuedDisWeek}
+            returned={returnedDisWeek}
+            outstanding={issuedPreviousWeeks}
+          />
         </div>
       </Div>
     </Wrapper>
@@ -183,11 +143,6 @@ const ButtonGroup = styled.div`
   display: flex;
   justify-content: flex-end;
   padding: 10px;
-`;
-
-const MessageSummary = styled.div`
-  background-color: #f4a261;
-  padding: 10px 0;
 `;
 
 const Div = styled.div`

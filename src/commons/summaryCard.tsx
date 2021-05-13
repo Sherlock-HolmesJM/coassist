@@ -9,13 +9,10 @@ interface SumCardProps {
 }
 
 const SumCard: React.FC<SumCardProps> = (props) => {
-  const { title, items, delay, animation } = props;
+  const { title, items, animation } = props;
 
   return (
-    <FlexItemWrap
-      data-aos={animation ?? 'flip-down'}
-      data-aos-delay={delay ?? 0}
-    >
+    <FlexItemWrap data-aos={animation ?? 'flip-down'}>
       <h6 className='card-title'>{title.toUpperCase()}</h6>
       {items.map((item, index) => (
         <div className='card-totals-container' key={index}>

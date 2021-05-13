@@ -1,6 +1,6 @@
 {
   "name": "coassist",
-  "version": "1.5.2",
+  "version": "1.5.1",
   "private": true,
   "dependencies": {
     "@react-pdf/renderer": "^2.0.12",
