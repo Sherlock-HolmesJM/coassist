@@ -62,6 +62,16 @@ const Report: React.FC<ReportProps> = (props) => {
     (m) => !transedited.find((worker) => worker.part === m.part)
   );
 
+  const messagesFinishedThisWeek = messages.filter(
+    (message) =>
+      message.status === 'done' &&
+      checkDate(
+        new Date(message.transcriptEditor.dateReturned),
+        weekbegan,
+        weekends
+      )
+  );
+
   // ================== Animation =======================
 
   const animIn = 'animate__zoomInDown';
@@ -103,15 +113,7 @@ const Report: React.FC<ReportProps> = (props) => {
           />
           <MessageSummary
             title={'Messages Completed this Week'}
-            messages={messages.filter(
-              (message) =>
-                message.status === 'done' &&
-                checkDate(
-                  new Date(message.transcriptEditor.dateReturned),
-                  weekbegan,
-                  weekends
-                )
-            )}
+            messages={messagesFinishedThisWeek}
           />
           <MessageSummary
             messages={messagesInProgress}
